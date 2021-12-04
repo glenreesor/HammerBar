@@ -8,6 +8,7 @@ local hb = {
   display = {},
   hsData = {},
   info = {},
+  log = {},
   main = {},
   util = {},
 }
@@ -370,6 +371,7 @@ function hb.canvas.updateCanvasesByScreenId(screenInfoById)
   -- Ensure all required canvases exist
   for _, screenInfo in pairs(screenInfoById) do
     if (lf.state.canvasesByScreenId[screenInfo.id] == nil) then
+      hb.log.printScreenInfo('Adding canvas for screen', screenInfo)
       l.newCanvas = hs.canvas.new(
         {
           x = screenInfo.x,
@@ -388,6 +390,7 @@ function hb.canvas.updateCanvasesByScreenId(screenInfoById)
   for screenId, canvas in pairs(lf.state.canvasesByScreenId) do
     if (screenInfoById[screenId] == nil) then
       if (canvas.delete ~= nil) then
+        hb.log.printScreenInfo('Removing canvas for screen', screenInfo)
         canvas:delete()
         lf.state.canvasesByScreenId[screenId] = nil
       end
@@ -762,6 +765,19 @@ end
 
 
 --------------------------------------------------------------------------------
+-- Functions for logging to the Hammerspoon console
+--------------------------------------------------------------------------------
+
+function hb.log.printScreenInfo(headerString, screenInfo)
+  print('HammerBar: ' .. headerString)
+  print('  id:     ' .. screenInfo.id)
+  print('  x:      ' .. screenInfo.x)
+  print('  y:      ' .. screenInfo.y)
+  print('  width:  ' .. screenInfo.width)
+  print('  height: ' .. screenInfo.height)
+end
+
+--------------------------------------------------------------------------------
 -- The main Hammerbar functions
 --------------------------------------------------------------------------------
 
@@ -802,7 +818,7 @@ function hb.main.recoverPreviouslyHiddenWindows()
           '',
           ''
         )
-        print('Recovering previously hidden windows')
+        print('Recovering windows that were previously on a different desktop')
       end
 
       l.window = hb.hsData.getWindow(hsWindow)
@@ -906,11 +922,6 @@ function hb.main.updateTaskbar(canvas, dimensions, windowsThisCanvasById)
   l.DESKTOP_SWITCHERS_WIDTH = lf.DESKTOP_SWITCHER_WIDTH * 2 +
     lf.BUTTON_PADDING * 2
 
-  -- Sort our window objects by windowId so the order on the taskbar is
-  -- consistent from render to render
-
-  table.sort(windowsThisCanvas, function(a, b) return a.id < b.id end)
-
   canvas:replaceElements(
     hb.canvas.getTaskbarElements(dimensions.width, dimensions.height)
   )
@@ -937,7 +948,7 @@ function hb.main.updateTaskbar(canvas, dimensions, windowsThisCanvasById)
 
   -- Use a sorted list of app names so order on the taskbar is consistent and
   -- windows don't jump around
-  l.windowIdsByAppName = hb.info.getWindowIdsByAppName(windowsThisCanvas)
+  l.windowIdsByAppName = hb.info.getWindowIdsByAppName(windowsThisCanvasById)
   l.appNames = hb.util.keys(l.windowIdsByAppName)
   table.sort(l.appNames)
 
@@ -949,7 +960,7 @@ function hb.main.updateTaskbar(canvas, dimensions, windowsThisCanvasById)
     table.sort(l.windowIdsThisApp)
 
     for _, windowId in pairs(l.windowIdsThisApp) do
-      l.window = windowsThisCanvas[windowId]
+      l.window = windowsThisCanvasById[windowId]
       canvas:appendElements(
         hb.canvas.getWindowButtonElements(l.x, l.y, l.window)
       )
