@@ -402,8 +402,35 @@ end
 -- Functions for dealing with virtual desktops
 --------------------------------------------------------------------------------
 
+-- Return an object with the coordinates of the bottom right corner of all
+-- screens. This is assuming screens are arranged in a horizontal layout
+function hb.desktops.getBottomRightCornerCoords()
+  local l = {}
+
+  l.allScreens = hb.hsData.getScreenInfoById(hs.screen.allScreens())
+  l.bottomRight = { x = 0, y = 0 }
+
+  for _, screenInfo in pairs(l.allScreens) do
+    l.thisScreenBottomRight = {
+      x = screenInfo.x + screenInfo.width,
+      y = screenInfo.y + screenInfo.height,
+    }
+
+    if (l.thisScreenBottomRight.x > l.bottomRight.x) then
+      l.bottomRight = {
+        x = l.thisScreenBottomRight.x,
+        y = l.thisScreenBottomRight.y,
+      }
+    end
+  end
+
+  return l.bottomRight
+end
+
 function hb.desktops.hideHammerspoonWindows(windowIds)
   local l = {}
+
+  l.bottomRight = hb.desktops.getBottomRightCornerCoords()
 
   -- Move all the specified windows to the bottom right corner so they're not
   -- visible
@@ -419,7 +446,10 @@ function hb.desktops.hideHammerspoonWindows(windowIds)
         lf.state.previousWindowTopLeftByWindowId[
           l.window.id
         ] = l.hsWindow:topLeft()
-        l.hsWindow:setTopLeft({x = 10000, y = 100000})
+        l.hsWindow:setTopLeft({
+          x = l.bottomRight.x,
+          y = l.bottomRight.y,
+        })
       end
     end
   end
@@ -768,6 +798,17 @@ end
 -- Functions for logging to the Hammerspoon console
 --------------------------------------------------------------------------------
 
+function hb.log.print(message, indent)
+  local l = {}
+
+  if (indent == '') then
+    l.prefix = 'HammerBar: '
+  else
+    l.prefix = indent
+  end
+  print(l.prefix .. message)
+end
+
 function hb.log.printScreenInfo(headerString, screenInfo)
   print('HammerBar: ' .. headerString)
   print('  id:     ' .. screenInfo.id)
@@ -801,6 +842,17 @@ function hb.main.recoverPreviouslyHiddenWindows()
   -- If user restarted Hammerbar, there may be windows that were moved to
   -- the bottom right. Bring those back
 
+  -- Our desktop hiding logic tells Hammerspoon to move windows to the absolute
+  -- bottom right corner, but OSX wants to keep them partly visible and thus
+  -- windows will be "close" to the bottom right corner. So introduce a fudge
+  -- factor to account for that
+  l.bottomRight = hb.desktops.getBottomRightCornerCoords()
+  l.fudgedBottomRight = {
+    x = l.bottomRight.x - 75,
+    y = l.bottomRight.y - 75,
+  }
+
+
   l.x = 0
   l.y = 30
 
@@ -810,24 +862,27 @@ function hb.main.recoverPreviouslyHiddenWindows()
     l.windowX = hsWindow:frame().x
     l.windowY = hsWindow:frame().y
 
-    if (l.windowX > 900 and l.windowY > 900) then
+    if (
+      l.windowX > l.fudgedBottomRight.x and
+      l.windowY > l.fudgedBottomRight.y
+    ) then
       if (not l.notificationShown) then
         l.notificationShown = true
         hs.notify.show(
-          'Recovering previously hidden windows. See hammerspoon console',
+          'HammerBar: Recovering previously hidden windows. See hammerspoon console',
           '',
           ''
         )
-        print('Recovering windows that were previously on a different desktop')
+        hb.log.print('Recovering windows that were previously on a different desktop', '')
       end
 
       l.window = hb.hsData.getWindow(hsWindow)
-      l.infoToPrint = l.window.appName ..
-        '(' .. l.window.windowTitle .. ')' ..
-        '    ' ..
+      l.infoToPrint = l.window.appName .. ' ' ..
+        '(' .. l.window.windowTitle .. ')' .. ' ' ..
+        '(x, y) = ' ..
         '(' .. tostring(l.windowX) .. ', ' .. tostring(l.windowY) .. ')'
 
-      print('  ' .. l.infoToPrint)
+      hb.log.print(l.infoToPrint, ' ')
 
       hsWindow:setTopLeft({ x = l.x, y = l.y })
       hsWindow:raise()
