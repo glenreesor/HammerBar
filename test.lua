@@ -155,19 +155,19 @@ describe('hb.display functions', function()
   describe('hb.display.getAppNameAndWindowTitle', function()
 
     it('should return unmodified name and title if no user config', function()
-      local windowInfo = {
+      local window = {
         appName = 'app name input',
         windowTitle = 'window title input',
       }
 
       assert.are.same(
-        windowInfo,
-        hb.display.getAppNameAndWindowTitle(windowInfo)
+        window,
+        hb.display.getAppNameAndWindowTitle(window)
       )
     end)
 
     it('should return unmodified name and title if no match', function()
-      local windowInfo = {
+      local window = {
         appName = 'app name input',
         windowTitle = 'window title input',
       }
@@ -184,13 +184,13 @@ describe('hb.display functions', function()
       )
 
       assert.are.same(
-        windowInfo,
-        hb.display.getAppNameAndWindowTitle(windowInfo)
+        window,
+        hb.display.getAppNameAndWindowTitle(window)
       )
     end)
 
     it('should return modified name and title if window pattern is nil', function()
-      local windowInfo = {
+      local window = {
         appName = 'app name input',
         windowTitle = 'window title input',
       }
@@ -208,12 +208,12 @@ describe('hb.display functions', function()
 
       assert.are.same(
       { appName = 'modified app name', windowTitle = 'modified window title' },
-        hb.display.getAppNameAndWindowTitle(windowInfo)
+        hb.display.getAppNameAndWindowTitle(window)
       )
     end)
 
     it('should return unmodified app name if displayAppName is nil', function()
-      local windowInfo = {
+      local window = {
         appName = 'app name input',
         windowTitle = 'window title input',
       }
@@ -231,12 +231,12 @@ describe('hb.display functions', function()
 
       assert.are.same(
       { appName = 'app name input', windowTitle = 'modified window title' },
-        hb.display.getAppNameAndWindowTitle(windowInfo)
+        hb.display.getAppNameAndWindowTitle(window)
       )
     end)
 
     it('should return unmodified title if displayWindowTitle is nil', function()
-      local windowInfo = {
+      local window = {
         appName = 'app name input',
         windowTitle = 'window title input',
       }
@@ -254,7 +254,7 @@ describe('hb.display functions', function()
 
       assert.are.same(
       { appName = 'modified app name', windowTitle = 'window title input' },
-        hb.display.getAppNameAndWindowTitle(windowInfo)
+        hb.display.getAppNameAndWindowTitle(window)
       )
     end)
 
@@ -304,14 +304,14 @@ describe('hb.display functions', function()
 
 
   describe('hb.display.getWindowIconColor', function()
-    local windowInfo = {
+    local window = {
       appName = 'TestAppName'
     }
 
     it('should return default color if user has not specified one', function()
       assert.are.same(
         hb.display.getDefaultColors().icons,
-        hb.display.getWindowIconColor(windowInfo)
+        hb.display.getWindowIconColor(window)
       )
     end)
 
@@ -322,7 +322,7 @@ describe('hb.display functions', function()
 
         assert.are.same(
           hb.display.getDefaultColors().icons,
-          hb.display.getWindowIconColor(windowInfo)
+          hb.display.getWindowIconColor(window)
         )
       end)
 
@@ -333,7 +333,7 @@ describe('hb.display functions', function()
 
         assert.are.same(
           hb.display.getDefaultColors().icons,
-          hb.display.getWindowIconColor(windowInfo)
+          hb.display.getWindowIconColor(window)
         )
       end)
 
@@ -345,7 +345,7 @@ describe('hb.display functions', function()
 
         assert.are.same(
           userColor,
-          hb.display.getWindowIconColor(windowInfo)
+          hb.display.getWindowIconColor(window)
         )
       end)
 
@@ -366,7 +366,7 @@ describe('hb.display functions', function()
 
         assert.are.same(
           userColor,
-          hb.display.getWindowIconColor(windowInfo)
+          hb.display.getWindowIconColor(window)
         )
       end)
   end)
@@ -534,7 +534,7 @@ describe('hb.hsData.getScreenInfoById', function()
 
 end)
 
-describe('hb.hsData.getWindowInfo', function()
+describe('hb.hsData.getWindow', function()
 
   it('should return the proper fields for a hammerspoon window', function()
     local l = {}
@@ -557,13 +557,13 @@ describe('hb.hsData.getWindowInfo', function()
         screenId = 'Screen ID',
         windowTitle = 'Window Title',
       },
-      hb.hsData.getWindowInfo(l.mockWindow)
+      hb.hsData.getWindow(l.mockWindow)
     )
   end)
 
 end)
 
-describe('hb.hsData.getWindowInfoByWindowId', function()
+describe('hb.hsData.getWindowsByWindowId', function()
 
   it('should return an empty object if there are zero windows', function()
     local l = {}
@@ -571,7 +571,7 @@ describe('hb.hsData.getWindowInfoByWindowId', function()
     l.mockWindows = {}
     assert.are.same(
       {},
-      hb.hsData.getWindowInfoByWindowId(l.mockWindows)
+      hb.hsData.getWindowsByWindowId(l.mockWindows)
     )
   end)
 
@@ -601,7 +601,7 @@ describe('hb.hsData.getWindowInfoByWindowId', function()
 
     assert.are.same(
       l.expectedValue,
-      hb.hsData.getWindowInfoByWindowId(l.mockWindows)
+      hb.hsData.getWindowsByWindowId(l.mockWindows)
     )
   end)
 
@@ -649,7 +649,7 @@ describe('hb.hsData.getWindowInfoByWindowId', function()
 
     assert.are.same(
       l.expectedValue,
-      hb.hsData.getWindowInfoByWindowId(l.mockWindows)
+      hb.hsData.getWindowsByWindowId(l.mockWindows)
     )
   end)
 
@@ -659,22 +659,22 @@ end)
 -- hb.hsData tests
 --------------------------------------------------------------------------------
 
-describe('hb.info.getWindowInfoByAppName', function()
+describe('hb.info.getWindowsByAppName', function()
 
   it('should return an empty object if there are zero windows', function()
     local l = {}
 
-    l.mockWindowInfoObjects = {}
+    l.mockWindows = {}
     assert.are.same(
       {},
-      hb.info.getWindowInfoByAppName(l.mockWindowInfoObjects)
+      hb.info.getWindowsByAppName(l.mockWindows)
     )
   end)
 
   it('should return a proper object when there is one window', function()
     local l = {}
 
-    l.mockWindowInfoObjects = {
+    l.mockWindows = {
       {
         appName = 'App Name',
         id = 'Window ID',
@@ -697,14 +697,14 @@ describe('hb.info.getWindowInfoByAppName', function()
 
     assert.are.same(
       l.expectedValue,
-      hb.info.getWindowInfoByAppName(l.mockWindowInfoObjects)
+      hb.info.getWindowsByAppName(l.mockWindows)
     )
   end)
 
   it('should return proper objects when there are multiple windows of different apps', function()
     local l = {}
 
-    l.mockWindowInfoObjects = {
+    l.mockWindows = {
       {
         appName = 'App Name1',
         id = 'Window ID1',
@@ -743,14 +743,14 @@ describe('hb.info.getWindowInfoByAppName', function()
 
     assert.are.same(
       l.expectedValue,
-      hb.info.getWindowInfoByAppName(l.mockWindowInfoObjects)
+      hb.info.getWindowsByAppName(l.mockWindows)
     )
   end)
 
   it('should return proper objects when there are multiple windows of the same app', function()
     local l = {}
 
-    l.mockWindowInfoObjects = {
+    l.mockWindows = {
       {
         appName = 'App Name',
         id = 'Window ID1',
@@ -787,7 +787,7 @@ describe('hb.info.getWindowInfoByAppName', function()
 
     assert.are.same(
       l.expectedValue,
-      hb.info.getWindowInfoByAppName(l.mockWindowInfoObjects)
+      hb.info.getWindowsByAppName(l.mockWindows)
     )
   end)
 

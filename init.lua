@@ -232,7 +232,7 @@ function hb.canvas.getTaskbarElements(width, height)
 end
 
 
-function hb.canvas.getWindowButtonElements(x, y, windowInfo)
+function hb.canvas.getWindowButtonElements(x, y, window)
   local l = {}
 
   l.ICON_WIDTH = 15
@@ -253,7 +253,7 @@ function hb.canvas.getWindowButtonElements(x, y, windowInfo)
   l.textLine1Y = y
   l.textLine2Y = l.textLine1Y + lf.config.fontSize + l.VERTICAL_PADDING
 
-  if (windowInfo.isMinimized) then
+  if (window.isMinimized) then
     l.iconHeight = lf.config.fontSize - 1
     l.iconY = y + lf.config.fontSize + l.VERTICAL_PADDING * 2
   else
@@ -264,13 +264,13 @@ function hb.canvas.getWindowButtonElements(x, y, windowInfo)
   l.allDesktopsIndicatorX = l.iconX + 2
   l.allDesktopsIndicatorY = l.iconY + l.iconHeight + 2
 
-  l.iconColor = hb.display.getWindowIconColor(windowInfo)
+  l.iconColor = hb.display.getWindowIconColor(window)
 
-  l.displayInfo = hb.display.getAppNameAndWindowTitle(windowInfo)
+  l.displayInfo = hb.display.getAppNameAndWindowTitle(window)
   l.appNameToDisplay = l.displayInfo.appName
   l.windowTitleToDisplay = l.displayInfo.windowTitle
 
-  l.clickId = 'windowButton ' .. windowInfo.id
+  l.clickId = 'windowButton ' .. window.id
 
   l.canvasElements = {
     {
@@ -328,7 +328,7 @@ function hb.canvas.getWindowButtonElements(x, y, windowInfo)
   }
 
   -- Hack for now to make it easy to quickly see which windows aren't "standard"
-  if (not windowInfo.isStandard) then
+  if (not window.isStandard) then
     table.insert(l.canvasElements, {
       type = 'rectangle',
       fillColor = lf.BLACK,
@@ -343,7 +343,7 @@ function hb.canvas.getWindowButtonElements(x, y, windowInfo)
   end
 
   -- All desktops indicator
-  if (hb.desktops.windowIsInAllDesktops(windowInfo.id)) then
+  if (hb.desktops.windowIsInAllDesktops(window.id)) then
     table.insert(l.canvasElements, {
       type = 'rectangle',
       fillColor = lf.BLACK,
@@ -410,11 +410,11 @@ function hb.desktops.hideHammerspoonWindows(windowIds)
     -- We have to check for nil hsWindow here because we're operating on a list
     -- of window ids that may not reflect the currently active windows
     if (l.hsWindow ~= nil) then
-      l.windowInfo = hb.hsData.getWindowInfo(l.hsWindow)
+      l.window = hb.hsData.getWindow(l.hsWindow)
 
-      if (hb.desktops.shouldManageWindow(l.windowInfo)) then
+      if (hb.desktops.shouldManageWindow(l.window)) then
         lf.state.previousWindowTopLeftByWindowId[
-          l.windowInfo.id
+          l.window.id
         ] = l.hsWindow:topLeft()
         l.hsWindow:setTopLeft({x = 10000, y = 100000})
       end
@@ -424,7 +424,7 @@ function hb.desktops.hideHammerspoonWindows(windowIds)
 end
 
 
-function hb.desktops.shouldManageWindow(windowInfo)
+function hb.desktops.shouldManageWindow(window)
   -- Only manage:
   --  - windows that aren't on all desktops
   --  - standard windows since I haven't figured out if some non-standard
@@ -432,9 +432,9 @@ function hb.desktops.shouldManageWindow(windowInfo)
   --  - unminimized windows since minimized ones already aren't visible
 
   return (
-    not hb.desktops.windowIsInAllDesktops(windowInfo.id) and
-    windowInfo.isStandard and
-    not windowInfo.isMinimized
+    not hb.desktops.windowIsInAllDesktops(window.id) and
+    window.isStandard and
+    not window.isMinimized
   )
 end
 
@@ -457,21 +457,21 @@ end
 function hb.desktops.toggleWindowAllDesktops(hammerspoonWindow)
   local l = {}
 
-  l.windowInfo = hb.hsData.getWindowInfo(hammerspoonWindow)
+  l.window = hb.hsData.getWindow(hammerspoonWindow)
 
-  if (hb.desktops.windowIsInAllDesktops(l.windowInfo.id)) then
+  if (hb.desktops.windowIsInAllDesktops(l.window.id)) then
     -- Remove from all desktops then re-add to only the current one
     for _, desktopId in pairs( {1, 2} ) do
       l.index = hs.fnutils.indexOf(
         lf.state.windowIdsByDesktopId[desktopId],
-        l.windowInfo.id
+        l.window.id
       )
       table.remove(lf.state.windowIdsByDesktopId[desktopId], l.index)
     end
 
     table.insert(
       lf.state.windowIdsByDesktopId[lf.state.currentDesktopId],
-      l.windowInfo.id
+      l.window.id
     )
   else
     -- Ensure present on all desktops
@@ -479,10 +479,10 @@ function hb.desktops.toggleWindowAllDesktops(hammerspoonWindow)
       if (
         not hb.util.contains(
           lf.state.windowIdsByDesktopId[desktopId],
-          l.windowInfo.id
+          l.window.id
         )
       ) then
-        table.insert(lf.state.windowIdsByDesktopId[desktopId], l.windowInfo.id)
+        table.insert(lf.state.windowIdsByDesktopId[desktopId], l.window.id)
       end
     end
   end
@@ -498,11 +498,11 @@ function hb.desktops.unhideHammerspoonWindows(windowIds)
     -- We have to check for nil hsWindow here because we're operating on a list
     -- of window ids that may not reflect the currently active windows
     if (l.hsWindow ~= nil) then
-      l.windowInfo = hb.hsData.getWindowInfo(l.hsWindow)
+      l.window = hb.hsData.getWindow(l.hsWindow)
 
-      if (hb.desktops.shouldManageWindow(l.windowInfo)) then
+      if (hb.desktops.shouldManageWindow(l.window)) then
         l.hsWindow:setTopLeft(
-          lf.state.previousWindowTopLeftByWindowId[l.windowInfo.id]
+          lf.state.previousWindowTopLeftByWindowId[l.window.id]
         )
       end
     end
@@ -512,12 +512,12 @@ end
 
 function hb.desktops.updateWindowIdsByDesktopId(
   currentDesktopId,
-  allWindowInfoObjectsById
+  allWindowsById
 )
   local l = {}
 
   -- Any windows not assigned to a virtual desktop must belong to the current one
-  for windowId, windowInfo in pairs(allWindowInfoObjectsById) do
+  for windowId, window in pairs(allWindowsById) do
     if (
       not hb.util.contains(lf.state.windowIdsByDesktopId[1], windowId) and
       not hb.util.contains(lf.state.windowIdsByDesktopId[2], windowId)
@@ -530,7 +530,7 @@ function hb.desktops.updateWindowIdsByDesktopId(
   -- must have been closed since our last update
   for _, desktopId in pairs({ 1, 2 }) do
     for _, windowId in pairs(lf.state.windowIdsByDesktopId[desktopId]) do
-      if (allWindowInfoObjectsById[windowId] == nil) then
+      if (allWindowsById[windowId] == nil) then
         l.index = hb.util.indexOf(lf.state.windowIdsByDesktopId[desktopId], windowId)
         table.remove(lf.state.windowIdsByDesktopId[desktopId], l.index)
       end
@@ -551,28 +551,28 @@ end
 --------------------------------------------------------------------------------
 
 -- Return an object that indicates what appName and windowTitle to display for
--- the specified windowInfo
+-- the specified window
 --
 -- Return value is of the form:
 -- {
 --   appName = 'Something to display'
 --   windowTitle = 'Something else to display'
 -- }
-function hb.display.getAppNameAndWindowTitle(windowInfo)
+function hb.display.getAppNameAndWindowTitle(window)
   local l = {}
 
   l.userConfig = lf.config.userAppNamesAndWindowTitles
 
   l.returnValue = {
-    appName = windowInfo.appName,
-    windowTitle = windowInfo.windowTitle
+    appName = window.appName,
+    windowTitle = window.windowTitle
   }
 
   for _, userConfig in pairs(l.userConfig) do
     if (
-      userConfig.appName == windowInfo.appName and
+      userConfig.appName == window.appName and
       (
-        userConfig.windowTitle == windowInfo.windowTitle or
+        userConfig.windowTitle == window.windowTitle or
         userConfig.windowTitle == nil
       )
     ) then
@@ -606,18 +606,18 @@ function hb.display.getTaskbarColor()
 end
 
 
-function hb.display.getWindowIconColor(windowInfo)
+function hb.display.getWindowIconColor(window)
   local l = {}
 
 
   if (
     lf.config.userColors.appNames == nil or
-    lf.config.userColors.appNames[windowInfo.appName] == nil
+    lf.config.userColors.appNames[window.appName] == nil
   ) then
     return lf.config.defaultColors.icons
   end
 
-  l.userColor = lf.config.userColors.appNames[windowInfo.appName]
+  l.userColor = lf.config.userColors.appNames[window.appName]
 
   if (type(l.userColor) == 'table') then
     return l.userColor
@@ -701,63 +701,63 @@ end
 --  screenId    - string
 --  windowTitle - string
 --
-function hb.hsData.getWindowInfo(hsWindow)
+function hb.hsData.getWindow(hsWindow)
   local l = {}
-  local windowInfo = {}
+  local window = {}
 
   l.application = hsWindow:application()
   if (l.application == nil) then
     -- Not sure what these windows are
-    windowInfo.appName = 'Unknown'
+    window.appName = 'Unknown'
   else
-    windowInfo.appName = l.application:name()
+    window.appName = l.application:name()
   end
 
-  windowInfo.id = hsWindow:id()
-  windowInfo.isMinimized = hsWindow:isMinimized()
-  windowInfo.isStandard = hsWindow:isStandard()
-  windowInfo.screenId = hsWindow:screen():id()
-  windowInfo.windowTitle = hsWindow:title()
+  window.id = hsWindow:id()
+  window.isMinimized = hsWindow:isMinimized()
+  window.isStandard = hsWindow:isStandard()
+  window.screenId = hsWindow:screen():id()
+  window.windowTitle = hsWindow:title()
 
-  return windowInfo
+  return window
 end
 
 
-function hb.hsData.getWindowInfoByWindowId(hammerSpoonWindows)
+function hb.hsData.getWindowsByWindowId(hammerSpoonWindows)
   local l = {}
-  local windowInfoByWindowId = {}
+  local windowsByWindowId = {}
 
   for _, hammerSpoonWindow in pairs(hammerSpoonWindows) do
-    l.windowInfo = hb.hsData.getWindowInfo(hammerSpoonWindow)
-    windowInfoByWindowId[l.windowInfo.id] = l.windowInfo
+    l.window = hb.hsData.getWindow(hammerSpoonWindow)
+    windowsByWindowId[l.window.id] = l.window
   end
 
-  return windowInfoByWindowId
+  return windowsByWindowId
 end
 
 --------------------------------------------------------------------------------
--- Functions for processing windowInfo objects
+-- Functions for processing our window objects
 --------------------------------------------------------------------------------
 
--- Return a table of windowInfoObjects keyed by app name, corresponding to
--- the passed-in table of windowInfo objects
+-- Return a table of window objects keyed by app name, corresponding to
+-- the passed-in table of window objects
 --
 -- {
---  "App Name 1" = { windowInfoObject1, windowInfoObject2, ...},
---  "App Name 2" = { windowInfoObject1, windowInfoObject2, ...},
+--  "App Name 1" = { window1, window2, ...},
+--  "App Name 2" = { window1, window2, ...},
 -- }
-function hb.info.getWindowInfoByAppName(windowInfoObjects)
-  local windowInfoByAppName = {}
+function hb.info.getWindowsByAppName(windows)
+  local windowsByAppName = {}
 
-  for _, window in pairs(windowInfoObjects) do
-    if (windowInfoByAppName[window.appName] == nil) then
-      windowInfoByAppName[window.appName] = {}
+  for _, window in pairs(windows) do
+    if (windowsByAppName[window.appName] == nil) then
+      windowsByAppName[window.appName] = {}
     end
 
-    table.insert(windowInfoByAppName[window.appName], window)
+    table.insert(windowsByAppName[window.appName], window)
   end
 
-  return windowInfoByAppName
+  return windowsByAppName
 end
 
 
@@ -805,9 +805,9 @@ function hb.main.recoverPreviouslyHiddenWindows()
         print('Recovering previously hidden windows')
       end
 
-      l.windowInfo = hb.hsData.getWindowInfo(hsWindow)
-      l.infoToPrint = l.windowInfo.appName ..
-        '(' .. l.windowInfo.windowTitle .. ')' ..
+      l.window = hb.hsData.getWindow(hsWindow)
+      l.infoToPrint = l.window.appName ..
+        '(' .. l.window.windowTitle .. ')' ..
         '    ' ..
         '(' .. tostring(l.windowX) .. ', ' .. tostring(l.windowY) .. ')'
 
@@ -832,10 +832,10 @@ function hb.main.updateAllTaskbars()
   -- logic for tracking which window is on each desktop will be working with
   -- invalid data.
   l.hammerspoonWindowFound = false
-  l.allWindowsById = hb.hsData.getWindowInfoByWindowId(hs.window.allWindows())
+  l.allWindowsById = hb.hsData.getWindowsByWindowId(hs.window.allWindows())
 
-  for _, windowInfo in pairs(l.allWindowsById) do
-    if (windowInfo.appName == 'Hammerspoon') then
+  for _, window in pairs(l.allWindowsById) do
+    if (window.appName == 'Hammerspoon') then
       l.hammerspoonWindowFound = true
       break
     end
@@ -874,13 +874,13 @@ function hb.main.updateAllTaskbars()
 
     l.windowsThisScreen = hb.util.filter(
       l.allWindowsById,
-      function(windowInfo, windowId)
+      function(window, windowId)
         if (
           hb.util.contains(
             lf.state.windowIdsByDesktopId[lf.state.currentDesktopId],
             windowId
           ) and
-          windowInfo.screenId == screenId
+          window.screenId == screenId
         ) then
           return true
         else
@@ -899,14 +899,14 @@ end
 
 
 -- Update the taskbar for the specified screen so it shows buttons for
--- each of the specified windowInfoObjects
+-- each of the specified window objects
 function hb.main.updateTaskbar(canvas, dimensions, windowsThisCanvas)
   local l = {}
 
   l.DESKTOP_SWITCHERS_WIDTH = lf.DESKTOP_SWITCHER_WIDTH * 2 +
     lf.BUTTON_PADDING * 2
 
-  -- Sort our windowInfoObjects by windowId so the order on the taskbar is
+  -- Sort our window objects by windowId so the order on the taskbar is
   -- consistent from render to render
 
   table.sort(windowsThisCanvas, function(a, b) return a.id < b.id end)
@@ -932,15 +932,15 @@ function hb.main.updateTaskbar(canvas, dimensions, windowsThisCanvas)
   )
   lf.lastHeartbeatTimeSinceEpoch = os.time()
 
-  l.windowsInfoByAppName = hb.info.getWindowInfoByAppName(windowsThisCanvas)
+  l.windowsByAppName = hb.info.getWindowsByAppName(windowsThisCanvas)
 
   l.x = l.x + lf.HEARTBEAT_WIDTH + lf.BUTTON_PADDING
   l.y = (lf.CANVAS_HEIGHT - lf.BUTTON_HEIGHT) / 2
 
-  for appName, windowInfoObjects in pairs(l.windowsInfoByAppName) do
-    for _, windowInfo in pairs(windowInfoObjects) do
+  for appName, windows in pairs(l.windowsByAppName) do
+    for _, window in pairs(windows) do
       canvas:appendElements(
-        hb.canvas.getWindowButtonElements(l.x, l.y, windowInfo)
+        hb.canvas.getWindowButtonElements(l.x, l.y, window)
       )
 
       l.x = l.x + lf.BUTTON_WIDTH + lf.BUTTON_PADDING
