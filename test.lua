@@ -659,7 +659,7 @@ end)
 -- hb.hsData tests
 --------------------------------------------------------------------------------
 
-describe('hb.info.getWindowsByAppName', function()
+describe('hb.info.getWindowIdsByAppName', function()
 
   it('should return an empty object if there are zero windows', function()
     local l = {}
@@ -667,11 +667,11 @@ describe('hb.info.getWindowsByAppName', function()
     l.mockWindows = {}
     assert.are.same(
       {},
-      hb.info.getWindowsByAppName(l.mockWindows)
+      hb.info.getWindowIdsByAppName(l.mockWindows)
     )
   end)
 
-  it('should return a proper object when there is one window', function()
+  it('should return the correct ID when there is one window', function()
     local l = {}
 
     l.mockWindows = {
@@ -686,22 +686,16 @@ describe('hb.info.getWindowsByAppName', function()
 
     l.expectedValue = {}
     l.expectedValue['App Name'] = {
-      [1] = {
-        appName = 'App Name',
-        id = 'Window ID',
-        isMinimized = true,
-        screenId = 'Screen ID',
-        windowTitle = 'Window Title',
-      }
+      [1] = 'Window ID'
     }
 
     assert.are.same(
       l.expectedValue,
-      hb.info.getWindowsByAppName(l.mockWindows)
+      hb.info.getWindowIdsByAppName(l.mockWindows)
     )
   end)
 
-  it('should return proper objects when there are multiple windows of different apps', function()
+  it('should return the correct IDs when there are multiple windows of different apps', function()
     local l = {}
 
     l.mockWindows = {
@@ -723,31 +717,20 @@ describe('hb.info.getWindowsByAppName', function()
 
     l.expectedValue = {}
     l.expectedValue['App Name1'] = {
-      [1] = {
-        appName = 'App Name1',
-        id = 'Window ID1',
-        isMinimized = true,
-        screenId = 'Screen ID1',
-        windowTitle = 'Window Title1',
-      }
+      [1] = 'Window ID1',
     }
+
     l.expectedValue['App Name2'] = {
-      [1] = {
-        appName = 'App Name2',
-        id = 'Window ID2',
-        isMinimized = true,
-        screenId = 'Screen ID2',
-        windowTitle = 'Window Title2',
-      },
+      [1] = 'Window ID2',
     }
 
     assert.are.same(
       l.expectedValue,
-      hb.info.getWindowsByAppName(l.mockWindows)
+      hb.info.getWindowIdsByAppName(l.mockWindows)
     )
   end)
 
-  it('should return proper objects when there are multiple windows of the same app', function()
+  it('should return proper IDs when there are multiple windows of the same app', function()
     local l = {}
 
     l.mockWindows = {
@@ -769,25 +752,13 @@ describe('hb.info.getWindowsByAppName', function()
 
     l.expectedValue = {}
     l.expectedValue['App Name'] = {
-      [1] = {
-        appName = 'App Name',
-        id = 'Window ID1',
-        isMinimized = true,
-        screenId = 'Screen ID1',
-        windowTitle = 'Window Title1',
-      },
-      [2] = {
-        appName = 'App Name',
-        id = 'Window ID2',
-        isMinimized = true,
-        screenId = 'Screen ID2',
-        windowTitle = 'Window Title2',
-      },
+      [1] = 'Window ID1',
+      [2] = 'Window ID2',
     }
 
     assert.are.same(
       l.expectedValue,
-      hb.info.getWindowsByAppName(l.mockWindows)
+      hb.info.getWindowIdsByAppName(l.mockWindows)
     )
   end)
 

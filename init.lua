@@ -739,25 +739,25 @@ end
 -- Functions for processing our window objects
 --------------------------------------------------------------------------------
 
--- Return a table of window objects keyed by app name, corresponding to
+-- Return a table of window IDs keyed by app name, corresponding to
 -- the passed-in table of window objects
 --
 -- {
---  "App Name 1" = { window1, window2, ...},
---  "App Name 2" = { window1, window2, ...},
+--  "App Name 1" = { windowId1, windowId2, ...},
+--  "App Name 2" = { windowId1, windowId2, ...},
 -- }
-function hb.info.getWindowsByAppName(windows)
-  local windowsByAppName = {}
+function hb.info.getWindowIdsByAppName(windows)
+  local windowIdsByAppName = {}
 
   for _, window in pairs(windows) do
-    if (windowsByAppName[window.appName] == nil) then
-      windowsByAppName[window.appName] = {}
+    if (windowIdsByAppName[window.appName] == nil) then
+      windowIdsByAppName[window.appName] = {}
     end
 
-    table.insert(windowsByAppName[window.appName], window)
+    table.insert(windowIdsByAppName[window.appName], window.id)
   end
 
-  return windowsByAppName
+  return windowIdsByAppName
 end
 
 
@@ -900,7 +900,7 @@ end
 
 -- Update the taskbar for the specified screen so it shows buttons for
 -- each of the specified window objects
-function hb.main.updateTaskbar(canvas, dimensions, windowsThisCanvas)
+function hb.main.updateTaskbar(canvas, dimensions, windowsThisCanvasById)
   local l = {}
 
   l.DESKTOP_SWITCHERS_WIDTH = lf.DESKTOP_SWITCHER_WIDTH * 2 +
@@ -932,15 +932,26 @@ function hb.main.updateTaskbar(canvas, dimensions, windowsThisCanvas)
   )
   lf.lastHeartbeatTimeSinceEpoch = os.time()
 
-  l.windowsByAppName = hb.info.getWindowsByAppName(windowsThisCanvas)
-
   l.x = l.x + lf.HEARTBEAT_WIDTH + lf.BUTTON_PADDING
   l.y = (lf.CANVAS_HEIGHT - lf.BUTTON_HEIGHT) / 2
 
-  for appName, windows in pairs(l.windowsByAppName) do
-    for _, window in pairs(windows) do
+  -- Use a sorted list of app names so order on the taskbar is consistent and
+  -- windows don't jump around
+  l.windowIdsByAppName = hb.info.getWindowIdsByAppName(windowsThisCanvas)
+  l.appNames = hb.util.keys(l.windowIdsByAppName)
+  table.sort(l.appNames)
+
+  for _, appName in pairs(l.appNames) do
+    -- Sort our windows by ID because the order returned by Hammerspoon is not
+    -- consistent. Using a specific order ensures windows don't jump around on
+    -- the taskbar
+    l.windowIdsThisApp = l.windowIdsByAppName[appName]
+    table.sort(l.windowIdsThisApp)
+
+    for _, windowId in pairs(l.windowIdsThisApp) do
+      l.window = windowsThisCanvas[windowId]
       canvas:appendElements(
-        hb.canvas.getWindowButtonElements(l.x, l.y, window)
+        hb.canvas.getWindowButtonElements(l.x, l.y, l.window)
       )
 
       l.x = l.x + lf.BUTTON_WIDTH + lf.BUTTON_PADDING
