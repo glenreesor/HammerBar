@@ -88,26 +88,26 @@ end
 function hb.actions.processWindowButtonClick(id)
   local l = {}
 
-  l.window = hs.window.get(id)
+  l.hsWindow = hs.window.get(id)
 
-  -- `window` might be nil if the window was closed after the most
+  -- `hsWindow` might be nil if the window was closed after the most
   -- recent taskbar update
-  if (l.window == nil) then
+  if (l.hsWindow == nil) then
     return
   end
 
   l.toggleAllDesktops = hs.eventtap.checkKeyboardModifiers().shift
 
   if (l.toggleAllDesktops) then
-    hb.desktops.toggleWindowAllDesktops(l.window)
+    hb.desktops.toggleWindowAllDesktops(l.hsWindow)
     return
   end
 
 
-  if l.window:isMinimized() then
-    l.window:unminimize()
+  if l.hsWindow:isMinimized() then
+    l.hsWindow:unminimize()
   else
-    l.window:minimize()
+    l.hsWindow:minimize()
   end
 
   hb.main.updateAllTaskbars()
@@ -405,18 +405,18 @@ function hb.desktops.hideHammerspoonWindows(windowIds)
   -- Move all the specified windows to the bottom right corner so they're not
   -- visible
   for _, windowId in pairs(windowIds) do
-    l.window = hs.window.get(windowId)
+    l.hsWindow = hs.window.get(windowId)
 
-    -- We have to check for nil window here because we're operating on a list
+    -- We have to check for nil hsWindow here because we're operating on a list
     -- of window ids that may not reflect the currently active windows
-    if (l.window ~= nil) then
-      l.windowInfo = hb.hsData.getWindowInfo(l.window)
+    if (l.hsWindow ~= nil) then
+      l.windowInfo = hb.hsData.getWindowInfo(l.hsWindow)
 
       if (hb.desktops.shouldManageWindow(l.windowInfo)) then
         lf.state.previousWindowTopLeftByWindowId[
           l.windowInfo.id
-        ] = l.window:topLeft()
-        l.window:setTopLeft({x = 10000, y = 100000})
+        ] = l.hsWindow:topLeft()
+        l.hsWindow:setTopLeft({x = 10000, y = 100000})
       end
     end
   end
@@ -493,15 +493,15 @@ function hb.desktops.unhideHammerspoonWindows(windowIds)
   local l = {}
 
   for _, windowId in pairs(windowIds) do
-    l.window = hs.window.get(windowId)
+    l.hsWindow = hs.window.get(windowId)
 
-    -- We have to check for nil window here because we're operating on a list
+    -- We have to check for nil hsWindow here because we're operating on a list
     -- of window ids that may not reflect the currently active windows
-    if (l.window ~= nil) then
-      l.windowInfo = hb.hsData.getWindowInfo(l.window)
+    if (l.hsWindow ~= nil) then
+      l.windowInfo = hb.hsData.getWindowInfo(l.hsWindow)
 
       if (hb.desktops.shouldManageWindow(l.windowInfo)) then
-        l.window:setTopLeft(
+        l.hsWindow:setTopLeft(
           lf.state.previousWindowTopLeftByWindowId[l.windowInfo.id]
         )
       end
@@ -701,11 +701,11 @@ end
 --  screenId    - string
 --  windowTitle - string
 --
-function hb.hsData.getWindowInfo(hammerspoonWindow)
+function hb.hsData.getWindowInfo(hsWindow)
   local l = {}
   local windowInfo = {}
 
-  l.application = hammerspoonWindow:application()
+  l.application = hsWindow:application()
   if (l.application == nil) then
     -- Not sure what these windows are
     windowInfo.appName = 'Unknown'
@@ -713,11 +713,11 @@ function hb.hsData.getWindowInfo(hammerspoonWindow)
     windowInfo.appName = l.application:name()
   end
 
-  windowInfo.id = hammerspoonWindow:id()
-  windowInfo.isMinimized = hammerspoonWindow:isMinimized()
-  windowInfo.isStandard = hammerspoonWindow:isStandard()
-  windowInfo.screenId = hammerspoonWindow:screen():id()
-  windowInfo.windowTitle = hammerspoonWindow:title()
+  windowInfo.id = hsWindow:id()
+  windowInfo.isMinimized = hsWindow:isMinimized()
+  windowInfo.isStandard = hsWindow:isStandard()
+  windowInfo.screenId = hsWindow:screen():id()
+  windowInfo.windowTitle = hsWindow:title()
 
   return windowInfo
 end
@@ -788,13 +788,13 @@ function hb.main.recoverPreviouslyHiddenWindows()
   l.x = 0
   l.y = 30
 
-  l.allWindows = hs.window.allWindows()
+  l.allHsWindows = hs.window.allWindows()
   l.notificationShown = false
-  for _, window in pairs(l.allWindows) do
-    l.windowX = window:frame().x
-    l.windowY = window:frame().y
+  for _, hsWindow in pairs(l.allHsWindows) do
+    l.windowX = hsWindow:frame().x
+    l.windowY = hsWindow:frame().y
 
-    if (l.windowX >1000 and l.windowY > 1000) then
+    if (l.windowX > 900 and l.windowY > 900) then
       if (not l.notificationShown) then
         l.notificationShown = true
         hs.notify.show(
@@ -805,7 +805,7 @@ function hb.main.recoverPreviouslyHiddenWindows()
         print('Recovering previously hidden windows')
       end
 
-      l.windowInfo = hb.hsData.getWindowInfo(window)
+      l.windowInfo = hb.hsData.getWindowInfo(hsWindow)
       l.infoToPrint = l.windowInfo.appName ..
         '(' .. l.windowInfo.windowTitle .. ')' ..
         '    ' ..
@@ -813,8 +813,8 @@ function hb.main.recoverPreviouslyHiddenWindows()
 
       print('  ' .. l.infoToPrint)
 
-      window:setTopLeft({ x = l.x, y = l.y })
-      window:raise()
+      hsWindow:setTopLeft({ x = l.x, y = l.y })
+      hsWindow:raise()
       l.x = l.x + 30
       l.y = l.y + 30
     end
