@@ -390,7 +390,7 @@ function hb.canvas.updateCanvasesByScreenId(screenInfoById)
   for screenId, canvas in pairs(lf.state.canvasesByScreenId) do
     if (screenInfoById[screenId] == nil) then
       if (canvas.delete ~= nil) then
-        hb.log.printScreenInfo('Removing canvas for screen', screenInfo)
+        hb.log.printScreenInfo('Removing canvas for screen', screenId)
         canvas:delete()
         lf.state.canvasesByScreenId[screenId] = nil
       end
