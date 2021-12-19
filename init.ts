@@ -1,6 +1,6 @@
 import {
   BUTTON_PADDING,
-  BUTTON_WIDTH,
+  DEFAULT_BUTTON_WIDTH,
   ColorType,
   getButtonHeight,
   getCanvasHeight,
@@ -251,23 +251,25 @@ function updateTaskbar(
   let x = BUTTON_PADDING
   let y = (canvasHeight - buttonHeight) / 2;
 
+  // Determine width of buttons if we want them to completely fill the taskbar
+  // so we can determine a good width
+  const exactWidth = (dimensions.width - BUTTON_PADDING) / windows.length - BUTTON_PADDING;
+  const buttonWidth = Math.min(DEFAULT_BUTTON_WIDTH, exactWidth);
+
   appNames.forEach((appName) => {
     const windowsThisApp = windows.filter((window) => window.appName === appName);
 
     windowsThisApp.forEach((window) => {
       canvas.appendElements(getWindowButtonElements({
         fontSize: config.fontSize,
+        buttonWidth: buttonWidth,
         x: x,
         y: y,
         window,
         getAppNameAndWindowTitle,
         getWindowIconColor,
       }));
-      x += BUTTON_WIDTH + BUTTON_PADDING;
-      if (x + BUTTON_WIDTH > dimensions.width) {
-        x = BUTTON_PADDING;
-        y += 15;
-      }
+      x += buttonWidth + BUTTON_PADDING;
     });
   });
 }

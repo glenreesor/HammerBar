@@ -6,7 +6,7 @@ export interface ColorType {
   blue: number;
 }
 export const BUTTON_PADDING = 5;
-export const BUTTON_WIDTH = 130;
+export const DEFAULT_BUTTON_WIDTH = 130;
 
 const BLACK = { red: 0.0, green: 0.0, blue: 0.0 };
 const WHITE = { red: 1.0, green: 1.0, blue: 1.0 };
@@ -37,6 +37,7 @@ export function getTaskbarElements(
 
 interface GetWindowButtonElementsType {
   fontSize: number;
+  buttonWidth: number;
   x: number;
   y: number;
   window: WindowInfoType;
@@ -51,6 +52,7 @@ interface GetWindowButtonElementsType {
 export function getWindowButtonElements(
   {
     fontSize,
+    buttonWidth,
     x,
     y,
     window,
@@ -64,7 +66,7 @@ export function getWindowButtonElements(
   const VERTICAL_PADDING = 2;
 
   const MAX_TEXT_WIDTH = (
-    BUTTON_WIDTH -
+    buttonWidth -
     ICON_WIDTH -
     ICON_PADDING_LEFT -
     TEXT_PADDING_LEFT -
@@ -106,7 +108,7 @@ export function getWindowButtonElements(
       frame: {
         x: x,
         y: y,
-        w: BUTTON_WIDTH,
+        w: buttonWidth,
         h: buttonHeight,
       },
       roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },

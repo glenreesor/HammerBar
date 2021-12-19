@@ -71,7 +71,7 @@ end
 
 local ____exports = {}
 ____exports.BUTTON_PADDING = 5
-____exports.BUTTON_WIDTH = 130
+____exports.DEFAULT_BUTTON_WIDTH = 130
 local BLACK = {red = 0, green = 0, blue = 0}
 local WHITE = {red = 1, green = 1, blue = 1}
 function ____exports.getButtonHeight(self, fontSize)
@@ -94,9 +94,11 @@ local getAppNameAndWindowTitle
 local window
 local y
 local x
+local buttonWidth
 local fontSize
 function ____exports.getWindowButtonElements(self, ____bindingPattern0)
     fontSize = ____bindingPattern0.fontSize
+    buttonWidth = ____bindingPattern0.buttonWidth
     x = ____bindingPattern0.x
     y = ____bindingPattern0.y
     window = ____bindingPattern0.window
@@ -106,7 +108,7 @@ function ____exports.getWindowButtonElements(self, ____bindingPattern0)
     local ICON_PADDING_LEFT = 4
     local TEXT_PADDING_LEFT = 3
     local VERTICAL_PADDING = 2
-    local MAX_TEXT_WIDTH = ____exports.BUTTON_WIDTH - ICON_WIDTH - ICON_PADDING_LEFT - TEXT_PADDING_LEFT - 4
+    local MAX_TEXT_WIDTH = buttonWidth - ICON_WIDTH - ICON_PADDING_LEFT - TEXT_PADDING_LEFT - 4
     local buttonHeight = ____exports.getButtonHeight(nil, fontSize)
     local iconX = x + ICON_PADDING_LEFT
     local textX = iconX + ICON_WIDTH + TEXT_PADDING_LEFT
@@ -129,7 +131,7 @@ function ____exports.getWindowButtonElements(self, ____bindingPattern0)
     local canvasElements = {{
         type = "rectangle",
         fillColor = WHITE,
-        frame = {x = x, y = y, w = ____exports.BUTTON_WIDTH, h = buttonHeight},
+        frame = {x = x, y = y, w = buttonWidth, h = buttonHeight},
         roundedRectRadii = {xRadius = 5, yRadius = 5},
         trackMouseUp = true,
         id = clickId
@@ -536,7 +538,7 @@ local ____exports = {}
 local getAppNameAndWindowTitle, getWindowIconColor, onTaskbarClick, updateAllTaskbars, updateCanvasesByScreenId, updateTaskbar, config, state
 local ____drawing = require("drawing")
 local BUTTON_PADDING = ____drawing.BUTTON_PADDING
-local BUTTON_WIDTH = ____drawing.BUTTON_WIDTH
+local DEFAULT_BUTTON_WIDTH = ____drawing.DEFAULT_BUTTON_WIDTH
 local getButtonHeight = ____drawing.getButtonHeight
 local getCanvasHeight = ____drawing.getCanvasHeight
 local getTaskbarElements = ____drawing.getTaskbarElements
@@ -684,6 +686,8 @@ function updateTaskbar(self, canvas, dimensions, windows)
     __TS__ArraySort(appNames)
     local x = BUTTON_PADDING
     local y = (canvasHeight - buttonHeight) / 2
+    local exactWidth = (dimensions.width - BUTTON_PADDING) / #windows - BUTTON_PADDING
+    local buttonWidth = math.min(DEFAULT_BUTTON_WIDTH, exactWidth)
     __TS__ArrayForEach(
         appNames,
         function(____, appName)
@@ -696,17 +700,14 @@ function updateTaskbar(self, canvas, dimensions, windows)
                 function(____, window)
                     canvas:appendElements(getWindowButtonElements(nil, {
                         fontSize = config.fontSize,
+                        buttonWidth = buttonWidth,
                         x = x,
                         y = y,
                         window = window,
                         getAppNameAndWindowTitle = getAppNameAndWindowTitle,
                         getWindowIconColor = getWindowIconColor
                     }))
-                    x = x + (BUTTON_WIDTH + BUTTON_PADDING)
-                    if x + BUTTON_WIDTH > dimensions.width then
-                        x = BUTTON_PADDING
-                        y = y + 15
-                    end
+                    x = x + (buttonWidth + BUTTON_PADDING)
                 end
             )
         end
