@@ -592,7 +592,11 @@ function onTaskbarClick(_canvas, _message, id)
     if hsWindow:isMinimized() then
         hsWindow:unminimize()
     else
-        hsWindow:minimize()
+        if hs.eventtap.checkKeyboardModifiers().cmd then
+            hsWindow:focus()
+        else
+            hsWindow:minimize()
+        end
     end
     updateAllTaskbars(nil)
 end

@@ -30,6 +30,7 @@ declare namespace hs {
 
   interface WindowType {
     application: () => { name: () => string };
+    focus: () => void;
     id: () => number;
     isMinimized: () => boolean;
     isStandard: () => boolean;
@@ -51,6 +52,10 @@ declare namespace hs {
   // word in TS, thus error :-(
   export const canvas: {
     new: (this: void, {x, y, w, h}: CanvasNewArgs) => CanvasType;
+  }
+
+  namespace eventtap {
+    function checkKeyboardModifiers(this: void): {shift?: boolean, cmd?: boolean};
   }
 
   namespace screen {

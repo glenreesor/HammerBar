@@ -122,7 +122,11 @@ function onTaskbarClick(this: void, _canvas: hs.CanvasType, _message: string, id
   if (hsWindow.isMinimized()) {
     hsWindow.unminimize();
   } else {
-    hsWindow.minimize();
+    if (hs.eventtap.checkKeyboardModifiers().cmd) {
+      hsWindow.focus();
+    } else {
+      hsWindow.minimize();
+    }
   }
 
   updateAllTaskbars();
