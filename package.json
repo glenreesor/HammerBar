@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "build": "tstl",
+    "dev": "tstl --watch"
+  },
+  "dependencies": {
+    "typescript-to-lua": "^1.2.0"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "types": ["./types/hammerspoon"],
+    "strict": true
+  },
+  "tstl": {
+    "luaBundle": "init.lua",
+    "luaBundleEntry": "init.ts",
+    "luaLibImport": "inline",
+    "luaTarget": "JIT"
+  }
+}
