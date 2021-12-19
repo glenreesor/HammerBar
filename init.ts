@@ -253,7 +253,6 @@ function updateTaskbar(
     windowsThisApp.forEach((window) => {
       canvas.appendElements(getWindowButtonElements({
         fontSize: config.fontSize,
-        buttonHeight: buttonHeight,
         x: x,
         y: y,
         window,

@@ -37,7 +37,6 @@ export function getTaskbarElements(
 
 interface GetWindowButtonElementsType {
   fontSize: number;
-  buttonHeight: number;
   x: number;
   y: number;
   window: WindowInfoType;
@@ -52,7 +51,6 @@ interface GetWindowButtonElementsType {
 export function getWindowButtonElements(
   {
     fontSize,
-    buttonHeight,
     x,
     y,
     window,
@@ -72,6 +70,8 @@ export function getWindowButtonElements(
     TEXT_PADDING_LEFT -
     4
   );
+
+  const buttonHeight = getButtonHeight(fontSize);
 
   const iconX = x + ICON_PADDING_LEFT;
   const textX = iconX + ICON_WIDTH + TEXT_PADDING_LEFT;

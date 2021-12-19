@@ -94,11 +94,9 @@ local getAppNameAndWindowTitle
 local window
 local y
 local x
-local buttonHeight
 local fontSize
 function ____exports.getWindowButtonElements(self, ____bindingPattern0)
     fontSize = ____bindingPattern0.fontSize
-    buttonHeight = ____bindingPattern0.buttonHeight
     x = ____bindingPattern0.x
     y = ____bindingPattern0.y
     window = ____bindingPattern0.window
@@ -109,6 +107,7 @@ function ____exports.getWindowButtonElements(self, ____bindingPattern0)
     local TEXT_PADDING_LEFT = 3
     local VERTICAL_PADDING = 2
     local MAX_TEXT_WIDTH = ____exports.BUTTON_WIDTH - ICON_WIDTH - ICON_PADDING_LEFT - TEXT_PADDING_LEFT - 4
+    local buttonHeight = ____exports.getButtonHeight(nil, fontSize)
     local iconX = x + ICON_PADDING_LEFT
     local textX = iconX + ICON_WIDTH + TEXT_PADDING_LEFT
     local textLine1Y = y
@@ -693,7 +692,6 @@ function updateTaskbar(self, canvas, dimensions, windows)
                 function(____, window)
                     canvas:appendElements(getWindowButtonElements(nil, {
                         fontSize = config.fontSize,
-                        buttonHeight = buttonHeight,
                         x = x,
                         y = y,
                         window = window,
