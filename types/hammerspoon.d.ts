@@ -46,20 +46,23 @@ declare namespace hs {
     h: number;
   }
 
+  // This should be a namespace in order for TS to report proper types,
+  // but the required notation is `function new....` and new is a reserved
+  // word in TS, thus error :-(
   export const canvas: {
     new: (this: void, {x, y, w, h}: CanvasNewArgs) => CanvasType;
   }
 
-  export const screen: {
-    allScreens: (this: void) => Array<ScreenType>;
-  };
+  namespace screen {
+    function allScreens(this: void): Array<ScreenType>;
+  }
 
-  export const timer: {
-    doEvery: (this: void, seconds: number, callback: Function) => TimerType;
-  };
+  namespace timer {
+    function doEvery(this: void, seconds: number, callback: Function): TimerType;
+  }
 
-  export const window: {
-    allWindows: (this: void ) => Array<WindowType>;
-    get: (this: void, windowId: number) => WindowType | undefined;
+  namespace window {
+    function allWindows(this: void ): Array<WindowType>;
+    function get(this: void, windowId: number): WindowType | undefined;
   }
 }
