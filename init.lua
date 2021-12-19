@@ -713,7 +713,7 @@ end
 config = {fontSize = 13, defaultColors = {taskbar = {red = 180 / 255, green = 180 / 255, blue = 180 / 255}, icons = {red = 132 / 255, green = 132 / 255, blue = 130 / 255}}}
 state = {
     canvasesByScreenId = __TS__New(Map),
-    doitTimer = {stop = nil}
+    doitTimer = nil
 }
 local function setAppNamesAndWindowTitles(self, appNamesAndWindowTitles)
     config.userAppNamesAndWindowTitles = appNamesAndWindowTitles
@@ -726,7 +726,7 @@ local function start(self)
     state.doitTimer = hs.timer.doEvery(0.5, updateAllTaskbars)
 end
 local function stop(self)
-    if state.doitTimer.stop then
+    if state.doitTimer then
         state.doitTimer:stop()
     end
 end

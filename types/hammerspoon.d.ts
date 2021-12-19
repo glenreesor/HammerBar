@@ -2,7 +2,6 @@ declare function print(this: void, text: string | number): void
 
 declare namespace hs {
   interface CanvasMouseCallbackType {
-
     (this: void, canvas: CanvasType, message: string, id: number | string): void;
   }
 
@@ -26,7 +25,7 @@ declare namespace hs {
   }
 
   export interface TimerType {
-    stop: undefined | (() => void);
+    stop: () => void;
   }
 
   interface WindowType {

@@ -49,12 +49,12 @@ const config:ConfigType = {
 
 interface StateType {
   canvasesByScreenId: Map<number, hs.CanvasType>;
-  doitTimer: hs.TimerType;
+  doitTimer: hs.TimerType | undefined;
 }
 
 const state:StateType = {
   canvasesByScreenId: new Map<number, hs.CanvasType>(),
-  doitTimer: { stop: undefined },
+  doitTimer: undefined,
 };
 
 //-----------------------------------------------------------------------------
@@ -287,7 +287,7 @@ function start() {
 }
 
 function stop() {
-  if (state.doitTimer.stop) {
+  if (state.doitTimer) {
     state.doitTimer.stop();
   }
 }
