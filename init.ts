@@ -259,7 +259,7 @@ function updateTaskbar(
         getAppNameAndWindowTitle,
         getWindowIconColor,
       }));
-      x += BUTTON_WIDTH;
+      x += BUTTON_WIDTH + BUTTON_PADDING;
       if (x + BUTTON_WIDTH > dimensions.width) {
         x = BUTTON_PADDING;
         y += 15;

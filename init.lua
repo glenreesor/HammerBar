@@ -698,7 +698,7 @@ function updateTaskbar(self, canvas, dimensions, windows)
                         getAppNameAndWindowTitle = getAppNameAndWindowTitle,
                         getWindowIconColor = getWindowIconColor
                     }))
-                    x = x + BUTTON_WIDTH
+                    x = x + (BUTTON_WIDTH + BUTTON_PADDING)
                     if x + BUTTON_WIDTH > dimensions.width then
                         x = BUTTON_PADDING
                         y = y + 15
