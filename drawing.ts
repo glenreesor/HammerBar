@@ -5,8 +5,9 @@ export interface ColorType {
   green: number;
   blue: number;
 }
-export const BUTTON_PADDING = 5;
-export const DEFAULT_BUTTON_WIDTH = 130;
+export const MAX_BUTTON_WIDTH = 130;
+
+const BUTTON_PADDING_EACH_SIDE = 2;
 
 const BLACK = { red: 0.0, green: 0.0, blue: 0.0 };
 const WHITE = { red: 1.0, green: 1.0, blue: 1.0 };
@@ -37,9 +38,8 @@ export function getTaskbarElements(
 
 interface GetWindowButtonElementsType {
   fontSize: number;
-  buttonWidth: number;
+  buttonWidthIncludingPadding: number;
   x: number;
-  y: number;
   window: WindowInfoType;
   getAppNameAndWindowTitle:
     (window: WindowInfoType) => {
@@ -52,32 +52,35 @@ interface GetWindowButtonElementsType {
 export function getWindowButtonElements(
   {
     fontSize,
-    buttonWidth,
+    buttonWidthIncludingPadding,
     x,
-    y,
     window,
     getAppNameAndWindowTitle,
     getWindowIconColor,
   }: GetWindowButtonElementsType
 ) {
+  const BUTTON_WIDTH = buttonWidthIncludingPadding - 2 * BUTTON_PADDING_EACH_SIDE;
   const ICON_WIDTH = 15;
   const ICON_PADDING_LEFT = 4;
   const TEXT_PADDING_LEFT = 3;
+  const TEXT_PADDING_RIGHT = 3;
   const VERTICAL_PADDING = 2;
 
   const MAX_TEXT_WIDTH = (
-    buttonWidth -
+    BUTTON_WIDTH -
     ICON_WIDTH -
     ICON_PADDING_LEFT -
     TEXT_PADDING_LEFT -
-    4
+    TEXT_PADDING_RIGHT
   );
 
   const buttonHeight = getButtonHeight(fontSize);
+  const buttonLeftX = x + BUTTON_PADDING_EACH_SIDE;
+  const buttonTopY = 2;
 
-  const iconX = x + ICON_PADDING_LEFT;
+  const iconX = buttonLeftX + ICON_PADDING_LEFT;
   const textX = iconX + ICON_WIDTH + TEXT_PADDING_LEFT;
-  const textLine1Y = y;
+  const textLine1Y = buttonTopY;
   const textLine2Y = textLine1Y + fontSize + VERTICAL_PADDING;
 
   let iconHeight;
@@ -85,10 +88,10 @@ export function getWindowButtonElements(
 
   if (window.isMinimized) {
     iconHeight = fontSize - 1;
-    iconY = y + fontSize + VERTICAL_PADDING * 2;
+    iconY = buttonTopY + fontSize + VERTICAL_PADDING * 2;
   } else {
     iconHeight = fontSize * 2 - 1;
-    iconY = y + 4;
+    iconY = buttonTopY + 4;
   }
 
   const iconColor = getWindowIconColor(window);
@@ -106,9 +109,9 @@ export function getWindowButtonElements(
       type: 'rectangle',
       fillColor: WHITE,
       frame: {
-        x: x,
-        y: y,
-        w: buttonWidth,
+        x: buttonLeftX,
+        y: buttonTopY,
+        w: BUTTON_WIDTH,
         h: buttonHeight,
       },
       roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },

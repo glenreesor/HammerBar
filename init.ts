@@ -1,10 +1,8 @@
 import { luaType } from "./luaType";
 
 import {
-  BUTTON_PADDING,
-  DEFAULT_BUTTON_WIDTH,
+  MAX_BUTTON_WIDTH,
   ColorType,
-  getButtonHeight,
   getCanvasHeight,
   getTaskbarElements,
   getWindowButtonElements,
@@ -235,9 +233,6 @@ function updateTaskbar(
   dimensions: {width: number, height: number},
   windows: Array<WindowInfoType>
 ) {
-  const buttonHeight = getButtonHeight(config.fontSize);
-  const canvasHeight = getCanvasHeight(config.fontSize);
-
   canvas.replaceElements(
     getTaskbarElements({
       color: config.defaultColors.taskbar,
@@ -257,13 +252,12 @@ function updateTaskbar(
 
   appNames.sort();
 
-  let x = BUTTON_PADDING
-  let y = (canvasHeight - buttonHeight) / 2;
+  let x = 0;
 
   // Determine width of buttons if we want them to completely fill the taskbar
   // so we can determine a good width
-  const exactWidth = (dimensions.width - BUTTON_PADDING) / windows.length - BUTTON_PADDING;
-  const buttonWidth = Math.min(DEFAULT_BUTTON_WIDTH, exactWidth);
+  const exactWidth = dimensions.width / windows.length;
+  const buttonWidth = Math.min(MAX_BUTTON_WIDTH, exactWidth);
 
   appNames.forEach((appName) => {
     const windowsThisApp = windows.filter((window) => window.appName === appName);
@@ -271,14 +265,13 @@ function updateTaskbar(
     windowsThisApp.forEach((window) => {
       canvas.appendElements(getWindowButtonElements({
         fontSize: config.fontSize,
-        buttonWidth: buttonWidth,
+        buttonWidthIncludingPadding: buttonWidth,
         x: x,
-        y: y,
         window,
         getAppNameAndWindowTitle,
         getWindowIconColor,
       }));
-      x += buttonWidth + BUTTON_PADDING;
+      x += buttonWidth;
     });
   });
 }
