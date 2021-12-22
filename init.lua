@@ -536,6 +536,8 @@ end
 
 local ____exports = {}
 local getAppNameAndWindowTitle, getWindowIconColor, onTaskbarClick, updateAllTaskbars, updateCanvasesByScreenId, updateTaskbar, config, state
+local ____luaType = require("luaType")
+local luaType = ____luaType.luaType
 local ____drawing = require("drawing")
 local BUTTON_PADDING = ____drawing.BUTTON_PADDING
 local DEFAULT_BUTTON_WIDTH = ____drawing.DEFAULT_BUTTON_WIDTH
@@ -576,7 +578,7 @@ function getWindowIconColor(self, window)
         return config.defaultColors.icons
     end
     userColor = userColorsAppNames[window.appName]
-    if type(userColor) == "table" then
+    if luaType(nil, userColor) == "table" then
         return userColor
     else
         if userColors.appGroups and userColors.appGroups[userColor] then
@@ -735,6 +737,15 @@ local function stop(self)
 end
 local hammerbar = {setAppNamesAndWindowTitles = setAppNamesAndWindowTitles, setColors = setColors, start = start, stop = stop}
 return hammerbar
+ end,
+["luaType"] = function(...) 
+local module = {}
+
+function module: luaType(object)
+  return type(object)
+end
+
+return module
  end,
 }
 return require("init", ...)
