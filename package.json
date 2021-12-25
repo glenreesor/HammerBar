@@ -4,6 +4,9 @@
     "dev": "tstl --watch"
   },
   "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4",
     "typescript-to-lua": "^1.2.0"
   }
 }
