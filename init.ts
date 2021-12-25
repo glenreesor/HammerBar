@@ -280,30 +280,22 @@ function updateTaskbar(
 // Public Interface
 //------------------------------------------------------------------------------
 
-function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNameAndWindowTitleType>) {
+export function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNameAndWindowTitleType>) {
   config.userAppNamesAndWindowTitles = appNamesAndWindowTitles;
 }
 
-function setColors(colors: UserColorsType) {
+export function setColors(colors: UserColorsType) {
   config.userColors = colors;
 }
 
-function start() {
+export function start() {
   updateAllTaskbars();
   state.doitTimer = hs.timer.doEvery(0.5, updateAllTaskbars);
 }
 
-function stop() {
+export function stop() {
   if (state.doitTimer) {
     state.doitTimer.stop();
   }
 }
 
-const hammerbar = {
-  setAppNamesAndWindowTitles,
-  setColors,
-  start,
-  stop,
-};
-
-return hammerbar;
