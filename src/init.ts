@@ -50,11 +50,13 @@ const config:ConfigType = {
 interface StateType {
   canvasesByScreenId: Map<number, hs.CanvasType>;
   doitTimer: hs.TimerType | undefined;
+  previousWindowList: Array<WindowInfoType>;
 }
 
 const state:StateType = {
   canvasesByScreenId: new Map<number, hs.CanvasType>(),
   doitTimer: undefined,
+  previousWindowList: [],
 };
 
 //-----------------------------------------------------------------------------
@@ -121,7 +123,7 @@ function getWindowIconColor(window: WindowInfoType): ColorType {
  * every render, independent of the order that Hammerspoon provides them, so
  * the window buttons won't change positions on different renders
  */
-export function orderWindowsConsistently(windows: WindowInfoType[]): void {
+function orderWindowsConsistently(windows: WindowInfoType[]): void {
   // Sort by appname so window buttons are grouped by app, and then by
   // window ID within app
   windows.sort((window1, window2) => {
@@ -171,27 +173,17 @@ function updateAllTaskbars() {
   const allWindows:WindowInfoType[] = [];
   const allScreens:ScreenInfoType[] = [];
 
-  // Use the absence of any Hammerspoon windows (e.g. the taskbar canvases)
-  // as a proxy for screen lock, screen saver, etc.
-  // In these states, there are no windows reported by Hammerspoon so there's
-  // no point updating anything
-  let hammerspoonWindowFound = false;
-
   hs.window.allWindows().forEach((hammerspoonWindow) => {
     const windowInfo = getWindowInfo(hammerspoonWindow);
     allWindows.push(windowInfo);
-
-    if (windowInfo.appName === 'Hammerspoon') {
-      hammerspoonWindowFound = true;
-    }
   });
 
-  // Take into account the first render, where we won't have drawn any
-  // canvases yet
-  if (state.canvasesByScreenId.size > 0 && !hammerspoonWindowFound) {
-    print('Hammerbar: No Hammerspoon windows. Skipping taskbar updates.')
+  if (windowListsAreIdentical(state.previousWindowList, allWindows)) {
+    // If nothing has changed, no point taking the effort to re-render taskbars
     return;
   }
+
+  state.previousWindowList = allWindows;
 
   //----------------------------------------------------------------------------
   // Update things that may have changed since our last call:
@@ -289,6 +281,46 @@ function updateTaskbar(
     x += buttonWidth;
   });
 }
+
+/**
+ * Return whether the two lists of windows are identical in all ways that
+ * affect whether a re-render of taskbars is required
+ */
+function windowListsAreIdentical(
+  windowList1: Array<WindowInfoType>,
+  windowList2: Array<WindowInfoType>
+): boolean {
+  if (windowList1.length !== windowList2.length) {
+    return false;
+  }
+
+  const windowListById1 = new Map<number, WindowInfoType>();
+  const windowListById2 = new Map<number, WindowInfoType>();
+
+  windowList1.forEach((window) => windowListById1.set(window.id, window));
+  windowList2.forEach((window) => windowListById2.set(window.id, window));
+
+  const windowListsAreIdentical = windowList1.reduce((accumulator, window) => {
+    const windowFromList2 = windowListById2.get(window.id);
+    return accumulator && (
+      windowFromList2 !== undefined &&
+      windowFromList2.appName == window.appName &&
+      windowFromList2.windowTitle == window.windowTitle &&
+      windowFromList2.isMinimized == window.isMinimized
+    );
+  },
+  true);
+
+  return windowListsAreIdentical;
+}
+
+//------------------------------------------------------------------------------
+// Names space these functions so it's obvious they're just for testing and
+// not to be called directly from other hammerspoon code
+export const testableFunctions = {
+  orderWindowsConsistently,
+  windowListsAreIdentical,
+};
 
 //------------------------------------------------------------------------------
 // Public Interface

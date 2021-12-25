@@ -1,6 +1,7 @@
 import { WindowInfoType } from "../hammerspoonUtils";
-import { orderWindowsConsistently } from '../init';
+import { testableFunctions } from '../init';
 
+const { orderWindowsConsistently, windowListsAreIdentical } = testableFunctions;
 const windowTemplate = {
   id: 1,
   appName: 'iTerm',
@@ -10,7 +11,7 @@ const windowTemplate = {
   windowTitle: 'My title',
 };
 
-describe('getConsistentlyOrderedWindows', () => {
+describe('orderWindowsConsistently()', () => {
   it('handles the case where window array is empty', () => {
     const windows: WindowInfoType[] = [];
     orderWindowsConsistently(windows);
@@ -123,3 +124,139 @@ describe('getConsistentlyOrderedWindows', () => {
   });
 });
 
+describe('windowsListsAreIdentical()', () => {
+  it('returns true if both lists are empty', () => {
+    expect(windowListsAreIdentical([], [])).toBe(true);
+  });
+
+  it('returns false if one list is empty', () => {
+    expect(windowListsAreIdentical([windowTemplate], [])).toBe(false);
+  });
+
+  it('returns true if all windows identical', () => {
+    const windowList1 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        id: 2,
+      },
+    ];
+
+    const windowList2 = windowList1;
+
+    expect(windowListsAreIdentical(windowList1, windowList2)).toBe(true);
+  });
+
+  it('returns false if a window has a different appName', () => {
+    const windowList1 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        id: 2,
+      },
+    ];
+
+    const windowList2 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        appName: 'a different appName',
+        id: 2,
+      },
+    ];
+
+    expect(windowListsAreIdentical(windowList1, windowList2)).toBe(false);
+  });
+
+  it('returns false if a window has a different windowTitle', () => {
+    const windowList1 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        id: 2,
+      },
+    ];
+
+    const windowList2 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        windowTitle: 'a different appName',
+        id: 2,
+      },
+    ];
+
+    expect(windowListsAreIdentical(windowList1, windowList2)).toBe(false);
+  });
+
+  it('returns false if a window has a different minimized state', () => {
+    const windowList1 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        id: 2,
+      },
+    ];
+
+    const windowList2 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        id: 2,
+        isMinimized: !windowTemplate.isMinimized,
+      },
+    ];
+
+    expect(windowListsAreIdentical(windowList1, windowList2)).toBe(false);
+  });
+
+  it('returns false if a window has a multiple different properties', () => {
+    const windowList1 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        id: 2,
+      },
+    ];
+
+    const windowList2 = [
+      {
+        ...windowTemplate,
+        id: 1,
+      },
+      {
+        ...windowTemplate,
+        id: 2,
+        appName: 'a different appName',
+        windowTitle: 'a different windowTitle',
+        isMinimized: !windowTemplate.isMinimized,
+      },
+    ];
+
+    expect(windowListsAreIdentical(windowList1, windowList2)).toBe(false);
+  });
+});
