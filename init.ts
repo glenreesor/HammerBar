@@ -116,6 +116,34 @@ function getWindowIconColor(window: WindowInfoType): ColorType {
   }
 }
 
+/**
+ * Modify the specified array of windows so they will be ordered consistently
+ * every render, independent of the order that Hammerspoon provides them, so
+ * the window buttons won't change positions on different renders
+ */
+export function orderWindowsConsistently(windows: WindowInfoType[]): void {
+  // Sort by appname so window buttons are grouped by app, and then by
+  // window ID within app
+  windows.sort((window1, window2) => {
+    if (window1.appName < window2.appName) {
+      return -1;
+    }
+
+    if (window1.appName === window2.appName) {
+      if (window1.id < window2.id) {
+        return -1;
+      }
+
+      if (window1.id === window2.id) {
+        // Presumably this will never happen
+        return 0;
+      }
+    }
+
+    return 1;
+  });
+}
+
 function onTaskbarClick(this: void, _canvas: hs.CanvasType, _message: string, id: string | number) {
   const idAsNumber = (typeof id === 'number') ? id : parseInt(id);
   const hsWindow = hs.window.get(idAsNumber);
@@ -241,17 +269,7 @@ function updateTaskbar(
     })
   )
 
-  // Use a sorted list of app names so order on the taskbar is consistent and
-  // windows don't jump around
-  const appNames: Array<string> = [];
-  windows.forEach((window) => {
-    if (!appNames.includes(window.appName)) {
-      appNames.push(window.appName);
-    }
-  });
-
-  appNames.sort();
-
+  orderWindowsConsistently(windows);
   let x = 0;
 
   // Determine width of buttons if we want them to completely fill the taskbar
@@ -259,20 +277,16 @@ function updateTaskbar(
   const exactWidth = dimensions.width / windows.length;
   const buttonWidth = Math.min(MAX_BUTTON_WIDTH, exactWidth);
 
-  appNames.forEach((appName) => {
-    const windowsThisApp = windows.filter((window) => window.appName === appName);
-
-    windowsThisApp.forEach((window) => {
-      canvas.appendElements(getWindowButtonElements({
-        fontSize: config.fontSize,
-        buttonWidthIncludingPadding: buttonWidth,
-        x: x,
-        window,
-        getAppNameAndWindowTitle,
-        getWindowIconColor,
-      }));
-      x += buttonWidth;
-    });
+  windows.forEach((window) => {
+    canvas.appendElements(getWindowButtonElements({
+      fontSize: config.fontSize,
+      buttonWidthIncludingPadding: buttonWidth,
+      x: x,
+      window,
+      getAppNameAndWindowTitle,
+      getWindowIconColor,
+    }));
+    x += buttonWidth;
   });
 }
 
