@@ -10,8 +10,8 @@
     "test/*"
   ],
   "tstl": {
-    "luaBundle": "init.lua",
-    "luaBundleEntry": "init.ts",
+    "luaBundle": "build/init.lua",
+    "luaBundleEntry": "src/init.ts",
     "luaLibImport": "inline",
     "luaTarget": "JIT"
   }
