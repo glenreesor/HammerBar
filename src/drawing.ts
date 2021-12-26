@@ -1,10 +1,5 @@
 import { WindowInfoType } from "./hammerspoonUtils";
 
-export interface ColorType {
-  red: number;
-  green: number;
-  blue: number;
-}
 export const MAX_BUTTON_WIDTH = 130;
 
 const BUTTON_PADDING_EACH_SIDE = 2;
@@ -21,7 +16,7 @@ export function getCanvasHeight(fontSize: number): number {
 }
 
 interface GetTaskbarElementsType {
-  color: ColorType;
+  color: hs.ColorType;
   width: number;
   height: number;
 }
@@ -46,7 +41,7 @@ interface GetWindowButtonElementsType {
       appNameToDisplay: string,
       windowTitleToDisplay: string
   };
-  getWindowIconColor: (window: WindowInfoType) => ColorType;
+  getWindowIconColor: (window: WindowInfoType) => hs.ColorType;
 }
 
 export function getWindowButtonElements(

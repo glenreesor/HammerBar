@@ -2,7 +2,6 @@ import { luaType } from "./luaType";
 
 import {
   MAX_BUTTON_WIDTH,
-  ColorType,
   getCanvasHeight,
   getTaskbarElements,
   getWindowButtonElements,
@@ -16,10 +15,10 @@ import {
 } from "./hammerspoonUtils";
 
 interface UserColorsType {
-  taskbar?: ColorType;
-  icons?: ColorType;
-  appGroups?: Record<string, ColorType>;
-  appNames?: Record<string, ColorType | string>;
+  taskbar?: hs.ColorType;
+  icons?: hs.ColorType;
+  appGroups?: Record<string, hs.ColorType>;
+  appNames?: Record<string, hs.ColorType | string>;
 }
 
 interface AppNameAndWindowTitleType {
@@ -32,8 +31,8 @@ interface AppNameAndWindowTitleType {
 interface ConfigType {
   fontSize: number;
   defaultColors: {
-    taskbar: ColorType;
-    icons: ColorType;
+    taskbar: hs.ColorType;
+    icons: hs.ColorType;
   };
   userColors?: UserColorsType;
   userAppNamesAndWindowTitles?: Array<AppNameAndWindowTitleType>;
@@ -89,7 +88,7 @@ function getAppNameAndWindowTitle(
   return returnValue
 }
 
-function getWindowIconColor(window: WindowInfoType): ColorType {
+function getWindowIconColor(window: WindowInfoType): hs.ColorType {
   const userColors = config.userColors;
   const userColorsAppNames = userColors?.appNames;
 
@@ -105,9 +104,9 @@ function getWindowIconColor(window: WindowInfoType): ColorType {
   // have type 'table'.
   if (luaType(userColor) === 'table') {
     // Since this isn't typescript type checking, typescript isn't smart
-    // enough to know that at this point userColor must be a ColorType, hence
+    // enough to know that at this point userColor must be a hs.ColorType, hence
     // the type assertion
-    return userColor as ColorType;
+    return userColor as hs.ColorType;
   } else {
     // Similar to above, typescript doesn't know that userColor must be a
     // string at this point

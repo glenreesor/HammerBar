@@ -13,6 +13,12 @@ declare namespace hs {
     show: () => void;
   }
 
+  interface ColorType {
+    red: number;
+    green: number;
+    blue: number;
+  }
+
   interface ScreenType {
     frame: () => {
       x: number;
