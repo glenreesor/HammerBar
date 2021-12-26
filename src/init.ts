@@ -12,13 +12,25 @@ import {
   WindowInfoType,
 } from "./hammerspoonUtils";
 
-interface UserColorsType {
-  taskbar?: hs.ColorType;
-  icons?: hs.ColorType;
-  appGroups?: Record<string, hs.ColorType>;
-  appNames?: Record<string, hs.ColorType | string>;
+//-----------------------------------------------------------------------------
+// Color config
+//-----------------------------------------------------------------------------
+type ConfigColorName = string;
+interface WindowButtonCriteria {
+  appName: string;
+  windowTitle: string;
+  color: ConfigColorName;
 }
 
+interface UserColorsType {
+  colorNames: Record<ConfigColorName, hs.ColorType>;
+  taskbar?: ConfigColorName;
+  windowButtons?: Array<WindowButtonCriteria>;
+}
+
+//-----------------------------------------------------------------------------
+// Other config
+//-----------------------------------------------------------------------------
 interface AppNameAndWindowTitleType {
   appName: string;
   windowTitle?: string;
@@ -87,27 +99,29 @@ function getAppNameAndWindowTitle(
 }
 
 function getWindowIconColor(window: WindowInfoType): hs.ColorType {
-  const userColors = config.userColors;
-  const userColorsAppNames = userColors?.appNames;
-
-  let userColor;
-
-  if (!userColorsAppNames || !userColorsAppNames[window.appName]) {
-    return config.defaultColors.icons
-  }
-
-  userColor = userColorsAppNames[window.appName]
-
-  // Yes, the typescript to lua compiler correctly knows that a lua 'table'
-  // corresponds to a typescript 'object'
-  if (typeof userColor === 'object') {
-    return userColor;
-  } else {
-    if (userColors.appGroups && userColors.appGroups[userColor]) {
-      return userColors.appGroups[userColor];
-    }
+  if (!config.userColors || !config.userColors.windowButtons) {
     return config.defaultColors.icons;
   }
+
+  let matchedColor: hs.ColorType;
+
+  let matchedColorName: undefined | ConfigColorName;
+
+  config.userColors.windowButtons.forEach((buttonCriteria) => {
+    if (
+      window.appName.includes(buttonCriteria.appName) &&
+      window.windowTitle.includes(buttonCriteria.windowTitle) &&
+      matchedColorName === undefined
+    ) {
+      matchedColorName = buttonCriteria.color;
+    }
+  });
+
+  matchedColor = matchedColorName !== undefined
+    ? config.userColors.colorNames[matchedColorName]
+    : config.defaultColors.icons;
+
+  return matchedColor;
 }
 
 /**
