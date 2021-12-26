@@ -1,6 +1,20 @@
 declare function print(this: void, text: string | number): void
 
 declare namespace hs {
+  interface CanvasElementType {
+    type: string;
+    id?: number;
+    fillColor?: ColorType;
+    frame?: { x: number, y: number, w: number, h: number };
+    roundedRectRadii?: {xRadius: number, yRadius: number };
+    strokeColor?: ColorType;
+    text?: string;
+    textColor?: ColorType;
+    textLineBreak?: string;
+    textSize?: number;
+    trackMouseUp?: boolean;
+  }
+
   interface CanvasMouseCallbackType {
     (this: void, canvas: CanvasType, message: string, id: number | string): void;
   }

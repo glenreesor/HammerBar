@@ -23,7 +23,7 @@ interface GetTaskbarElementsType {
 
 export function getTaskbarElements(
   {color, width, height}: GetTaskbarElementsType
-) {
+): hs.CanvasElementType {
   return {
     type: 'rectangle',
     fillColor: color,
@@ -53,7 +53,7 @@ export function getWindowButtonElements(
     getAppNameAndWindowTitle,
     getWindowIconColor,
   }: GetWindowButtonElementsType
-) {
+): Array<hs.CanvasElementType> {
   const BUTTON_WIDTH = buttonWidthIncludingPadding - 2 * BUTTON_PADDING_EACH_SIDE;
   const ICON_WIDTH = 15;
   const ICON_PADDING_LEFT = 4;
@@ -98,7 +98,7 @@ export function getWindowButtonElements(
 
   const clickId = window.id;
 
-  const canvasElements = [
+  const canvasElements:Array<hs.CanvasElementType> = [
     {
       // Container
       type: 'rectangle',
