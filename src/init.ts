@@ -1,5 +1,3 @@
-import { luaType } from "./luaType";
-
 import {
   MAX_BUTTON_WIDTH,
   getCanvasHeight,
@@ -100,18 +98,13 @@ function getWindowIconColor(window: WindowInfoType): hs.ColorType {
 
   userColor = userColorsAppNames[window.appName]
 
-  // We can't use typeof because typescript knows that a TS object can never
-  // have type 'table'.
-  if (luaType(userColor) === 'table') {
-    // Since this isn't typescript type checking, typescript isn't smart
-    // enough to know that at this point userColor must be a hs.ColorType, hence
-    // the type assertion
-    return userColor as hs.ColorType;
+  // Yes, the typescript to lua compiler correctly knows that a lua 'table'
+  // corresponds to a typescript 'object'
+  if (typeof userColor === 'object') {
+    return userColor;
   } else {
-    // Similar to above, typescript doesn't know that userColor must be a
-    // string at this point
-    if (userColors.appGroups && userColors.appGroups[userColor as string]) {
-      return userColors.appGroups[userColor as string];
+    if (userColors.appGroups && userColors.appGroups[userColor]) {
+      return userColors.appGroups[userColor];
     }
     return config.defaultColors.icons;
   }
