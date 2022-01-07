@@ -312,7 +312,8 @@ function windowListsAreIdentical(
       windowFromList2 !== undefined &&
       windowFromList2.appName == window.appName &&
       windowFromList2.windowTitle == window.windowTitle &&
-      windowFromList2.isMinimized == window.isMinimized
+      windowFromList2.isMinimized == window.isMinimized &&
+      windowFromList2.screenId == window.screenId
     );
   },
   true);
