@@ -4,6 +4,7 @@ import { testableFunctions } from '../init';
 const { orderWindowsConsistently, windowListsAreIdentical } = testableFunctions;
 const windowTemplate = {
   id: 1,
+  bundleId: '1',
   appName: 'iTerm',
   isMinimized: true,
   isStandard: true,

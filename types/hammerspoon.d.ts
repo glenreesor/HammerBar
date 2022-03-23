@@ -6,6 +6,8 @@ declare namespace hs {
     id?: number;
     fillColor?: ColorType;
     frame?: { x: number, y: number, w: number, h: number };
+    image?: any;
+    imageAlpha?: number;
     roundedRectRadii?: {xRadius: number, yRadius: number };
     strokeColor?: ColorType;
     text?: string;
@@ -49,12 +51,13 @@ declare namespace hs {
   }
 
   interface WindowType {
-    application: () => { name: () => string };
+    application: () => { name: () => string, bundleID: () => string };
     focus: () => void;
     id: () => number;
     isMinimized: () => boolean;
     isStandard: () => boolean;
     minimize: () => void;
+    raise: () => void;
     screen: () => { id: () => number };
     title: () => string;
     unminimize: () => void;
@@ -76,6 +79,10 @@ declare namespace hs {
 
   namespace eventtap {
     function checkKeyboardModifiers(this: void): {shift?: boolean, cmd?: boolean};
+  }
+
+  namespace image {
+    function imageFromAppBundle(this: void, bundleID: string): Object;
   }
 
   namespace screen {

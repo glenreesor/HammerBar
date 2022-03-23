@@ -51,7 +51,7 @@ interface ConfigType {
 const config:ConfigType = {
   fontSize: 13,
   defaultColors: {
-    taskbar: { red: 180/255, green: 180/255, blue: 180/255 },
+    taskbar: { red: 220/255, green: 220/255, blue: 220/255 },
     icons:   { red: 132/255, green: 132/255, blue: 130/255 },
   },
 };
@@ -98,32 +98,6 @@ function getAppNameAndWindowTitle(
   return returnValue
 }
 
-function getWindowIconColor(window: WindowInfoType): hs.ColorType {
-  if (!config.userColors || !config.userColors.windowButtons) {
-    return config.defaultColors.icons;
-  }
-
-  let matchedColor: hs.ColorType;
-
-  let matchedColorName: undefined | ConfigColorName;
-
-  config.userColors.windowButtons.forEach((buttonCriteria) => {
-    if (
-      window.appName.includes(buttonCriteria.appName) &&
-      window.windowTitle.includes(buttonCriteria.windowTitle) &&
-      matchedColorName === undefined
-    ) {
-      matchedColorName = buttonCriteria.color;
-    }
-  });
-
-  matchedColor = matchedColorName !== undefined
-    ? config.userColors.colorNames[matchedColorName]
-    : config.defaultColors.icons;
-
-  return matchedColor;
-}
-
 /**
  * Modify the specified array of windows so they will be ordered consistently
  * every render, independent of the order that Hammerspoon provides them, so
@@ -163,7 +137,9 @@ function onTaskbarClick(this: void, _canvas: hs.CanvasType, _message: string, id
   }
 
   if (hsWindow.isMinimized()) {
-    hsWindow.unminimize();
+    // Most apps require just focus(), but some like LibreOffice also require raise()
+    hsWindow.raise();
+    hsWindow.focus();
   } else {
     if (hs.eventtap.checkKeyboardModifiers().cmd) {
       hsWindow.focus();
@@ -282,7 +258,6 @@ function updateTaskbar(
       x: x,
       window,
       getAppNameAndWindowTitle,
-      getWindowIconColor,
     }));
     x += buttonWidth;
   });
@@ -322,7 +297,7 @@ function windowListsAreIdentical(
 }
 
 //------------------------------------------------------------------------------
-// Names space these functions so it's obvious they're just for testing and
+// Name space these functions so it's obvious they're just for testing and
 // not to be called directly from other hammerspoon code
 export const testableFunctions = {
   orderWindowsConsistently,
