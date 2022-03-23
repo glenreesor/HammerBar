@@ -24,6 +24,7 @@ declare namespace hs {
   interface CanvasType {
     appendElements: (element: CanvasElementType | Array<CanvasElementType>) => void;
     delete: () => void;
+    hide: () => void;
     mouseCallback: (callback: CanvasMouseCallbackType) => void;
     replaceElements: (element: CanvasElementType | Array<CanvasElementType>) => void;
     show: () => void;
