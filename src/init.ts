@@ -13,22 +13,6 @@ import {
 } from "./hammerspoonUtils";
 
 //-----------------------------------------------------------------------------
-// Color config
-//-----------------------------------------------------------------------------
-type ConfigColorName = string;
-interface WindowButtonCriteria {
-  appName: string;
-  windowTitle: string;
-  color: ConfigColorName;
-}
-
-interface UserColorsType {
-  colorNames: Record<ConfigColorName, hs.ColorType>;
-  taskbar?: ConfigColorName;
-  windowButtons?: Array<WindowButtonCriteria>;
-}
-
-//-----------------------------------------------------------------------------
 // Other config
 //-----------------------------------------------------------------------------
 interface AppNameAndWindowTitleType {
@@ -44,7 +28,6 @@ interface ConfigType {
     taskbar: hs.ColorType;
     icons: hs.ColorType;
   };
-  userColors?: UserColorsType;
   userAppNamesAndWindowTitles?: Array<AppNameAndWindowTitleType>;
 }
 
@@ -310,10 +293,6 @@ export const testableFunctions = {
 
 export function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNameAndWindowTitleType>) {
   config.userAppNamesAndWindowTitles = appNamesAndWindowTitles;
-}
-
-export function setColors(colors: UserColorsType) {
-  config.userColors = colors;
 }
 
 export function start() {
