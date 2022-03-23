@@ -82,6 +82,21 @@ function getAppNameAndWindowTitle(
 }
 
 /**
+ * Get a list of windows that we should show buttons for. We can't just look
+ * at the window.isStandard field because it is false for some windows
+ * even though we want them to show up in the taskbar.
+ *
+ * So far now, just filter out Hammerspoon windows with an empty title, since
+ * those correspond to canvases, which we definitely don't want to see in
+ * the taskbar
+ */
+function getWindowsToShow(windows: WindowInfoType[]): WindowInfoType[] {
+  return windows.filter((window) => {
+    return !(window.appName === 'Hammerspoon' && window.windowTitle === '')
+  });
+}
+
+/**
  * Modify the specified array of windows so they will be ordered consistently
  * every render, independent of the order that Hammerspoon provides them, so
  * the window buttons won't change positions on different renders
@@ -227,14 +242,16 @@ function updateTaskbar(
   )
 
   orderWindowsConsistently(windows);
-  let x = 0;
+  const windowsToDisplay = getWindowsToShow(windows);
 
   // Determine width of buttons if we want them to completely fill the taskbar
   // so we can determine a good width
   const exactWidth = dimensions.width / windows.length;
   const buttonWidth = Math.min(MAX_BUTTON_WIDTH, exactWidth);
 
-  windows.forEach((window) => {
+  let x = 0;
+
+  windowsToDisplay.forEach((window) => {
     canvas.appendElements(getWindowButtonElements({
       fontSize: config.fontSize,
       buttonWidthIncludingPadding: buttonWidth,
