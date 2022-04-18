@@ -1,6 +1,7 @@
 import { WindowInfoType } from "./hammerspoonUtils";
 
 export const MAX_BUTTON_WIDTH = 130;
+export const TOGGLE_BUTTON_WIDTH = 20;
 
 const BUTTON_PADDING_EACH_SIDE = 3;
 
@@ -9,6 +10,55 @@ const WHITE = { red: 1.0, green: 1.0, blue: 1.0 };
 
 export function getCanvasHeight(fontSize: number): number {
   return fontSize * 2 + 18;
+}
+
+interface GetToggleButtonElementsType {
+  fontSize: number,
+  screenSide: 'left' | 'right';
+  taskbarIsVisible: boolean;
+}
+
+export function getToggleButtonElements({
+  fontSize,
+  screenSide,
+  taskbarIsVisible,
+}: GetToggleButtonElementsType) {
+  let toggleSymbol;
+
+  if (screenSide === 'left') {
+    toggleSymbol = taskbarIsVisible ? '<' : '>';
+  } else {
+    toggleSymbol = taskbarIsVisible ? '>' : '<';
+  }
+
+  const canvasElements:Array<hs.CanvasElementType> = [
+    {
+      type: 'rectangle',
+      fillColor: { red: 100/255, green: 100/255, blue: 100/255 },
+      frame: {
+        x: 0,
+        y: 0,
+        w: TOGGLE_BUTTON_WIDTH,
+        h: getCanvasHeight(fontSize),
+      },
+      trackMouseUp: true,
+    },
+    {
+      type: 'text',
+      text: toggleSymbol,
+      textColor: BLACK,
+      textSize: fontSize,
+      frame: {
+        x: TOGGLE_BUTTON_WIDTH / 4,
+        y: getCanvasHeight(fontSize) / 2 - fontSize / 2,
+        w: fontSize,
+        h: fontSize,
+      },
+      trackMouseUp: true,
+    },
+  ];
+
+  return canvasElements;
 }
 
 interface GetTaskbarElementsType {
