@@ -73,6 +73,33 @@ declare namespace hs {
     ) => CanvasType;
   }
 
+  interface WindowFilter {
+    new: (this: void) => {
+      subscribe: Function;
+    };
+    windowAllowed: string;
+    windowCreated: string;
+    windowDestroyed: string;
+    windowFocused: string;
+    windowFullscreened: string;
+    windowHidden: string;
+    windowInCurrentSpace: string;
+    windowMinimized: string;
+    windowMoved: string;
+    windowNotInCurrentSpace: string;
+    windowNotOnScreen: string;
+    windowNotVisible: string;
+    windowOnScreen: string;
+    windowRejected: string;
+    windowsChanged: string;
+    windowTitleChanged: string;
+    windowUnfocused: string;
+    windowUnfullscreened: string;
+    windowUnhidden: string;
+    windowUnminimized: string;
+    windowVisible: string;
+  }
+
   export const canvas: WindowDotCanvas;
 
   namespace eventtap {
@@ -94,5 +121,6 @@ declare namespace hs {
   namespace window {
     function allWindows(this: void ): Array<WindowType>;
     function get(this: void, windowId: number): WindowType | undefined;
+    const filter: WindowFilter;
   }
 }
