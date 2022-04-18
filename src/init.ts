@@ -1,11 +1,10 @@
-import {
-  MAX_BUTTON_WIDTH,
-  TOGGLE_BUTTON_WIDTH,
-  getCanvasHeight,
-  getToggleButtonElements,
-  getTaskbarElements,
-  getWindowButtonElements,
-} from "./drawing";
+import { MAX_BUTTON_WIDTH } from './drawing';
+import { TOGGLE_BUTTON_WIDTH } from './drawing/common';
+
+import { getCanvasHeight } from './drawing/getCanvasHeight';
+import { getToggleButtonElements } from './drawing/getToggleButtonElements';
+import { getTaskbarElements } from './drawing/getTaskbarElements';
+import { getWindowButtonElements } from './drawing/getWindowButtonElements';
 
 import { getScreenInfo, ScreenInfoType } from './hammerspoonUtils/getScreenInfo';
 import { getWindowInfo, WindowInfoType } from './hammerspoonUtils/getWindowInfo';
