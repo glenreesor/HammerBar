@@ -47,7 +47,7 @@ declare namespace hs {
     name: () => string;
   }
 
-  export interface TimerType {
+  interface TimerType {
     stop: () => void;
   }
 
@@ -64,19 +64,16 @@ declare namespace hs {
     unminimize: () => void;
   }
 
-  interface CanvasNewArgs {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
+  // We need to use this interface approach (instead of just namespacing like
+  // below) due to `new` being a TS reserved word
+  interface WindowDotCanvas {
+    new: (
+      this: void,
+      {x, y, w, h}: {x: number, y: number, w: number, h: number}
+    ) => CanvasType;
   }
 
-  // This should be a namespace in order for TS to report proper types,
-  // but the required notation is `function new....` and new is a reserved
-  // word in TS, thus error :-(
-  export const canvas: {
-    new: (this: void, {x, y, w, h}: CanvasNewArgs) => CanvasType;
-  }
+  export const canvas: WindowDotCanvas;
 
   namespace eventtap {
     function checkKeyboardModifiers(this: void): {shift?: boolean, cmd?: boolean};
