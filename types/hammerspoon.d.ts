@@ -47,7 +47,7 @@ declare namespace hs {
     name: () => string;
   }
 
-  export interface TimerType {
+  interface TimerType {
     stop: () => void;
   }
 
@@ -64,19 +64,44 @@ declare namespace hs {
     unminimize: () => void;
   }
 
-  interface CanvasNewArgs {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
+  // We need to use this interface approach (instead of just namespacing like
+  // below) due to `new` being a TS reserved word
+  interface WindowDotCanvas {
+    new: (
+      this: void,
+      {x, y, w, h}: {x: number, y: number, w: number, h: number}
+    ) => CanvasType;
   }
 
-  // This should be a namespace in order for TS to report proper types,
-  // but the required notation is `function new....` and new is a reserved
-  // word in TS, thus error :-(
-  export const canvas: {
-    new: (this: void, {x, y, w, h}: CanvasNewArgs) => CanvasType;
+  interface WindowFilter {
+    getWindows: () => Array<WindowType>;
+    new: (this: void, criteria: boolean) => WindowFilter;
+    subscribe: (events: Array<string>, callback: Function) => void;
+    unsubscribeAll: () => void;
+    windowAllowed: string;
+    windowCreated: string;
+    windowDestroyed: string;
+    windowFocused: string;
+    windowFullscreened: string;
+    windowHidden: string;
+    windowInCurrentSpace: string;
+    windowMinimized: string;
+    windowMoved: string;
+    windowNotInCurrentSpace: string;
+    windowNotOnScreen: string;
+    windowNotVisible: string;
+    windowOnScreen: string;
+    windowRejected: string;
+    windowsChanged: string;
+    windowTitleChanged: string;
+    windowUnfocused: string;
+    windowUnfullscreened: string;
+    windowUnhidden: string;
+    windowUnminimized: string;
+    windowVisible: string;
   }
+
+  export const canvas: WindowDotCanvas;
 
   namespace eventtap {
     function checkKeyboardModifiers(this: void): {shift?: boolean, cmd?: boolean};
@@ -97,5 +122,6 @@ declare namespace hs {
   namespace window {
     function allWindows(this: void ): Array<WindowType>;
     function get(this: void, windowId: number): WindowType | undefined;
+    const filter: WindowFilter;
   }
 }
