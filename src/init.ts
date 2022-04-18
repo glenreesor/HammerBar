@@ -138,7 +138,11 @@ function onTaskbarClick(
   id: string | number
 ) {
   const idAsNumber = (typeof id === 'number') ? id : parseInt(id);
-  const hsWindow = hs.window.get(idAsNumber);
+
+  // We can't use hs.window.get() because it causes a gigantic delay if other
+  // tools like RectangleWM are running
+  const allWindows = state.windowFilter?.getWindows() || [];
+  const hsWindow = allWindows.filter((window) => window.id() === idAsNumber)[0];
 
   // We have to check for null because it may have been closed after the most
   // recent taskbar update
