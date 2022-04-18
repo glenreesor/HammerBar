@@ -1,4 +1,4 @@
-import { WindowInfoType } from '../hammerspoonUtils/getWindowInfo';
+import { WindowInfoType } from '../hammerspoonUtils';
 import { BLACK, WHITE } from './common';
 
 interface GetWindowButtonElementsType {
