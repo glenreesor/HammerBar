@@ -16,9 +16,6 @@ import {
   getWindowInfo,
 } from './hammerspoonUtils';
 
-//-----------------------------------------------------------------------------
-// Other config
-//-----------------------------------------------------------------------------
 interface AppNameAndWindowTitleType {
   appName: string;
   windowTitle?: string;
@@ -51,16 +48,14 @@ interface CanvasesOneScreenType {
 
 interface StateType {
   canvasesByScreenId: Map<number, CanvasesOneScreenType>;
-  doitTimer: hs.TimerType | undefined;
-  previousWindowList: Array<WindowInfoType>;
   taskbarsAreVisible: boolean;
+  windowFilter: hs.WindowFilter | undefined;
 }
 
 const state:StateType = {
   canvasesByScreenId: new Map<number, CanvasesOneScreenType>(),
-  doitTimer: undefined,
-  previousWindowList: [],
   taskbarsAreVisible: true,
+  windowFilter: undefined,
 };
 
 //-----------------------------------------------------------------------------
@@ -168,28 +163,21 @@ function onTaskbarClick(
 
 function onToggleButtonClick(this: void) {
   toggleTaskbarVisibility();
-  updateAllTaskbars(true);
+  updateAllTaskbars();
 }
 
 function toggleTaskbarVisibility() {
   state.taskbarsAreVisible = !state.taskbarsAreVisible;
 }
 
-function updateAllTaskbars(force = false) {
+function updateAllTaskbars() {
   const allWindows:WindowInfoType[] = [];
   const allScreens:ScreenInfoType[] = [];
 
-  hs.window.allWindows().forEach((hammerspoonWindow) => {
+  state.windowFilter?.getWindows().forEach((hammerspoonWindow) => {
     const windowInfo = getWindowInfo(hammerspoonWindow);
     allWindows.push(windowInfo);
   });
-
-  if (!force && windowListsAreIdentical(state.previousWindowList, allWindows)) {
-    // If nothing has changed, no point taking the effort to re-render taskbars
-    return;
-  }
-
-  state.previousWindowList = allWindows;
 
   //----------------------------------------------------------------------------
   // Update things that may have changed since our last call:
@@ -323,45 +311,11 @@ function updateTaskbar(
   });
 }
 
-/**
- * Return whether the two lists of windows are identical in all ways that
- * affect whether a re-render of taskbars is required
- */
-function windowListsAreIdentical(
-  windowList1: Array<WindowInfoType>,
-  windowList2: Array<WindowInfoType>
-): boolean {
-  if (windowList1.length !== windowList2.length) {
-    return false;
-  }
-
-  const windowListById1 = new Map<number, WindowInfoType>();
-  const windowListById2 = new Map<number, WindowInfoType>();
-
-  windowList1.forEach((window) => windowListById1.set(window.id, window));
-  windowList2.forEach((window) => windowListById2.set(window.id, window));
-
-  const windowListsAreIdentical = windowList1.reduce((accumulator, window) => {
-    const windowFromList2 = windowListById2.get(window.id);
-    return accumulator && (
-      windowFromList2 !== undefined &&
-      windowFromList2.appName == window.appName &&
-      windowFromList2.windowTitle == window.windowTitle &&
-      windowFromList2.isMinimized == window.isMinimized &&
-      windowFromList2.screenId == window.screenId
-    );
-  },
-  true);
-
-  return windowListsAreIdentical;
-}
-
 //------------------------------------------------------------------------------
 // Name space these functions so it's obvious they're just for testing and
 // not to be called directly from other hammerspoon code
 export const testableFunctions = {
   orderWindowsConsistently,
-  windowListsAreIdentical,
 };
 
 //------------------------------------------------------------------------------
@@ -373,13 +327,37 @@ export function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNam
 }
 
 export function start() {
+  state.windowFilter = hs.window.filter.new(true);
+  state.windowFilter.subscribe(
+    [
+      hs.window.filter.windowCreated,
+      hs.window.filter.windowDestroyed,
+
+      // This is the Mac "hide" functionality
+      hs.window.filter.windowHidden,
+      hs.window.filter.windowMinimized,
+
+      // Need this to handle when window moved to another screen
+      hs.window.filter.windowMoved,
+
+      // For keeping text in taskbar up to date
+      hs.window.filter.windowTitleChanged,
+
+      hs.window.filter.windowUnhidden,
+
+      // This only fires if window was *Hidden* then unminimized
+      hs.window.filter.windowUnminimized,
+
+      // This is the only way to trigger when a window is unminimized (but
+      // wasn't "hidden" prior to that)
+      hs.window.filter.windowVisible,
+    ],
+    updateAllTaskbars,
+  );
   updateAllTaskbars();
-  state.doitTimer = hs.timer.doEvery(0.5, updateAllTaskbars);
 }
 
 export function stop() {
-  if (state.doitTimer) {
-    state.doitTimer.stop();
-  }
+  state.windowFilter?.unsubscribeAll();
 }
 

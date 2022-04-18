@@ -74,9 +74,10 @@ declare namespace hs {
   }
 
   interface WindowFilter {
-    new: (this: void) => {
-      subscribe: Function;
-    };
+    getWindows: () => Array<WindowType>;
+    new: (this: void, criteria: boolean) => WindowFilter;
+    subscribe: (events: Array<string>, callback: Function) => void;
+    unsubscribeAll: () => void;
     windowAllowed: string;
     windowCreated: string;
     windowDestroyed: string;
