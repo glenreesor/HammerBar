@@ -7,12 +7,8 @@ import {
   getWindowButtonElements,
 } from "./drawing";
 
-import {
-  getScreenInfo,
-  getWindowInfo,
-  ScreenInfoType,
-  WindowInfoType,
-} from "./hammerspoonUtils";
+import { getScreenInfo, ScreenInfoType } from './hammerspoonUtils/getScreenInfo';
+import { getWindowInfo, WindowInfoType } from './hammerspoonUtils/getWindowInfo';
 
 //-----------------------------------------------------------------------------
 // Other config

@@ -1,4 +1,4 @@
-import { WindowInfoType } from "../hammerspoonUtils";
+import { WindowInfoType } from "../hammerspoonUtils/getWindowInfo";
 import { testableFunctions } from '../init';
 
 const { orderWindowsConsistently, windowListsAreIdentical } = testableFunctions;

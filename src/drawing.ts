@@ -1,4 +1,4 @@
-import { WindowInfoType } from "./hammerspoonUtils";
+import { WindowInfoType } from './hammerspoonUtils/getWindowInfo';
 
 export const MAX_BUTTON_WIDTH = 130;
 export const TOGGLE_BUTTON_WIDTH = 20;
