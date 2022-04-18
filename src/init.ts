@@ -1,7 +1,9 @@
 import {
   MAX_BUTTON_WIDTH,
   TOGGLE_BUTTON_WIDTH,
-  getCanvasHeight,
+  getNewLeftToggleCanvas,
+  getNewRightToggleCanvas,
+  getNewWindowButtonCanvas,
   getToggleButtonElements,
   getTaskbarElements,
   getWindowButtonElements,
@@ -239,28 +241,17 @@ function updateCanvasesByScreenId(allScreens: Array<ScreenInfoType>) {
     if (!state.canvasesByScreenId.get(screen.id)) {
       print(`Adding canvases for screen: ${screen.id}`);
 
-      const canvasHeight = getCanvasHeight(config.fontSize);
+      const newLeftToggleCanvas = getNewLeftToggleCanvas(
+        {fontSize: config.fontSize, screen: screen}
+      );
 
-      const newLeftToggleCanvas = hs.canvas.new({
-        x: screen.x,
-        y: screen.y + screen.height - canvasHeight,
-        w: TOGGLE_BUTTON_WIDTH,
-        h: canvasHeight,
-      });
+      const newRightToggleCanvas = getNewRightToggleCanvas(
+        {fontSize: config.fontSize, screen: screen}
+      );
 
-      const newRightToggleCanvas = hs.canvas.new({
-        x: screen.x + screen.width - TOGGLE_BUTTON_WIDTH,
-        y: screen.y + screen.height - canvasHeight,
-        w: TOGGLE_BUTTON_WIDTH,
-        h: canvasHeight,
-      });
-
-      const newWindowButtonsCanvas = hs.canvas.new({
-        x: screen.x + TOGGLE_BUTTON_WIDTH,
-        y: screen.y + screen.height - canvasHeight,
-        w: screen.width - 2 * TOGGLE_BUTTON_WIDTH,
-        h: canvasHeight,
-      });
+      const newWindowButtonsCanvas = getNewWindowButtonCanvas(
+        {fontSize: config.fontSize, screen: screen}
+      );
 
       newWindowButtonsCanvas.show();
       newLeftToggleCanvas.show();
