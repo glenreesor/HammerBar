@@ -47,12 +47,14 @@ interface CanvasesOneScreenType {
 }
 
 interface StateType {
+  allowAllWindows: boolean;
   canvasesByScreenId: Map<number, CanvasesOneScreenType>;
   taskbarsAreVisible: boolean;
   windowFilter: hs.WindowFilter | undefined;
 }
 
 const state:StateType = {
+  allowAllWindows: false,
   canvasesByScreenId: new Map<number, CanvasesOneScreenType>(),
   taskbarsAreVisible: true,
   windowFilter: undefined,
@@ -97,7 +99,11 @@ function getAppNameAndWindowTitle(
  * those correspond to canvases, which we definitely don't want to see in
  * the taskbar
  */
-function getWindowsToShow(windows: WindowInfoType[]): WindowInfoType[] {
+function getWindowsToManage(windows: WindowInfoType[]): WindowInfoType[] {
+  if (state.allowAllWindows) {
+    return windows.slice();
+  }
+
   return windows.filter((window) => {
     return !(window.appName === 'Hammerspoon' && window.windowTitle === '')
   });
@@ -346,7 +352,7 @@ function updateTaskbar(
   )
 
   orderWindowsConsistently(windows);
-  const windowsToDisplay = getWindowsToShow(windows);
+  const windowsToDisplay = getWindowsToManage(windows);
 
   // Determine width of buttons if we want them to completely fill the taskbar
   // so we can determine a good width
@@ -377,6 +383,14 @@ export const testableFunctions = {
 //------------------------------------------------------------------------------
 // Public Interface
 //------------------------------------------------------------------------------
+
+// Use this function to allow *all* windows reported by HammerSpoon in the
+// taskbar. This will be useful if a window isn't showing up normally. So with
+// this enabled, user can shift-click on the window button in question and get
+// all the hammerspoon info about it
+export function allowAllWindows() {
+  state.allowAllWindows = true;
+}
 
 export function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNameAndWindowTitleType>) {
   config.userAppNamesAndWindowTitles = appNamesAndWindowTitles;
