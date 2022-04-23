@@ -161,8 +161,6 @@ function onTaskbarClick(
       hsWindow.minimize();
     }
   }
-
-  updateAllTaskbars();
 }
 
 function onToggleButtonClick(this: void) {
