@@ -104,7 +104,14 @@ declare namespace hs {
   export const canvas: WindowDotCanvas;
 
   namespace eventtap {
-    function checkKeyboardModifiers(this: void): {shift?: boolean, cmd?: boolean};
+    function checkKeyboardModifiers(this: void): {
+      alt?: boolean,
+      capslock?: boolean,
+      cmd?: boolean,
+      ctrl?: boolean,
+      fn?: boolean,
+      shift?: boolean,
+    };
   }
 
   namespace image {
