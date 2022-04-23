@@ -170,6 +170,35 @@ function onToggleButtonClick(this: void) {
   updateAllTaskbars();
 }
 
+function subscribeWindowFilterToEvents() {
+  state.windowFilter?.subscribe(
+    [
+      hs.window.filter.windowCreated,
+      hs.window.filter.windowDestroyed,
+
+      // This is the Mac "hide" functionality
+      hs.window.filter.windowHidden,
+      hs.window.filter.windowMinimized,
+
+      // Need this to handle when window moved to another screen
+      hs.window.filter.windowMoved,
+
+      // For keeping text in taskbar up to date
+      hs.window.filter.windowTitleChanged,
+
+      hs.window.filter.windowUnhidden,
+
+      // This only fires if window was *Hidden* then unminimized
+      hs.window.filter.windowUnminimized,
+
+      // This is the only way to trigger when a window is unminimized (but
+      // wasn't "hidden" prior to that)
+      hs.window.filter.windowVisible,
+    ],
+    updateAllTaskbars,
+  );
+}
+
 function toggleTaskbarVisibility() {
   state.taskbarsAreVisible = !state.taskbarsAreVisible;
 }
@@ -332,32 +361,7 @@ export function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNam
 
 export function start() {
   state.windowFilter = hs.window.filter.new(true);
-  state.windowFilter.subscribe(
-    [
-      hs.window.filter.windowCreated,
-      hs.window.filter.windowDestroyed,
-
-      // This is the Mac "hide" functionality
-      hs.window.filter.windowHidden,
-      hs.window.filter.windowMinimized,
-
-      // Need this to handle when window moved to another screen
-      hs.window.filter.windowMoved,
-
-      // For keeping text in taskbar up to date
-      hs.window.filter.windowTitleChanged,
-
-      hs.window.filter.windowUnhidden,
-
-      // This only fires if window was *Hidden* then unminimized
-      hs.window.filter.windowUnminimized,
-
-      // This is the only way to trigger when a window is unminimized (but
-      // wasn't "hidden" prior to that)
-      hs.window.filter.windowVisible,
-    ],
-    updateAllTaskbars,
-  );
+  subscribeWindowFilterToEvents();
   updateAllTaskbars();
 }
 
