@@ -24,7 +24,7 @@ export function getWindowInfo(window: hs.WindowType): WindowInfoType {
 
   return {
     appName: appName,
-    bundleId: bundleId,
+    bundleId: bundleId || '',
     id: window.id(),
     isMinimized: window.isMinimized(),
     isStandard: window.isStandard(),

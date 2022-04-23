@@ -52,7 +52,10 @@ declare namespace hs {
   }
 
   interface WindowType {
-    application: () => { name: () => string, bundleID: () => string };
+    application: () => {
+      name: () => string,
+      bundleID: () => string | null,
+    };
     focus: () => void;
     id: () => number;
     isMinimized: () => boolean;
