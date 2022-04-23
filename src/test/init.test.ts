@@ -8,6 +8,7 @@ const windowTemplate = {
   appName: 'iTerm',
   isMinimized: true,
   isStandard: true,
+  role: 'My role',
   screenId: 2,
   windowTitle: 'My title',
 };

@@ -4,6 +4,7 @@ export interface WindowInfoType {
   id: number;
   isMinimized: boolean;
   isStandard: boolean;
+  role: string;
   screenId: number;
   windowTitle: string;
 }
@@ -28,6 +29,7 @@ export function getWindowInfo(window: hs.WindowType): WindowInfoType {
     id: window.id(),
     isMinimized: window.isMinimized(),
     isStandard: window.isStandard(),
+    role: window.role(),
     screenId: window.screen().id(),
     windowTitle: window.title(),
   };

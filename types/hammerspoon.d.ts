@@ -62,6 +62,7 @@ declare namespace hs {
     isStandard: () => boolean;
     minimize: () => void;
     raise: () => void;
+    role: () => string;
     screen: () => { id: () => number };
     title: () => string;
     unminimize: () => void;
