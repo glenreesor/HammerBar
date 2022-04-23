@@ -91,39 +91,6 @@ function getAppNameAndWindowTitle(
 }
 
 /**
- * Get a list of windows that we should show buttons for. There don't appear
- * to be any single Hammerspoon filters or fields that reliably create the
- * list we want. So we do it manually here.
- */
-function getWindowsToManage(windows: WindowInfoType[]): WindowInfoType[] {
-  if (state.allowAllWindows) {
-    return windows.slice();
-  }
-
-  // Based on the HammerSpoon docs, you'd think we could just filter out
-  // windows that are not "standard". However that also filters out some
-  // windows that we want in the taskbar. For instance the following are all
-  // classified as not "standard" (but only when they're minimized):
-  //  - gitk
-  //  - Safari
-  //  - DBeaver
-  //
-  // It looks like the windows we want in the taskbar all have a "role" of
-  // "AXWindow".
-  //
-  // Ironically Hammerspoon has its own weirdness to account for:
-  //  - the Console is "standard" unless it's minimized -- then it's not "standard"
-  //  - there are other windows associated with Hammerspoon (that we don't care
-  //    about), all of which have a role of "AXWindow" but they are not "standard"
-  return windows.filter((window) => {
-    return (
-      (window.appName === 'Hammerspoon' && window.windowTitle === 'Hammerspoon Console') ||
-      (window.appName !== 'Hammerspoon' && window.role === 'AXWindow')
-    );
-  });
-}
-
-/**
  * Modify the specified array of windows so they will be ordered consistently
  * every render, independent of the order that Hammerspoon provides them, so
  * the window buttons won't change positions on different renders
@@ -366,7 +333,6 @@ function updateTaskbar(
   )
 
   orderWindowsConsistently(windows);
-  const windowsToDisplay = getWindowsToManage(windows);
 
   // Determine width of buttons if we want them to completely fill the taskbar
   // so we can determine a good width
@@ -375,7 +341,7 @@ function updateTaskbar(
 
   let x = 0;
 
-  windowsToDisplay.forEach((window) => {
+  windows.forEach((window) => {
     canvas.appendElements(getWindowButtonElements({
       fontSize: config.fontSize,
       buttonWidthIncludingPadding: buttonWidth,
@@ -385,6 +351,33 @@ function updateTaskbar(
     }));
     x += buttonWidth;
   });
+}
+
+function windowFilterCallback(this: void, hsWindow: hs.WindowType) {
+  if (state.allowAllWindows) {
+    return true;
+  }
+
+  // Based on the HammerSpoon docs, you'd think we could just filter out
+  // windows that are not "standard". However that also filters out some
+  // windows that we want in the taskbar. For instance the following are all
+  // classified as not "standard" (but only when they're minimized):
+  //  - gitk
+  //  - Safari
+  //  - DBeaver
+  //
+  // It looks like the windows we want in the taskbar all have a "role" of
+  // "AXWindow".
+  //
+  // Ironically Hammerspoon has its own weirdness to account for:
+  //  - the Console is "standard" unless it's minimized -- then it's not "standard"
+  //  - there are other windows associated with Hammerspoon (that we don't care
+  //    about), all of which have a role of "AXWindow" but they are not "standard"
+  const window = getWindowInfo(hsWindow);
+  return (
+    (window.appName === 'Hammerspoon' && window.windowTitle === 'Hammerspoon Console') ||
+    (window.appName !== 'Hammerspoon' && window.role === 'AXWindow')
+  );
 }
 
 //------------------------------------------------------------------------------
@@ -411,7 +404,7 @@ export function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNam
 }
 
 export function start() {
-  state.windowFilter = hs.window.filter.new(true);
+  state.windowFilter = hs.window.filter.new(windowFilterCallback);
   subscribeWindowFilterToEvents();
   updateAllTaskbars();
 }

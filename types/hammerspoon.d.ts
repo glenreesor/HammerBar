@@ -81,7 +81,7 @@ declare namespace hs {
     getWindows: () => Array<WindowType>;
     new: (
       this: void,
-      criteria: null | boolean,
+      filterCriteria: null | boolean | ((this:void, hsWindow: WindowType) => boolean),
     ) => WindowFilter;
     subscribe: (events: Array<string>, callback: Function) => void;
     unsubscribeAll: () => void;
