@@ -155,7 +155,12 @@ function onTaskbarClick(
     hsWindow.raise();
     hsWindow.focus();
   } else {
-    if (hs.eventtap.checkKeyboardModifiers().cmd) {
+    if (
+      hs.eventtap.checkKeyboardModifiers().cmd ||
+      hs.eventtap.checkKeyboardModifiers().ctrl
+    ) {
+      // Just focus() the window because user just wants to make it visible
+      // instead of minimizing it
       hsWindow.focus();
     } else {
       hsWindow.minimize();
