@@ -150,15 +150,20 @@ function onTaskbarClick(
     return;
   }
 
+  const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();
+
+  if (keyboardModifiers.shift) {
+    // User just wants to dump the window info without toggling window visibility
+    printWindowInfo(hsWindow);
+    return;
+  }
+
   if (hsWindow.isMinimized()) {
     // Most apps require just focus(), but some like LibreOffice also require raise()
     hsWindow.raise();
     hsWindow.focus();
   } else {
-    if (
-      hs.eventtap.checkKeyboardModifiers().cmd ||
-      hs.eventtap.checkKeyboardModifiers().ctrl
-    ) {
+    if (keyboardModifiers.cmd || keyboardModifiers.ctrl) {
       // Just focus() the window because user just wants to make it visible
       // instead of minimizing it
       hsWindow.focus();
@@ -171,6 +176,21 @@ function onTaskbarClick(
 function onToggleButtonClick(this: void) {
   toggleTaskbarVisibility();
   updateAllTaskbars();
+}
+
+function printWindowInfo(hsWindow: hs.WindowType) {
+  const window = getWindowInfo(hsWindow);
+  print('');
+  print('Window info:');
+  print(`    appName    : ${window.appName}`);
+  print(`    bundleId   : ${window.bundleId}`);
+  print(`    id         : ${window.id}`);
+  print(`    isMinimized: ${window.isMinimized}`);
+  print(`    isStandard : ${window.isStandard}`);
+  print(`    role       : ${window.role}`);
+  print(`    screenId   : ${window.screenId}`);
+  print(`    windowTitle: ${window.windowTitle}`);
+  print('');
 }
 
 function subscribeWindowFilterToEvents() {
