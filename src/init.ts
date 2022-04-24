@@ -281,6 +281,7 @@ function updateCanvasesByScreenId(allScreens: Array<ScreenInfoType>) {
       const NEWtaskbar = new Taskbar({
         fontSize: config.fontSize,
         screenInfo: screen,
+        backgroundColor: config.defaultColors.taskbar,
         onToggleButtonClick: onToggleButtonClick,
       });
 
