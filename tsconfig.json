@@ -4,7 +4,8 @@
     "lib": ["esnext"],
     "moduleResolution": "node",
     "types": ["./types/hammerspoon", "jest"],
-    "strict": true
+    "strict": true,
+    "baseUrl": "./"
   },
   "exclude": [
     "test/*"
