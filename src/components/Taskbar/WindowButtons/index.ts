@@ -8,6 +8,7 @@ interface ConstructorType {
   height: number;
   backgroundColor: hs.ColorType;
   fontSize: number;
+  onWindowButtonClick: (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
 }
 
 const MAX_BUTTON_WIDTH = 130;
@@ -19,13 +20,23 @@ export default class WindowButtons {
   _backgroundColor: hs.ColorType;
   _fontSize: number;
 
-  constructor({topLeftX, topLeftY, width, height, backgroundColor, fontSize}: ConstructorType) {
+  constructor({
+    topLeftX,
+    topLeftY,
+    width,
+    height,
+    backgroundColor,
+    fontSize,
+    onWindowButtonClick,
+  }: ConstructorType) {
     this._canvas = hs.canvas.new({
       x: topLeftX,
       y: topLeftY,
       w: width,
       h: height,
     });
+    this._canvas.mouseCallback(onWindowButtonClick);
+
     this._width = width;
     this._height = height;
     this._backgroundColor = backgroundColor;
@@ -76,6 +87,8 @@ export default class WindowButtons {
   }
 
   _getWindowButtonElements(x: number, widthIncludingPadding: number, window: WindowInfoType): Array<hs.CanvasElementType> {
+    const MINIMIZED_BACKGROUND_COLOR = { red: 190/255, green: 190/255, blue: 190/255 };
+
     const BUTTON_PADDING_EACH_SIDE = 3;
     const BUTTON_PADDING_TOP_AND_BOTTOM = 4;
 
@@ -94,6 +107,7 @@ export default class WindowButtons {
     const appIcon = hs.image.imageFromAppBundle(window.bundleId);
     const appIconX = buttonLeftX + APP_ICON_PADDING_LEFT;
     const appIconY = buttonTopY;
+    const appIconAlpha = window.isMinimized ? 0.6 : 1;
 
     const textX = appIconX + appIconWidth + TEXT_PADDING_LEFT;
     const textY = buttonTopY;
@@ -105,11 +119,13 @@ export default class WindowButtons {
       TEXT_PADDING_RIGHT
     );
 
+    const clickId = window.id;
+
     return [
       {
         // Container
         type: 'rectangle',
-        fillColor: WHITE,
+        fillColor: window.isMinimized ? MINIMIZED_BACKGROUND_COLOR : WHITE,
         frame: {
           x: buttonLeftX,
           y: buttonTopY,
@@ -117,6 +133,8 @@ export default class WindowButtons {
           h: buttonHeight,
         },
         roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+        trackMouseUp: true,
+        id: clickId,
       }, {
         // App icon
         type: 'image',
@@ -127,6 +145,9 @@ export default class WindowButtons {
           h: appIconHeight,
         },
         image: appIcon,
+        imageAlpha: appIconAlpha,
+        trackMouseUp: true,
+        id: clickId,
       },
       {
         // Text: window title
@@ -140,6 +161,8 @@ export default class WindowButtons {
           w: maxTextWidth,
           h: buttonHeight
         },
+        trackMouseUp: true,
+        id: clickId,
       },
     ];
   }

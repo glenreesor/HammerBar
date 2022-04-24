@@ -283,6 +283,7 @@ function updateCanvasesByScreenId(allScreens: Array<ScreenInfoType>) {
         screenInfo: screen,
         backgroundColor: config.defaultColors.taskbar,
         onToggleButtonClick: onToggleButtonClick,
+        onWindowButtonClick: onTaskbarClick,
       });
 
       const newLeftToggleCanvas = getNewLeftToggleCanvas(

@@ -7,6 +7,7 @@ interface ConstructorType {
   screenInfo: ScreenInfoType;
   backgroundColor: hs.ColorType;
   onToggleButtonClick: (this: void) => void;
+  onWindowButtonClick: (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
 }
 
 const TOGGLE_BUTTON_WIDTH = 20;
@@ -16,7 +17,13 @@ export default class Taskbar {
   _rightToggleButton: ToggleButton;
   _windowButtons: WindowButtons;
 
-  constructor({fontSize, screenInfo, backgroundColor, onToggleButtonClick}: ConstructorType) {
+  constructor({
+    fontSize,
+    screenInfo,
+    backgroundColor,
+    onToggleButtonClick,
+    onWindowButtonClick
+  }: ConstructorType) {
     const canvasHeight = fontSize * 2 + 18;
 
     this._leftToggleButton = new ToggleButton({
@@ -46,6 +53,7 @@ export default class Taskbar {
       height: canvasHeight,
       backgroundColor: backgroundColor,
       fontSize: fontSize,
+      onWindowButtonClick: onWindowButtonClick,
     });
   }
 
