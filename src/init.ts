@@ -244,7 +244,7 @@ function updateAllTaskbars() {
     if (!canvases) {
       print(`Hammerbar: No canvas for screen ${screen.id}`);
     } else {
-      canvases.NEWtaskbar.update(state.taskbarsAreVisible);
+      canvases.NEWtaskbar.update(state.taskbarsAreVisible, windowsThisScreen);
 
       canvases.leftToggle.replaceElements(getToggleButtonElements({
         fontSize: config.fontSize,

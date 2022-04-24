@@ -1,4 +1,4 @@
-import { ScreenInfoType } from 'src/hammerspoonUtils';
+import { ScreenInfoType, WindowInfoType } from 'src/hammerspoonUtils';
 import ToggleButton  from './ToggleButton';
 import WindowButtons from './WindowButtons';
 
@@ -45,12 +45,13 @@ export default class Taskbar {
       width: screenInfo.width - 2 * TOGGLE_BUTTON_WIDTH,
       height: canvasHeight,
       backgroundColor: backgroundColor,
+      fontSize: fontSize,
     });
   }
 
-  update(taskbarIsVisible: boolean) {
+  update(taskbarIsVisible: boolean, windows: Array<WindowInfoType>) {
     this._leftToggleButton.update(taskbarIsVisible);
     this._rightToggleButton.update(taskbarIsVisible);
-    this._windowButtons.update(taskbarIsVisible);
+    this._windowButtons.update(taskbarIsVisible, windows);
   }
 }
