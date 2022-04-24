@@ -16,6 +16,8 @@ import {
   getWindowInfo,
 } from './hammerspoonUtils';
 
+import Taskbar from './components/Taskbar';
+
 interface AppNameAndWindowTitleType {
   appName: string;
   windowTitle?: string;
@@ -44,6 +46,7 @@ interface CanvasesOneScreenType {
   leftToggle: hs.CanvasType;
   rightToggle: hs.CanvasType;
   windowButtons: hs.CanvasType;
+  NEWtaskbar: Taskbar;
 }
 
 interface StateType {
@@ -241,6 +244,8 @@ function updateAllTaskbars() {
     if (!canvases) {
       print(`Hammerbar: No canvas for screen ${screen.id}`);
     } else {
+      canvases.NEWtaskbar.update(state.taskbarsAreVisible);
+
       canvases.leftToggle.replaceElements(getToggleButtonElements({
         fontSize: config.fontSize,
         screenSide: 'left',
@@ -272,6 +277,13 @@ function updateCanvasesByScreenId(allScreens: Array<ScreenInfoType>) {
     if (!state.canvasesByScreenId.get(screen.id)) {
       print(`Adding canvases for screen: ${screen.id}`);
 
+
+      const NEWtaskbar = new Taskbar({
+        fontSize: config.fontSize,
+        screenInfo: screen,
+        onToggleButtonClick: onToggleButtonClick,
+      });
+
       const newLeftToggleCanvas = getNewLeftToggleCanvas(
         {fontSize: config.fontSize, screen: screen}
       );
@@ -294,6 +306,7 @@ function updateCanvasesByScreenId(allScreens: Array<ScreenInfoType>) {
           leftToggle: newLeftToggleCanvas,
           rightToggle: newRightToggleCanvas,
           windowButtons: newWindowButtonsCanvas,
+          NEWtaskbar: NEWtaskbar,
         }
       );
 
