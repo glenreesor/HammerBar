@@ -55,7 +55,10 @@ export default class WindowButtons {
   }
 
   _addWindowsElements(windows: Array<WindowInfoType>): void {
+    this._orderWindowsConsistently(windows);
+
     const buttonWidth = this._getButtonWidth(windows.length);
+
     let x = 0;
     windows.forEach((window) => {
       this._canvas.appendElements(this._getWindowButtonElements(x, buttonWidth, window));
@@ -139,5 +142,33 @@ export default class WindowButtons {
         },
       },
     ];
+  }
+
+  /**
+   * Modify the specified array of windows so they will be ordered consistently
+   * every render, independent of the order that Hammerspoon provides them, so
+   * the window buttons won't change positions on different renders
+   */
+  _orderWindowsConsistently(windows: WindowInfoType[]): void {
+    // Sort by appname so window buttons are grouped by app, and then by
+    // window ID within app
+    windows.sort((window1, window2) => {
+      if (window1.appName < window2.appName) {
+        return -1;
+      }
+
+      if (window1.appName === window2.appName) {
+        if (window1.id < window2.id) {
+          return -1;
+        }
+
+        if (window1.id === window2.id) {
+          // Presumably this will never happen
+          return 0;
+        }
+      }
+
+      return 1;
+    });
   }
 }
