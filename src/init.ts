@@ -7,20 +7,12 @@ import {
 
 import Taskbar from './Taskbar';
 
-interface AppNameAndWindowTitleType {
-  appName: string;
-  windowTitle?: string;
-  displayAppName?: string;
-  displayWindowTitle?: string;
-}
-
 interface ConfigType {
   fontSize: number;
   defaultColors: {
     taskbar: hs.ColorType;
     icons: hs.ColorType;
   };
-  userAppNamesAndWindowTitles?: Array<AppNameAndWindowTitleType>;
 }
 
 const config:ConfigType = {
@@ -50,34 +42,6 @@ const state:StateType = {
 };
 
 //-----------------------------------------------------------------------------
-
-function getAppNameAndWindowTitle(
-  window: WindowInfoType
-): {appNameToDisplay: string, windowTitleToDisplay: string} {
-  const userConfig = config.userAppNamesAndWindowTitles ? config.userAppNamesAndWindowTitles : [];
-
-  let returnValue = {
-    appNameToDisplay: window.appName,
-    windowTitleToDisplay: window.windowTitle
-  }
-
-  userConfig.forEach((configObject) => {
-    if (
-      configObject.appName === window.appName &&
-      (configObject.windowTitle == window.windowTitle || !configObject.windowTitle)
-    ) {
-      if (configObject.displayAppName) {
-        returnValue.appNameToDisplay = configObject.displayAppName;
-      }
-
-      if (configObject.displayWindowTitle) {
-        returnValue.windowTitleToDisplay = configObject.displayWindowTitle;
-      }
-    }
-  });
-
-  return returnValue
-}
 
 function onTaskbarClick(
   this: void,
@@ -279,10 +243,6 @@ function windowFilterCallback(this: void, hsWindow: hs.WindowType) {
 // all the hammerspoon info about it
 export function allowAllWindows() {
   state.allowAllWindows = true;
-}
-
-export function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNameAndWindowTitleType>) {
-  config.userAppNamesAndWindowTitles = appNamesAndWindowTitles;
 }
 
 export function start() {
