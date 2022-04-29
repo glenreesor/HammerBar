@@ -26,7 +26,7 @@ declare namespace hs {
     delete: () => void;
     hide: () => void;
     mouseCallback: (callback: CanvasMouseCallbackType) => void;
-    replaceElements: (element: CanvasElementType | Array<CanvasElementType>) => void;
+    replaceElements: (element?: CanvasElementType | Array<CanvasElementType>) => void;
     show: () => void;
   }
 

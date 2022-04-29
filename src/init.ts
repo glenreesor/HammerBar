@@ -1,27 +1,11 @@
 import {
-  MAX_BUTTON_WIDTH,
-  TOGGLE_BUTTON_WIDTH,
-  getNewLeftToggleCanvas,
-  getNewRightToggleCanvas,
-  getNewWindowButtonCanvas,
-  getToggleButtonElements,
-  getTaskbarElements,
-  getWindowButtonElements,
-} from './drawing';
-
-import {
   ScreenInfoType,
   WindowInfoType,
   getScreenInfo,
   getWindowInfo,
 } from './hammerspoonUtils';
 
-interface AppNameAndWindowTitleType {
-  appName: string;
-  windowTitle?: string;
-  displayAppName?: string;
-  displayWindowTitle?: string;
-}
+import Taskbar from './Taskbar';
 
 interface ConfigType {
   fontSize: number;
@@ -29,7 +13,6 @@ interface ConfigType {
     taskbar: hs.ColorType;
     icons: hs.ColorType;
   };
-  userAppNamesAndWindowTitles?: Array<AppNameAndWindowTitleType>;
 }
 
 const config:ConfigType = {
@@ -40,85 +23,23 @@ const config:ConfigType = {
   },
 };
 
-interface CanvasesOneScreenType {
-  leftToggle: hs.CanvasType;
-  rightToggle: hs.CanvasType;
-  windowButtons: hs.CanvasType;
-}
-
 interface StateType {
   allowAllWindows: boolean;
-  canvasesByScreenId: Map<number, CanvasesOneScreenType>;
+  taskbarsByScreenId: Map<number, Taskbar>;
   taskbarsAreVisible: boolean;
   windowFilter: hs.WindowFilter | undefined;
 }
 
 const state:StateType = {
   allowAllWindows: false,
-  canvasesByScreenId: new Map<number, CanvasesOneScreenType>(),
+  taskbarsByScreenId: new Map<number, Taskbar>(),
   taskbarsAreVisible: true,
   windowFilter: undefined,
 };
 
 //-----------------------------------------------------------------------------
 
-function getAppNameAndWindowTitle(
-  window: WindowInfoType
-): {appNameToDisplay: string, windowTitleToDisplay: string} {
-  const userConfig = config.userAppNamesAndWindowTitles ? config.userAppNamesAndWindowTitles : [];
-
-  let returnValue = {
-    appNameToDisplay: window.appName,
-    windowTitleToDisplay: window.windowTitle
-  }
-
-  userConfig.forEach((configObject) => {
-    if (
-      configObject.appName === window.appName &&
-      (configObject.windowTitle == window.windowTitle || !configObject.windowTitle)
-    ) {
-      if (configObject.displayAppName) {
-        returnValue.appNameToDisplay = configObject.displayAppName;
-      }
-
-      if (configObject.displayWindowTitle) {
-        returnValue.windowTitleToDisplay = configObject.displayWindowTitle;
-      }
-    }
-  });
-
-  return returnValue
-}
-
-/**
- * Modify the specified array of windows so they will be ordered consistently
- * every render, independent of the order that Hammerspoon provides them, so
- * the window buttons won't change positions on different renders
- */
-function orderWindowsConsistently(windows: WindowInfoType[]): void {
-  // Sort by appname so window buttons are grouped by app, and then by
-  // window ID within app
-  windows.sort((window1, window2) => {
-    if (window1.appName < window2.appName) {
-      return -1;
-    }
-
-    if (window1.appName === window2.appName) {
-      if (window1.id < window2.id) {
-        return -1;
-      }
-
-      if (window1.id === window2.id) {
-        // Presumably this will never happen
-        return 0;
-      }
-    }
-
-    return 1;
-  });
-}
-
-function onTaskbarClick(
+function onTaskbarWindowButtonClick(
   this: void,
   _canvas: hs.CanvasType,
   _message: string,
@@ -219,7 +140,13 @@ function updateAllTaskbars() {
 
   state.windowFilter?.getWindows().forEach((hammerspoonWindow) => {
     const windowInfo = getWindowInfo(hammerspoonWindow);
-    allWindows.push(windowInfo);
+
+    // Even though our Hammerspoon window filter excludes windows that don't
+    // have a role of 'AXWindow', it appears some still get through.
+    // So ensure a proper role here.
+    if (windowInfo.role === 'AXWindow') {
+      allWindows.push(windowInfo);
+    }
   });
 
   //----------------------------------------------------------------------------
@@ -231,125 +158,52 @@ function updateAllTaskbars() {
     allScreens.push(screenInfo);
   });
 
-  updateCanvasesByScreenId(allScreens);
+  ensureTaskbarsExistForAllScreens(allScreens);
 
   allScreens.forEach((screen) => {
     const windowsThisScreen = allWindows.filter(
       (window) => window.screenId === screen.id
     );
-    const canvases = state.canvasesByScreenId.get(screen.id);
-    if (!canvases) {
-      print(`Hammerbar: No canvas for screen ${screen.id}`);
+    const taskbar = state.taskbarsByScreenId.get(screen.id);
+    if (!taskbar) {
+      print(`Hammerbar: No taskbar for screen ${screen.id}`);
     } else {
-      canvases.leftToggle.replaceElements(getToggleButtonElements({
-        fontSize: config.fontSize,
-        screenSide: 'left',
-        taskbarIsVisible: state.taskbarsAreVisible,
-      }));
-
-      canvases.rightToggle.replaceElements(getToggleButtonElements({
-        fontSize: config.fontSize,
-        screenSide: 'right',
-        taskbarIsVisible: state.taskbarsAreVisible,
-      }));
-
-      updateTaskbar(
-        canvases.windowButtons,
-        {
-          width: screen.width,
-          height: screen.height,
-        },
-        windowsThisScreen,
-      );
+      taskbar.update(state.taskbarsAreVisible, windowsThisScreen);
     }
   });
 }
 
-function updateCanvasesByScreenId(allScreens: Array<ScreenInfoType>) {
+function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
 
-  // Ensure each screen has a corresponding canvas
+  // Ensure each screen has a corresponding taskbar
   allScreens.forEach((screen) => {
-    if (!state.canvasesByScreenId.get(screen.id)) {
-      print(`Adding canvases for screen: ${screen.id}`);
+    if (!state.taskbarsByScreenId.get(screen.id)) {
+      print(`Adding taskbar for screen: ${screen.id}`);
 
-      const newLeftToggleCanvas = getNewLeftToggleCanvas(
-        {fontSize: config.fontSize, screen: screen}
-      );
 
-      const newRightToggleCanvas = getNewRightToggleCanvas(
-        {fontSize: config.fontSize, screen: screen}
-      );
+      const newTaskbar = new Taskbar({
+        fontSize: config.fontSize,
+        screenInfo: screen,
+        backgroundColor: config.defaultColors.taskbar,
+        onToggleButtonClick: onToggleButtonClick,
+        onWindowButtonClick: onTaskbarWindowButtonClick,
+      });
 
-      const newWindowButtonsCanvas = getNewWindowButtonCanvas(
-        {fontSize: config.fontSize, screen: screen}
-      );
-
-      newWindowButtonsCanvas.show();
-      newLeftToggleCanvas.show();
-      newRightToggleCanvas.show();
-
-      state.canvasesByScreenId.set(
-        screen.id,
-        {
-          leftToggle: newLeftToggleCanvas,
-          rightToggle: newRightToggleCanvas,
-          windowButtons: newWindowButtonsCanvas,
-        }
-      );
-
-      newWindowButtonsCanvas.mouseCallback(onTaskbarClick);
-      newLeftToggleCanvas.mouseCallback(onToggleButtonClick);
-      newRightToggleCanvas.mouseCallback(onToggleButtonClick);
+      state.taskbarsByScreenId.set(screen.id, newTaskbar);
     }
   });
 
-  // Remove canvases for screens that no longer exist
-  state.canvasesByScreenId.forEach((_canvas, screenId) => {
+  // Remove taskbars for screens that no longer exist
+  state.taskbarsByScreenId.forEach((taskbar, screenId) => {
     const foundScreens = allScreens.filter((screen) => screen.id === screenId);
     if (foundScreens.length === 0) {
-      print(`Removing canvases for screen: ${screenId}`);
-      state.canvasesByScreenId.delete(screenId);
+      print(`Removing taskbar for screen: ${screenId}`);
+
+      // We know it'll eventually get garbage collected, but make it invisible
+      // in case screen topology changes prior to garbage collection
+      taskbar.update(false, []);
+      state.taskbarsByScreenId.delete(screenId);
     }
-  });
-}
-
-function updateTaskbar(
-  canvas: hs.CanvasType,
-  dimensions: {width: number, height: number},
-  windows: Array<WindowInfoType>
-) {
-  if (!state.taskbarsAreVisible) {
-    canvas.hide();
-    return;
-  }
-
-  canvas.show();
-  canvas.replaceElements(
-    getTaskbarElements({
-      color: config.defaultColors.taskbar,
-      width: dimensions.width,
-      height: dimensions.height
-    })
-  )
-
-  orderWindowsConsistently(windows);
-
-  // Determine width of buttons if we want them to completely fill the taskbar
-  // so we can determine a good width
-  const exactWidth = (dimensions.width - 2 * TOGGLE_BUTTON_WIDTH) / windows.length;
-  const buttonWidth = Math.min(MAX_BUTTON_WIDTH, exactWidth);
-
-  let x = 0;
-
-  windows.forEach((window) => {
-    canvas.appendElements(getWindowButtonElements({
-      fontSize: config.fontSize,
-      buttonWidthIncludingPadding: buttonWidth,
-      x: x,
-      window,
-      getAppNameAndWindowTitle,
-    }));
-    x += buttonWidth;
   });
 }
 
@@ -381,13 +235,6 @@ function windowFilterCallback(this: void, hsWindow: hs.WindowType) {
 }
 
 //------------------------------------------------------------------------------
-// Name space these functions so it's obvious they're just for testing and
-// not to be called directly from other hammerspoon code
-export const testableFunctions = {
-  orderWindowsConsistently,
-};
-
-//------------------------------------------------------------------------------
 // Public Interface
 //------------------------------------------------------------------------------
 
@@ -397,10 +244,6 @@ export const testableFunctions = {
 // all the hammerspoon info about it
 export function allowAllWindows() {
   state.allowAllWindows = true;
-}
-
-export function setAppNamesAndWindowTitles(appNamesAndWindowTitles: Array<AppNameAndWindowTitleType>) {
-  config.userAppNamesAndWindowTitles = appNamesAndWindowTitles;
 }
 
 export function start() {
