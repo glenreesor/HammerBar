@@ -39,7 +39,7 @@ const state:StateType = {
 
 //-----------------------------------------------------------------------------
 
-function onTaskbarClick(
+function onTaskbarWindowButtonClick(
   this: void,
   _canvas: hs.CanvasType,
   _message: string,
@@ -180,7 +180,7 @@ function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
         screenInfo: screen,
         backgroundColor: config.defaultColors.taskbar,
         onToggleButtonClick: onToggleButtonClick,
-        onWindowButtonClick: onTaskbarClick,
+        onWindowButtonClick: onTaskbarWindowButtonClick,
       });
 
       state.taskbarsByScreenId.set(screen.id, newTaskbar);
