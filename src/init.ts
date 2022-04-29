@@ -5,7 +5,7 @@ import {
   getWindowInfo,
 } from './hammerspoonUtils';
 
-import Taskbar from './components/Taskbar';
+import Taskbar from './Taskbar';
 
 interface AppNameAndWindowTitleType {
   appName: string;
