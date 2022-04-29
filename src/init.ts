@@ -140,7 +140,13 @@ function updateAllTaskbars() {
 
   state.windowFilter?.getWindows().forEach((hammerspoonWindow) => {
     const windowInfo = getWindowInfo(hammerspoonWindow);
-    allWindows.push(windowInfo);
+
+    // Even though our Hammerspoon window filter excludes windows that don't
+    // have a role of 'AXWindow', it appears some still get through.
+    // So ensure a proper role here.
+    if (windowInfo.role === 'AXWindow') {
+      allWindows.push(windowInfo);
+    }
   });
 
   //----------------------------------------------------------------------------
