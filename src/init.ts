@@ -23,20 +23,16 @@ const config:ConfigType = {
   },
 };
 
-interface CanvasesOneScreenType {
-  NEWtaskbar: Taskbar;
-}
-
 interface StateType {
   allowAllWindows: boolean;
-  canvasesByScreenId: Map<number, CanvasesOneScreenType>;
+  taskbarsByScreenId: Map<number, Taskbar>;
   taskbarsAreVisible: boolean;
   windowFilter: hs.WindowFilter | undefined;
 }
 
 const state:StateType = {
   allowAllWindows: false,
-  canvasesByScreenId: new Map<number, CanvasesOneScreenType>(),
+  taskbarsByScreenId: new Map<number, Taskbar>(),
   taskbarsAreVisible: true,
   windowFilter: undefined,
 };
@@ -156,30 +152,30 @@ function updateAllTaskbars() {
     allScreens.push(screenInfo);
   });
 
-  updateCanvasesByScreenId(allScreens);
+  ensureTaskbarsExistForAllScreens(allScreens);
 
   allScreens.forEach((screen) => {
     const windowsThisScreen = allWindows.filter(
       (window) => window.screenId === screen.id
     );
-    const canvases = state.canvasesByScreenId.get(screen.id);
-    if (!canvases) {
-      print(`Hammerbar: No canvas for screen ${screen.id}`);
+    const taskbar = state.taskbarsByScreenId.get(screen.id);
+    if (!taskbar) {
+      print(`Hammerbar: No taskbar for screen ${screen.id}`);
     } else {
-      canvases.NEWtaskbar.update(state.taskbarsAreVisible, windowsThisScreen);
+      taskbar.update(state.taskbarsAreVisible, windowsThisScreen);
     }
   });
 }
 
-function updateCanvasesByScreenId(allScreens: Array<ScreenInfoType>) {
+function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
 
-  // Ensure each screen has a corresponding canvas
+  // Ensure each screen has a corresponding taskbar
   allScreens.forEach((screen) => {
-    if (!state.canvasesByScreenId.get(screen.id)) {
-      print(`Adding canvases for screen: ${screen.id}`);
+    if (!state.taskbarsByScreenId.get(screen.id)) {
+      print(`Adding taskbar for screen: ${screen.id}`);
 
 
-      const NEWtaskbar = new Taskbar({
+      const newTaskbar = new Taskbar({
         fontSize: config.fontSize,
         screenInfo: screen,
         backgroundColor: config.defaultColors.taskbar,
@@ -187,21 +183,20 @@ function updateCanvasesByScreenId(allScreens: Array<ScreenInfoType>) {
         onWindowButtonClick: onTaskbarClick,
       });
 
-      state.canvasesByScreenId.set(
-        screen.id,
-        {
-          NEWtaskbar: NEWtaskbar,
-        }
-      );
+      state.taskbarsByScreenId.set(screen.id, newTaskbar);
     }
   });
 
-  // Remove canvases for screens that no longer exist
-  state.canvasesByScreenId.forEach((_canvas, screenId) => {
+  // Remove taskbars for screens that no longer exist
+  state.taskbarsByScreenId.forEach((taskbar, screenId) => {
     const foundScreens = allScreens.filter((screen) => screen.id === screenId);
     if (foundScreens.length === 0) {
-      print(`Removing canvases for screen: ${screenId}`);
-      state.canvasesByScreenId.delete(screenId);
+      print(`Removing taskbar for screen: ${screenId}`);
+
+      // We know it'll eventually get garbage collected, but make it invisible
+      // in case screen topology changes prior to garbage collection
+      taskbar.update(false, []);
+      state.taskbarsByScreenId.delete(screenId);
     }
   });
 }
