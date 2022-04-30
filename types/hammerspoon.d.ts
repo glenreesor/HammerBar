@@ -108,6 +108,10 @@ declare namespace hs {
     windowVisible: string;
   }
 
+  namespace application {
+    function launchOrFocusByBundleID(this: void, name: string): boolean;
+  }
+
   export const canvas: WindowDotCanvas;
 
   namespace eventtap {
