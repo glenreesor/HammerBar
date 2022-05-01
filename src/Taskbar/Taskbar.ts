@@ -5,6 +5,7 @@ import WindowButtons from './WindowButtons';
 
 interface ConstructorType {
   fontSize: number;
+  height: number;
   screenInfo: ScreenInfoType;
   backgroundColor: hs.ColorType;
   onToggleButtonClick: (this: void) => void;
@@ -22,6 +23,7 @@ export default class Taskbar {
 
   constructor({
     fontSize,
+    height,
     screenInfo,
     backgroundColor,
     onToggleButtonClick,
@@ -42,7 +44,7 @@ export default class Taskbar {
       fontSize: fontSize,
       screenSide: 'left',
       width: TOGGLE_BUTTON_WIDTH,
-      height: canvasHeight,
+      height: height,
       topLeftX: leftToggleButtonX,
       topLeftY: topLeftY,
       onClick: onToggleButtonClick,
@@ -52,7 +54,7 @@ export default class Taskbar {
       topLeftX: appMenuButtonX,
       topLeftY: topLeftY,
       widthIncludingPadding: APP_MENU_BUTTON_WIDTH,
-      height: canvasHeight,
+      height: height,
       onClick: () => this._onAppMenuButtonClick(),
     });
 
@@ -60,7 +62,7 @@ export default class Taskbar {
       topLeftX: windowButtonsX,
       topLeftY: topLeftY,
       width: windowButtonsWidth,
-      height: canvasHeight,
+      height: height,
       backgroundColor: backgroundColor,
       fontSize: fontSize,
       onWindowButtonClick: onWindowButtonClick,
@@ -70,7 +72,7 @@ export default class Taskbar {
       fontSize: fontSize,
       screenSide: 'right',
       width: TOGGLE_BUTTON_WIDTH,
-      height: canvasHeight,
+      height: height,
       topLeftX: screenInfo.x + screenInfo.width - TOGGLE_BUTTON_WIDTH,
       topLeftY: screenInfo.y + screenInfo.height - canvasHeight,
       onClick: onToggleButtonClick,

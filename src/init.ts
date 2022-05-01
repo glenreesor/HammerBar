@@ -9,6 +9,7 @@ import Taskbar from './Taskbar';
 
 interface ConfigType {
   fontSize: number;
+  taskbarHeight: number;
   defaultColors: {
     taskbar: hs.ColorType;
     icons: hs.ColorType;
@@ -17,6 +18,7 @@ interface ConfigType {
 
 const config:ConfigType = {
   fontSize: 13,
+  taskbarHeight: 45,
   defaultColors: {
     taskbar: { red: 220/255, green: 220/255, blue: 220/255 },
     icons:   { red: 132/255, green: 132/255, blue: 130/255 },
@@ -183,6 +185,7 @@ function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
 
       const newTaskbar = new Taskbar({
         fontSize: config.fontSize,
+        height: config.taskbarHeight,
         screenInfo: screen,
         backgroundColor: config.defaultColors.taskbar,
         onToggleButtonClick: onToggleButtonClick,

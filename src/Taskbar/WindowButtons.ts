@@ -66,14 +66,21 @@ export default class WindowButtons {
   }
 
   _addWindowsElements(windows: Array<WindowInfoType>): void {
+    const VERTICAL_PADDING = 4;
+    const HORIZONTAL_PADDING = 4;
+    const buttonHeight = this._height - 2 * VERTICAL_PADDING;
+
     this._orderWindowsConsistently(windows);
 
     const buttonWidth = this._getButtonWidth(windows.length);
 
-    let x = 0;
+    let x = HORIZONTAL_PADDING;
+
     windows.forEach((window) => {
-      this._canvas.appendElements(this._getWindowButtonElements(x, buttonWidth, window));
-      x += buttonWidth;
+      this._canvas.appendElements(
+        this._getWindowButtonElements(x, VERTICAL_PADDING, buttonWidth, buttonHeight, window)
+      );
+      x += buttonWidth + HORIZONTAL_PADDING;
     });
   }
 
@@ -86,31 +93,27 @@ export default class WindowButtons {
     return buttonWidth;
   }
 
-  _getWindowButtonElements(x: number, widthIncludingPadding: number, window: WindowInfoType): Array<hs.CanvasElementType> {
+  _getWindowButtonElements(
+    x: number,
+    y: number,
+    buttonWidth: number,
+    buttonHeight: number,
+    window: WindowInfoType
+  ): Array<hs.CanvasElementType> {
     const MINIMIZED_BACKGROUND_COLOR = { red: 190/255, green: 190/255, blue: 190/255 };
-
-    const BUTTON_PADDING_EACH_SIDE = 3;
-    const BUTTON_PADDING_TOP_AND_BOTTOM = 4;
 
     const APP_ICON_PADDING_LEFT = 2;
 
     const TEXT_PADDING_LEFT = 0;
     const TEXT_PADDING_RIGHT = 3;
 
-    const buttonWidth = widthIncludingPadding - 2 * BUTTON_PADDING_EACH_SIDE;
-    const buttonLeftX = x + BUTTON_PADDING_EACH_SIDE;
-    const buttonTopY = BUTTON_PADDING_TOP_AND_BOTTOM;
-    const buttonHeight = this._height - 2 * BUTTON_PADDING_TOP_AND_BOTTOM;
-
     const appIconWidth = buttonHeight;
     const appIconHeight = appIconWidth;
-    const appIcon = hs.image.imageFromAppBundle(window.bundleId);
-    const appIconX = buttonLeftX + APP_ICON_PADDING_LEFT;
-    const appIconY = buttonTopY;
-    const appIconAlpha = window.isMinimized ? 0.6 : 1;
+    const appIconX = x + APP_ICON_PADDING_LEFT;
+    const appIconY = y;
 
     const textX = appIconX + appIconWidth + TEXT_PADDING_LEFT;
-    const textY = buttonTopY;
+    const textY = y;
     const maxTextWidth = (
       buttonWidth -
       APP_ICON_PADDING_LEFT -
@@ -118,6 +121,9 @@ export default class WindowButtons {
       TEXT_PADDING_LEFT -
       TEXT_PADDING_RIGHT
     );
+
+    const appIcon = hs.image.imageFromAppBundle(window.bundleId);
+    const appIconAlpha = window.isMinimized ? 0.6 : 1;
 
     const clickId = window.id;
 
@@ -127,8 +133,8 @@ export default class WindowButtons {
         type: 'rectangle',
         fillColor: window.isMinimized ? MINIMIZED_BACKGROUND_COLOR : WHITE,
         frame: {
-          x: buttonLeftX,
-          y: buttonTopY,
+          x: x,
+          y: y,
           w: buttonWidth,
           h: buttonHeight,
         },
