@@ -1,26 +1,12 @@
 import { BLACK, WHITE } from 'src/constants';
+import { MenuAppType } from 'src/Taskbar';
 
 interface ConstructorType {
   bottomLeftX: number;
   bottomLeftY: number;
   fontSize: number;
+  appList: Array<MenuAppType>;
 }
-
-interface AppType {
-  bundleId: any;
-  displayName: string;
-}
-
-const apps: Array<AppType> = [
-  {
-    bundleId: 'org.mozilla.firefox',
-    displayName: 'Firefox',
-  },
-  {
-    bundleId: 'com.googlecode.iterm2',
-    displayName: 'iTerm',
-  },
-]
 
 const MENU_WIDTH = 120;
 const HEIGHT_PER_APP = 30;
@@ -29,10 +15,13 @@ const VERTICAL_ROW_PADDING = 4;
 export default class AppMenu {
   _canvas: hs.CanvasType;
   _iAmVisible: boolean;
+  _appList: Array<MenuAppType>;
 
-  constructor({bottomLeftX, bottomLeftY, fontSize}: ConstructorType) {
+  constructor({bottomLeftX, bottomLeftY, fontSize, appList}: ConstructorType) {
+    this._appList = appList;
+
     const height =
-      apps.length * (HEIGHT_PER_APP + VERTICAL_ROW_PADDING) -
+      appList.length * (HEIGHT_PER_APP + VERTICAL_ROW_PADDING) -
       VERTICAL_ROW_PADDING;
 
     this._canvas = hs.canvas.new({
@@ -53,7 +42,7 @@ export default class AppMenu {
       }
     });
 
-    this._addApps(fontSize);
+    this._addApps(fontSize, appList);
     this._canvas.mouseCallback(
       (
         canvas: hs.CanvasType,
@@ -83,14 +72,14 @@ export default class AppMenu {
     this._iAmVisible = true;
   }
 
-  _addApps(fontSize: number) {
+  _addApps(fontSize: number, appList: Array<MenuAppType>) {
     const VERTICAL_PADDING = 4;
     const HORIZONTAL_PADDING = 4;
     const height = HEIGHT_PER_APP - VERTICAL_PADDING;
 
     let y = VERTICAL_PADDING;
 
-    apps.forEach((app, index) => {
+    appList.forEach((app, index) => {
       this._canvas.appendElements(
         this._getOneAppElements(
           HORIZONTAL_PADDING,
@@ -112,7 +101,7 @@ export default class AppMenu {
     height: number,
     width: number,
     fontSize: number,
-    app: AppType,
+    app: MenuAppType,
     appId: number,
   ): Array<hs.CanvasElementType> {
     const APP_ICON_PADDING_LEFT = 2;
@@ -181,7 +170,7 @@ export default class AppMenu {
 
   _onAppClick(_canvas: hs.CanvasType, _message: string, id: number | string) {
     const idAsNumber = (typeof id === 'number') ? id : parseInt(id);
-    hs.application.launchOrFocusByBundleID(apps[idAsNumber].bundleId);
+    hs.application.launchOrFocusByBundleID(this._appList[idAsNumber].bundleId);
     this._hide();
   }
 }

@@ -3,6 +3,7 @@ import AppMenu from 'src/AppMenu';
 import AppMenuButton from './AppMenuButton';
 import ToggleButton  from './ToggleButton';
 import WindowButtons from './WindowButtons';
+import { MenuAppType } from './index';
 
 interface ConstructorType {
   fontSize: number;
@@ -12,6 +13,17 @@ interface ConstructorType {
   onToggleButtonClick: (this: void) => void;
   onWindowButtonClick: (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
 }
+
+const appList: Array<MenuAppType> = [
+  {
+    bundleId: 'org.mozilla.firefox',
+    displayName: 'Firefox',
+  },
+  {
+    bundleId: 'com.googlecode.iterm2',
+    displayName: 'iTerm',
+  },
+]
 
 const TOGGLE_BUTTON_WIDTH = 20;
 const APP_MENU_BUTTON_WIDTH = 40;
@@ -99,6 +111,7 @@ export default class Taskbar {
         bottomLeftX: this._topLeftX,
         bottomLeftY: this._topLeftY - 1,
         fontSize: this._fontSize,
+        appList: appList,
       });
     } else {
       this._appMenu.toggleVisibility();
