@@ -53,7 +53,7 @@ export default class Taskbar {
     this._appMenuButton = new AppMenuButton({
       topLeftX: appMenuButtonX,
       topLeftY: topLeftY,
-      widthIncludingPadding: APP_MENU_BUTTON_WIDTH,
+      width: APP_MENU_BUTTON_WIDTH,
       height: height,
       onClick: () => this._onAppMenuButtonClick(),
     });

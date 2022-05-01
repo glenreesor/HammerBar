@@ -1,7 +1,7 @@
 interface ConstructorType {
   topLeftX: number;
   topLeftY: number;
-  widthIncludingPadding: number;
+  width: number;
   height: number;
   onClick: (this: void) => void;
 }
@@ -15,19 +15,19 @@ export default class AppMenuButton {
   constructor({
     topLeftX,
     topLeftY,
-    widthIncludingPadding,
+    width,
     height,
     onClick,
   }: ConstructorType) {
     this._canvas = hs.canvas.new({
       x: topLeftX,
       y: topLeftY,
-      w: widthIncludingPadding,
+      w: width,
       h: height,
     });
 
     const image = hs.image.imageFromAppBundle('com.apple.launchpad.launcher');
-    const imageWidth = widthIncludingPadding - 2 * IMAGE_PADDING;
+    const imageWidth = width - 2 * IMAGE_PADDING;
 
     this._canvas.appendElements(
       [
@@ -37,7 +37,7 @@ export default class AppMenuButton {
           frame: {
             x: 0,
             y: 0,
-            w: widthIncludingPadding,
+            w: width,
             h: height,
           },
           trackMouseUp: true,
