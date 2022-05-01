@@ -1,4 +1,5 @@
 import { ScreenInfoType, WindowInfoType } from 'src/hammerspoonUtils';
+import AppMenu from 'src/AppMenu';
 import AppMenuButton from './AppMenuButton';
 import ToggleButton  from './ToggleButton';
 import WindowButtons from './WindowButtons';
@@ -16,10 +17,15 @@ const TOGGLE_BUTTON_WIDTH = 20;
 const APP_MENU_BUTTON_WIDTH = 40;
 
 export default class Taskbar {
+  _appMenu: AppMenu | undefined;
   _leftToggleButton: ToggleButton;
   _rightToggleButton: ToggleButton;
   _windowButtons: WindowButtons;
   _appMenuButton: AppMenuButton;
+
+  _topLeftX: number;
+  _topLeftY: number;
+  _fontSize: number;
 
   constructor({
     fontSize,
@@ -29,10 +35,11 @@ export default class Taskbar {
     onToggleButtonClick,
     onWindowButtonClick
   }: ConstructorType) {
-    const canvasHeight = fontSize * 2 + 18;
+    this._topLeftX = screenInfo.x;
+    this._topLeftY = screenInfo.y + screenInfo.height - height;
+    this._fontSize = fontSize;
 
-    const topLeftY = screenInfo.y + screenInfo.height - canvasHeight;
-    const leftToggleButtonX = screenInfo.x;
+    const leftToggleButtonX = this._topLeftX;
     const appMenuButtonX = leftToggleButtonX + TOGGLE_BUTTON_WIDTH;
     const windowButtonsX = appMenuButtonX + APP_MENU_BUTTON_WIDTH;
     const windowButtonsWidth = screenInfo.width - (
@@ -46,13 +53,13 @@ export default class Taskbar {
       width: TOGGLE_BUTTON_WIDTH,
       height: height,
       topLeftX: leftToggleButtonX,
-      topLeftY: topLeftY,
+      topLeftY: this._topLeftY,
       onClick: onToggleButtonClick,
     });
 
     this._appMenuButton = new AppMenuButton({
       topLeftX: appMenuButtonX,
-      topLeftY: topLeftY,
+      topLeftY: this._topLeftY,
       width: APP_MENU_BUTTON_WIDTH,
       height: height,
       onClick: () => this._onAppMenuButtonClick(),
@@ -60,7 +67,7 @@ export default class Taskbar {
 
     this._windowButtons = new WindowButtons({
       topLeftX: windowButtonsX,
-      topLeftY: topLeftY,
+      topLeftY: this._topLeftY,
       width: windowButtonsWidth,
       height: height,
       backgroundColor: backgroundColor,
@@ -74,7 +81,7 @@ export default class Taskbar {
       width: TOGGLE_BUTTON_WIDTH,
       height: height,
       topLeftX: screenInfo.x + screenInfo.width - TOGGLE_BUTTON_WIDTH,
-      topLeftY: screenInfo.y + screenInfo.height - canvasHeight,
+      topLeftY: screenInfo.y + screenInfo.height - height,
       onClick: onToggleButtonClick,
     });
   }
@@ -87,6 +94,14 @@ export default class Taskbar {
   }
 
   _onAppMenuButtonClick() {
-    hs.application.launchOrFocusByBundleID('com.apple.launchpad.launcher');
+    if (!this._appMenu) {
+      this._appMenu = new AppMenu({
+        bottomLeftX: this._topLeftX,
+        bottomLeftY: this._topLeftY - 1,
+        fontSize: this._fontSize,
+      });
+    } else {
+      this._appMenu.toggleVisibility();
+    }
   }
 }
