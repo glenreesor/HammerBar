@@ -9,8 +9,11 @@ interface ConstructorType {
 }
 
 const MENU_WIDTH = 120;
+
 const HEIGHT_PER_APP = 30;
-const VERTICAL_ROW_PADDING = 4;
+const VERTICAL_PADDING_TOP = 4;
+const VERTICAL_PADDING_BOTTOM = 4;
+const VERTICAL_PADDING_BETWEEN_APPS = 4;
 
 export default class AppMenu {
   _canvas: hs.CanvasType;
@@ -20,9 +23,10 @@ export default class AppMenu {
   constructor({bottomLeftX, bottomLeftY, fontSize, appList}: ConstructorType) {
     this._appList = appList;
 
-    const height =
-      appList.length * (HEIGHT_PER_APP + VERTICAL_ROW_PADDING) -
-      VERTICAL_ROW_PADDING;
+    const height = appList.length * HEIGHT_PER_APP +
+      VERTICAL_PADDING_TOP +
+      (appList.length - 1) * VERTICAL_PADDING_BETWEEN_APPS +
+      VERTICAL_PADDING_BOTTOM;
 
     this._canvas = hs.canvas.new({
       x: bottomLeftX,
@@ -73,25 +77,22 @@ export default class AppMenu {
   }
 
   _addApps(fontSize: number, appList: Array<MenuAppType>) {
-    const VERTICAL_PADDING = 4;
     const HORIZONTAL_PADDING = 4;
-    const height = HEIGHT_PER_APP - VERTICAL_PADDING;
-
-    let y = VERTICAL_PADDING;
+    let y = VERTICAL_PADDING_TOP;
 
     appList.forEach((app, index) => {
       this._canvas.appendElements(
         this._getOneAppElements(
           HORIZONTAL_PADDING,
           y,
-          height,
+          HEIGHT_PER_APP,
           MENU_WIDTH - 2 * HORIZONTAL_PADDING,
           fontSize,
           app,
           index
         )
       );
-      y += HEIGHT_PER_APP;
+      y += HEIGHT_PER_APP + VERTICAL_PADDING_BETWEEN_APPS;
     });
   }
 
