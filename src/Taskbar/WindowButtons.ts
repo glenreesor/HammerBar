@@ -14,6 +14,9 @@ interface ConstructorType {
 const MAX_BUTTON_WIDTH = 130;
 
 export default class WindowButtons {
+  _HORIZONTAL_PADDING = 4;
+  _VERTICAL_PADDING = 4;
+
   _canvas: hs.CanvasType;
   _width: number;
   _height: number;
@@ -66,26 +69,31 @@ export default class WindowButtons {
   }
 
   _addWindowsElements(windows: Array<WindowInfoType>): void {
-    const VERTICAL_PADDING = 4;
-    const HORIZONTAL_PADDING = 4;
-    const buttonHeight = this._height - 2 * VERTICAL_PADDING;
+    const buttonHeight = this._height - 2 * this._VERTICAL_PADDING;
 
     this._orderWindowsConsistently(windows);
 
     const buttonWidth = this._getButtonWidth(windows.length);
 
-    let x = HORIZONTAL_PADDING;
+    let x = this._HORIZONTAL_PADDING;
 
     windows.forEach((window) => {
       this._canvas.appendElements(
-        this._getWindowButtonElements(x, VERTICAL_PADDING, buttonWidth, buttonHeight, window)
+        this._getWindowButtonElements(x, this._VERTICAL_PADDING, buttonWidth, buttonHeight, window)
       );
-      x += buttonWidth + HORIZONTAL_PADDING;
+      x += buttonWidth + this._HORIZONTAL_PADDING;
     });
   }
 
   _getButtonWidth(numberOfButtons: number): number {
-    const widthToFillTaskbar = this._width / numberOfButtons;
+    // Think of this as:
+    //  - we need to account for the padding before each button
+    //    (numberOfButtons * this._HORIZONTAL_PADDING)
+    //  - and we need to account for the padding after the last button
+    //    ( - this._HORIZONTAL_PADDING)
+    const widthToFillTaskbar = (
+      this._width - numberOfButtons * this._HORIZONTAL_PADDING - this._HORIZONTAL_PADDING
+    ) / numberOfButtons;
 
     // Now adjust because we don't want gigantic buttons
     const buttonWidth = Math.min(MAX_BUTTON_WIDTH, widthToFillTaskbar);
