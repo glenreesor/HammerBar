@@ -171,7 +171,12 @@ export default class AppMenu {
 
   _onAppClick(_canvas: hs.CanvasType, _message: string, id: number | string) {
     const idAsNumber = (typeof id === 'number') ? id : parseInt(id);
+    const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();
+
     hs.application.launchOrFocusByBundleID(this._appList[idAsNumber].bundleId);
-    this._hide();
+
+    if (!keyboardModifiers.cmd && !keyboardModifiers.ctrl) {
+      this._hide();
+    }
   }
 }
