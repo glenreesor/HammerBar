@@ -1,5 +1,3 @@
-declare function print(this: void, text: string | number): void
-
 declare namespace hs {
   interface CanvasElementType {
     type: string;
