@@ -1,4 +1,4 @@
-import { LauncherConfigType } from './types';
+import { AppMenuEntryConfigType, LauncherConfigType } from './types';
 import {
   ScreenInfoType,
   WindowInfoType,
@@ -19,17 +19,7 @@ const config:ConfigType = {
   fontSize: 13,
   taskbarHeight: 45,
   taskbarColor: { red: 220/255, green: 220/255, blue: 220/255 },
-  launchers: [
-    {
-      type: 'appMenu',
-      apps: [
-        { bundleId: 'org.mozilla.firefox', displayName: 'Firefox' },
-        { bundleId: 'com.googlecode.iterm2', displayName: 'iTerm' },
-      ],
-    },
-    { type: 'app', bundleId: 'org.mozilla.firefox' },
-    { type: 'app', bundleId: 'com.googlecode.iterm2' },
-  ],
+  launchers: [],
 };
 
 interface StateType {
@@ -175,7 +165,7 @@ function updateAllTaskbars() {
     );
     const taskbar = state.taskbarsByScreenId.get(screen.id);
     if (!taskbar) {
-      print(`Hammerbar: No taskbar for screen ${screen.id}`);
+      print(`HammerBar: No taskbar for screen ${screen.id}`);
     } else {
       taskbar.update(state.taskbarsAreVisible, windowsThisScreen);
     }
@@ -245,14 +235,102 @@ function windowFilterCallback(this: void, hsWindow: hs.WindowType) {
   );
 }
 
+function validateAppLauncherConfig(bundleId: any): true | string[] {
+  if (typeof bundleId === 'string') return true;
+
+  return [
+    'You need to specify a bundleId (a string) but this was received instead:',
+    hs.inspect.inspect(bundleId),
+  ];
+}
+
+function validateAppMenuConfig(menuConfig: any): true | string[] {
+  const errors: string[] = [];
+
+  if (typeof(menuConfig) !== 'object') {
+    errors.push('You need to specify a table, but this was received instead:');
+    errors.push(hs.inspect.inspect(menuConfig));
+  }
+
+  if (errors.length === 0 && (menuConfig as AppMenuEntryConfigType[]).length === 0) {
+    errors.push('You need to specify a list of menu items, but this was received instead:');
+    errors.push(hs.inspect.inspect(menuConfig));
+  }
+
+  if (errors.length === 0) {
+    (menuConfig as AppMenuEntryConfigType[]).forEach((menuItem, index) => {
+      // Remember that lua users are expecting array indexes to start at 1
+      const errorIndex = index + 1;
+
+      if (!menuItem.bundleId || typeof menuItem.bundleId !== 'string') {
+        errors.push(`Menu item ${errorIndex} is missing a bundleId string. This was received instead:`);
+        errors.push(hs.inspect.inspect(menuItem));
+      }
+
+      if (!menuItem.displayName || typeof menuItem.displayName !== 'string') {
+        errors.push(`Menu item ${errorIndex} is missing a displayName string. This was received instead:`);
+        errors.push(hs.inspect.inspect(menuItem));
+      }
+    });
+  }
+
+  if (errors.length === 0) return true;
+
+  return errors.concat([
+    '',
+    'A valid menu looks like this:',
+    '{',
+    '    {',
+    '        bundleId = "org.mozilla.firefox",',
+    '        displayName = "Firefox",',
+    '    }',
+    '    {',
+    '        bundleId = "com.googlecode.iterm2",',
+    '        displayName = "Chrome",',
+    '    }',
+    '}',
+    '',
+    'If you\'re not sure of the bundleId, start the application then shift-click',
+    'on the icon in the taskbar. The bundleId (and other information) will be',
+    'printed to the Hammerspoon console',
+  ]);
+}
+
 //------------------------------------------------------------------------------
 // Public Interface
 //------------------------------------------------------------------------------
 
-export function addAppMenu() {
+export function addAppMenu(menuConfig: any) {
+  const validation = validateAppMenuConfig(menuConfig);
+
+  if (validation === true) {
+    config.launchers.push({ type: 'appMenu', apps: menuConfig });
+  } else {
+    print();
+    print('------- HammerBar error :-(');
+    print('Error encountered with addAppMenu()');
+    validation.forEach((msg) => {
+      print(msg);
+    });
+    print();
+  }
+
 }
 
-export function addAppLauncher() {
+export function addAppLauncher(bundleId: any) {
+  const validation = validateAppLauncherConfig(bundleId);
+
+  if (validation === true) {
+    config.launchers.push({ type: 'app', bundleId: bundleId });
+  } else {
+    print();
+    print('------- HammerBar error :-(');
+    print('Error encountered with addAppLauncher()');
+    validation.forEach((msg) => {
+      print(msg);
+    });
+    print();
+  }
 }
 
 export function addLaunchpadLauncher() {

@@ -1,6 +1,6 @@
 type BundleIdType = string;
 
-interface AppMenuEntryConfigType {
+export interface AppMenuEntryConfigType {
   bundleId: BundleIdType;
   displayName: string;
 }
