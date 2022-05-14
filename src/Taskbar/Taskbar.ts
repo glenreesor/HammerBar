@@ -1,8 +1,8 @@
 import { ScreenInfoType, WindowInfoType } from 'src/hammerspoonUtils';
 import AppMenu from 'src/AppMenu';
-import AppMenuButton from './AppMenuButton';
-import ToggleButton  from './ToggleButton';
-import WindowButtons from './WindowButtons';
+import AppMenuButton from './components/AppMenuButton';
+import ToggleButton  from './components/ToggleButton';
+import WindowButtons from './components/WindowButtons';
 import { MenuAppType } from './index';
 
 interface ConstructorType {
