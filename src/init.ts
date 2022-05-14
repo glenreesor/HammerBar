@@ -1,3 +1,4 @@
+import { LauncherConfigType } from './types';
 import {
   ScreenInfoType,
   WindowInfoType,
@@ -11,12 +12,24 @@ interface ConfigType {
   fontSize: number;
   taskbarHeight: number;
   taskbarColor: hs.ColorType;
+  launchers: LauncherConfigType[];
 }
 
 const config:ConfigType = {
   fontSize: 13,
   taskbarHeight: 45,
   taskbarColor: { red: 220/255, green: 220/255, blue: 220/255 },
+  launchers: [
+    {
+      type: 'appMenu',
+      apps: [
+        { bundleId: 'org.mozilla.firefox', displayName: 'Firefox' },
+        { bundleId: 'com.googlecode.iterm2', displayName: 'iTerm' },
+      ],
+    },
+    { type: 'app', bundleId: 'org.mozilla.firefox' },
+    { type: 'app', bundleId: 'com.googlecode.iterm2' },
+  ],
 };
 
 interface StateType {
@@ -182,6 +195,7 @@ function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
         height: config.taskbarHeight,
         screenInfo: screen,
         backgroundColor: config.taskbarColor,
+        launchers: config.launchers,
         onToggleButtonClick: onToggleButtonClick,
         onWindowButtonClick: onTaskbarWindowButtonClick,
       });
@@ -234,6 +248,12 @@ function windowFilterCallback(this: void, hsWindow: hs.WindowType) {
 //------------------------------------------------------------------------------
 // Public Interface
 //------------------------------------------------------------------------------
+
+export function addAppMenu() {
+}
+
+export function addAppLauncher() {
+}
 
 // Use this function to allow *all* windows reported by HammerSpoon in the
 // taskbar. This will be useful if a window isn't showing up normally. So with

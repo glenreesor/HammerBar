@@ -1,122 +1,91 @@
+import { LauncherConfigType } from 'src/types';
 import { ScreenInfoType, WindowInfoType } from 'src/hammerspoonUtils';
-import AppMenu from 'src/AppMenu';
-import AppMenuButton from './components/LauncherButton';
+import LauncherButton from './components/LauncherButton';
 import ToggleButton  from './components/ToggleButton';
 import WindowButtons from './components/WindowButtons';
-import { MenuAppType } from './index';
 
 interface ConstructorType {
   fontSize: number;
   height: number;
   screenInfo: ScreenInfoType;
   backgroundColor: hs.ColorType;
+  launchers: LauncherConfigType[];
   onToggleButtonClick: (this: void) => void;
-  onWindowButtonClick: (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
+  onWindowButtonClick:
+    (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
 }
 
-const appList1: Array<MenuAppType> = [
-  {
-    bundleId: 'org.mozilla.firefox',
-    displayName: 'Firefox',
-  },
-  {
-    bundleId: 'com.googlecode.iterm2',
-    displayName: 'iTerm',
-  },
-]
-
-const appList2: Array<MenuAppType> = [
-  {
-    bundleId: 'org.libreoffice.script',
-    displayName: 'Firefox',
-  },
-  {
-    bundleId: 'com.googlecode.iterm2',
-    displayName: 'iTerm',
-  },
-]
-
 const TOGGLE_BUTTON_WIDTH = 20;
-const APP_MENU_BUTTON_WIDTH = 40;
+const LAUNCHER_BUTTON_WIDTH = 40;
 
 export default class Taskbar {
-  _appMenu1: AppMenu | undefined;
-  _appMenu2: AppMenu | undefined;
+  _launcherButtons: LauncherButton[];
   _leftToggleButton: ToggleButton;
   _rightToggleButton: ToggleButton;
   _windowButtons: WindowButtons;
-  _appMenuButton1: AppMenuButton;
-  _appMenuButton2: AppMenuButton;
-
-  _topLeftX: number;
-  _topLeftY: number;
-  _fontSize: number;
 
   constructor({
     fontSize,
     height,
     screenInfo,
     backgroundColor,
+    launchers,
     onToggleButtonClick,
     onWindowButtonClick
   }: ConstructorType) {
-    this._topLeftX = screenInfo.x;
-    this._topLeftY = screenInfo.y + screenInfo.height - height;
-    this._fontSize = fontSize;
+    this._launcherButtons = [];
 
-    const leftToggleButtonX = this._topLeftX;
-    const appMenuButton1X = leftToggleButtonX + TOGGLE_BUTTON_WIDTH;
-    const appMenuButton2X = appMenuButton1X + APP_MENU_BUTTON_WIDTH;
-    const windowButtonsX = appMenuButton2X + APP_MENU_BUTTON_WIDTH;
-
-    const windowButtonsWidth = screenInfo.width - (
-      2 * TOGGLE_BUTTON_WIDTH +
-      2 * APP_MENU_BUTTON_WIDTH
-    );
+    // Create objects that live in the taskbar, left to right
+    const y = screenInfo.y + screenInfo.height - height;
+    let x = screenInfo.x;
 
     this._leftToggleButton = new ToggleButton({
       fontSize: fontSize,
       screenSide: 'left',
       width: TOGGLE_BUTTON_WIDTH,
       height: height,
-      topLeftX: leftToggleButtonX,
-      topLeftY: this._topLeftY,
+      topLeftX: x,
+      topLeftY: y,
       onClick: onToggleButtonClick,
     });
+    x += TOGGLE_BUTTON_WIDTH;
 
-    this._appMenuButton1 = new AppMenuButton({
-      topLeftX: appMenuButton1X,
-      topLeftY: this._topLeftY,
-      width: APP_MENU_BUTTON_WIDTH,
-      height: height,
-      onClick: () => this._onAppMenuButton1Click(),
+    launchers.forEach((launcher, index) => {
+      this._launcherButtons.push(
+        new LauncherButton({
+          topLeftX: x,
+          topLeftY: y,
+          width: LAUNCHER_BUTTON_WIDTH,
+          height: height,
+          onClick: () => print(`launcher ${index} click`),
+        })
+      );
+      x += LAUNCHER_BUTTON_WIDTH;
     });
 
-    this._appMenuButton2 = new AppMenuButton({
-      topLeftX: appMenuButton2X,
-      topLeftY: this._topLeftY,
-      width: APP_MENU_BUTTON_WIDTH,
-      height: height,
-      onClick: () => this._onAppMenuButton2Click(),
-    });
+    const windowButtonsWidth = screenInfo.width - (
+      2 * TOGGLE_BUTTON_WIDTH +
+      launchers.length * LAUNCHER_BUTTON_WIDTH
+    );
 
     this._windowButtons = new WindowButtons({
-      topLeftX: windowButtonsX,
-      topLeftY: this._topLeftY,
+      topLeftX: x,
+      topLeftY: y,
       width: windowButtonsWidth,
       height: height,
       backgroundColor: backgroundColor,
       fontSize: fontSize,
       onWindowButtonClick: onWindowButtonClick,
     });
+    x += windowButtonsWidth;
 
     this._rightToggleButton = new ToggleButton({
       fontSize: fontSize,
       screenSide: 'right',
       width: TOGGLE_BUTTON_WIDTH,
       height: height,
-      topLeftX: screenInfo.x + screenInfo.width - TOGGLE_BUTTON_WIDTH,
-      topLeftY: screenInfo.y + screenInfo.height - height,
+      topLeftX: x,
+      topLeftY: y,
       onClick: onToggleButtonClick,
     });
   }
@@ -125,33 +94,9 @@ export default class Taskbar {
     this._leftToggleButton.update(taskbarIsVisible);
     this._rightToggleButton.update(taskbarIsVisible);
     this._windowButtons.update(taskbarIsVisible, windows);
-    this._appMenuButton1.update(taskbarIsVisible);
-    this._appMenuButton2.update(taskbarIsVisible);
-  }
 
-  _onAppMenuButton1Click() {
-    if (!this._appMenu1) {
-      this._appMenu1 = new AppMenu({
-        bottomLeftX: this._topLeftX + TOGGLE_BUTTON_WIDTH,
-        bottomLeftY: this._topLeftY - 1,
-        fontSize: this._fontSize,
-        appList: appList1,
-      });
-    } else {
-      this._appMenu1.toggleVisibility();
-    }
-  }
-
-  _onAppMenuButton2Click() {
-    if (!this._appMenu2) {
-      this._appMenu2 = new AppMenu({
-        bottomLeftX: this._topLeftX + TOGGLE_BUTTON_WIDTH + APP_MENU_BUTTON_WIDTH,
-        bottomLeftY: this._topLeftY - 1,
-        fontSize: this._fontSize,
-        appList: appList2,
-      });
-    } else {
-      this._appMenu2.toggleVisibility();
-    }
+    this._launcherButtons.forEach((launcherButton) => {
+      launcherButton.update(taskbarIsVisible);
+    });
   }
 }
