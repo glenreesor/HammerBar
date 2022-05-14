@@ -57,6 +57,7 @@ export default class Taskbar {
           topLeftY: y,
           width: LAUNCHER_BUTTON_WIDTH,
           height: height,
+          fontSize: fontSize,
           launcherDetails: launcher,
         })
       );

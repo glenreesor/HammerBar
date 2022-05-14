@@ -1,10 +1,12 @@
 import { LauncherConfigType } from 'src/types';
+import AppMenu from 'src/AppMenu';
 
 interface ConstructorType {
   topLeftX: number;
   topLeftY: number;
   width: number;
   height: number;
+  fontSize: number;
   launcherDetails: LauncherConfigType;
 }
 
@@ -12,17 +14,26 @@ const BACKGROUND_COLOR = { red: 100/255, green: 100/255, blue: 100/255 };
 const IMAGE_PADDING = 2;
 
 export default class LauncherButton {
+  _appMenu: AppMenu | undefined;
   _canvas: hs.CanvasType;
+  _fontSize: number;
   _launcherConfig: LauncherConfigType;
+  _topLeftX: number;
+  _topLeftY: number;
 
   constructor({
     topLeftX,
     topLeftY,
     width,
     height,
+    fontSize,
     launcherDetails,
   }: ConstructorType) {
+    this._fontSize = fontSize;
     this._launcherConfig = launcherDetails;
+    this._topLeftX = topLeftX;
+    this._topLeftY = topLeftY;
+
     this._canvas = hs.canvas.new({
       x: topLeftX,
       y: topLeftY,
@@ -80,7 +91,16 @@ export default class LauncherButton {
     if (this._launcherConfig.type === 'app') {
       hs.application.launchOrFocusByBundleID(this._launcherConfig.bundleId);
     } else {
-      print('clicked a menu');
+      if (!this._appMenu) {
+        this._appMenu = new AppMenu({
+          bottomLeftX: this._topLeftX,
+          bottomLeftY: this._topLeftY - 1,
+          fontSize: this._fontSize,
+          appList: this._launcherConfig.apps,
+        });
+      } else {
+        this._appMenu.toggleVisibility();
+      }
     }
   }
 }
