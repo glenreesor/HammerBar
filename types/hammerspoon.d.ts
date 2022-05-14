@@ -128,6 +128,10 @@ declare namespace hs {
     function imageFromPath(this: void, path: string): Object;
   }
 
+  namespace inspect {
+    function inspect(this: void, thing: any): string;
+  }
+
   namespace screen {
     function allScreens(this: void): Array<ScreenType>;
   }
