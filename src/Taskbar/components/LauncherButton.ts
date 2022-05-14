@@ -41,11 +41,11 @@ export default class LauncherButton {
       h: height,
     });
 
-    const image = hs.image.imageFromAppBundle(
-      launcherDetails.type === 'app'
-        ? launcherDetails.bundleId
-        : 'com.apple.launchpad.launcher'
-    );
+    const image = launcherDetails.type === 'app'
+      ? hs.image.imageFromAppBundle(launcherDetails.bundleId)
+      : hs.image.imageFromPath(
+        os.getenv('HOME') + '/.hammerspoon/Spoons/HammerBar.spoon/appMenuButton.png'
+      );
 
     const imageWidth = width - 2 * IMAGE_PADDING;
 

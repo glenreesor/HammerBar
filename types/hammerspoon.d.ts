@@ -125,6 +125,7 @@ declare namespace hs {
 
   namespace image {
     function imageFromAppBundle(this: void, bundleID: string): Object;
+    function imageFromPath(this: void, path: string): Object;
   }
 
   namespace screen {
