@@ -255,6 +255,10 @@ export function addAppMenu() {
 export function addAppLauncher() {
 }
 
+export function addLaunchpadLauncher() {
+  config.launchers.push({ type: 'app', bundleId: 'com.apple.launchpad.launcher' });
+}
+
 // Use this function to allow *all* windows reported by HammerSpoon in the
 // taskbar. This will be useful if a window isn't showing up normally. So with
 // this enabled, user can shift-click on the window button in question and get
