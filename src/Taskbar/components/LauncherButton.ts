@@ -1,9 +1,11 @@
+import { LauncherConfigType } from 'src/types';
+
 interface ConstructorType {
   topLeftX: number;
   topLeftY: number;
   width: number;
   height: number;
-  onClick: (this: void) => void;
+  launcherDetails: LauncherConfigType;
 }
 
 const BACKGROUND_COLOR = { red: 100/255, green: 100/255, blue: 100/255 };
@@ -11,14 +13,16 @@ const IMAGE_PADDING = 2;
 
 export default class LauncherButton {
   _canvas: hs.CanvasType;
+  _launcherConfig: LauncherConfigType;
 
   constructor({
     topLeftX,
     topLeftY,
     width,
     height,
-    onClick,
+    launcherDetails,
   }: ConstructorType) {
+    this._launcherConfig = launcherDetails;
     this._canvas = hs.canvas.new({
       x: topLeftX,
       y: topLeftY,
@@ -26,7 +30,12 @@ export default class LauncherButton {
       h: height,
     });
 
-    const image = hs.image.imageFromAppBundle('com.apple.launchpad.launcher');
+    const image = hs.image.imageFromAppBundle(
+      launcherDetails.type === 'app'
+        ? launcherDetails.bundleId
+        : 'com.apple.launchpad.launcher'
+    );
+
     const imageWidth = width - 2 * IMAGE_PADDING;
 
     this._canvas.appendElements(
@@ -55,7 +64,7 @@ export default class LauncherButton {
       ]
     );
 
-    this._canvas.mouseCallback(onClick);
+    this._canvas.mouseCallback(() => this._onClick());
     this._canvas.show();
   }
 
@@ -64,6 +73,14 @@ export default class LauncherButton {
       this._canvas.show();
     } else {
       this._canvas.hide();
+    }
+  }
+
+  _onClick() {
+    if (this._launcherConfig.type === 'app') {
+      hs.application.launchOrFocusByBundleID(this._launcherConfig.bundleId);
+    } else {
+      print('clicked a menu');
     }
   }
 }

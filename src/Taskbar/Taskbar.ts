@@ -50,14 +50,14 @@ export default class Taskbar {
     });
     x += TOGGLE_BUTTON_WIDTH;
 
-    launchers.forEach((launcher, index) => {
+    launchers.forEach((launcher) => {
       this._launcherButtons.push(
         new LauncherButton({
           topLeftX: x,
           topLeftY: y,
           width: LAUNCHER_BUTTON_WIDTH,
           height: height,
-          onClick: () => print(`launcher ${index} click`),
+          launcherDetails: launcher,
         })
       );
       x += LAUNCHER_BUTTON_WIDTH;
