@@ -1,6 +1,6 @@
 import { ScreenInfoType, WindowInfoType } from 'src/hammerspoonUtils';
 import AppMenu from 'src/AppMenu';
-import AppMenuButton from './components/AppMenuButton';
+import AppMenuButton from './components/LauncherButton';
 import ToggleButton  from './components/ToggleButton';
 import WindowButtons from './components/WindowButtons';
 import { MenuAppType } from './index';

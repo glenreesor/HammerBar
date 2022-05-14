@@ -9,7 +9,7 @@ interface ConstructorType {
 const BACKGROUND_COLOR = { red: 100/255, green: 100/255, blue: 100/255 };
 const IMAGE_PADDING = 2;
 
-export default class AppMenuButton {
+export default class LauncherButton {
   _canvas: hs.CanvasType;
 
   constructor({
