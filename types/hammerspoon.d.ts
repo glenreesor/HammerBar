@@ -147,7 +147,8 @@ declare namespace hs {
   }
 
   namespace window {
-    function allWindows(this: void ): Array<WindowType>;
+    function allWindows(this: void): Array<WindowType>;
+    function focusedWindow(this: void): WindowType;
     function get(this: void, windowId: number): WindowType | undefined;
     const filter: WindowFilter;
   }
