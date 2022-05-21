@@ -38,6 +38,19 @@ const state:StateType = {
 
 //-----------------------------------------------------------------------------
 
+function verticallyMaximizeCurrentWindow() {
+  const currentWindow = hs.window.focusedWindow();
+  if (currentWindow) {
+    const screenInfo = getScreenInfo(currentWindow.screen());
+    currentWindow.setFrame({
+      x: currentWindow.frame().x,
+      y: screenInfo.y,
+      w: currentWindow.frame().w,
+      h: screenInfo.height - config.taskbarHeight,
+    });
+  }
+}
+
 function onTaskbarWindowButtonClick(
   this: void,
   _canvas: hs.CanvasType,
@@ -353,6 +366,7 @@ export function allowAllWindows() {
 }
 
 export function start() {
+  hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
   state.windowFilter = hs.window.filter.new(windowFilterCallback);
   subscribeWindowFilterToEvents();
   updateAllTaskbars();

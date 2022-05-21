@@ -34,13 +34,15 @@ declare namespace hs {
     blue: number;
   }
 
+  interface FrameType {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  }
+
   interface ScreenType {
-    frame: () => {
-      x: number;
-      y: number;
-      w: number;
-      h: number;
-    };
+    frame: () => FrameType;
     id: () => number;
     name: () => string;
   }
@@ -55,13 +57,15 @@ declare namespace hs {
       bundleID: () => string | null,
     };
     focus: () => void;
+    frame: () => FrameType;
     id: () => number;
     isMinimized: () => boolean;
     isStandard: () => boolean;
     minimize: () => void;
     raise: () => void;
     role: () => string;
-    screen: () => { id: () => number };
+    screen: () => ScreenType;
+    setFrame: ({x, y, w, h}: FrameType) => void;
     title: () => string;
     unminimize: () => void;
   }
@@ -123,6 +127,12 @@ declare namespace hs {
     };
   }
 
+  namespace hotkey {
+    // There are a bazillion overrides that hammerspoon accepts. Just create
+    // the one I need
+    function bind(this: void, mods: string, key: string, pressedFunction: () => void): void;
+  }
+
   namespace image {
     function imageFromAppBundle(this: void, bundleID: string): Object;
     function imageFromPath(this: void, path: string): Object;
@@ -141,7 +151,8 @@ declare namespace hs {
   }
 
   namespace window {
-    function allWindows(this: void ): Array<WindowType>;
+    function allWindows(this: void): Array<WindowType>;
+    function focusedWindow(this: void): WindowType;
     function get(this: void, windowId: number): WindowType | undefined;
     const filter: WindowFilter;
   }
