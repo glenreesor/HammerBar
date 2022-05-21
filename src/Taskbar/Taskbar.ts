@@ -65,6 +65,30 @@ export default class Taskbar {
     }
   }
 
+  updateSizeAndPosition(newScreenInfo: ScreenInfoType) {
+    if (
+      newScreenInfo.x !== this._screenInfo.x ||
+      newScreenInfo.y !== this._screenInfo.y ||
+      newScreenInfo.width !== this._screenInfo.width ||
+      newScreenInfo.height !== this._screenInfo.height
+    ) {
+      print(`Recreating taskbar for screen ${newScreenInfo.id} because size and/or position has changed`);
+
+      // Hide all existing elements
+      this._leftToggleButton?.hide();
+      this._rightToggleButton?.hide();
+      this._launcherButtons.forEach((launcherButton) => {
+        launcherButton.update(false);
+      });
+      this._windowButtons?.update(false, []);
+
+      // Create new elements (thus letting garbage collector deal with old ones)
+      this._screenInfo = newScreenInfo;
+      this._launcherButtons = [];
+      this._createAllElements();
+    }
+  }
+
   _createAllElements() {
     // Create objects that live in the taskbar, left to right
     const y = this._screenInfo.y + this._screenInfo.height - this._height;
