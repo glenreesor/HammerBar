@@ -19,10 +19,19 @@ const TOGGLE_BUTTON_WIDTH = 20;
 const LAUNCHER_BUTTON_WIDTH = 40;
 
 export default class Taskbar {
-  _launcherButtons: LauncherButton[];
-  _leftToggleButton: ToggleButton;
-  _rightToggleButton: ToggleButton;
-  _windowButtons: WindowButtons;
+  _fontSize: number;
+  _height: number;
+  _screenInfo: ScreenInfoType;
+  _backgroundColor: hs.ColorType;
+  _launchersConfig: LauncherConfigType[];
+  _onToggleButtonClick: (this: void) => void;
+  _onWindowButtonClick:
+    (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
+
+  _launcherButtons: LauncherButton[] = [];
+  _leftToggleButton?: ToggleButton;
+  _rightToggleButton?: ToggleButton;
+  _windowButtons?: WindowButtons;
 
   constructor({
     fontSize,
@@ -33,71 +42,85 @@ export default class Taskbar {
     onToggleButtonClick,
     onWindowButtonClick
   }: ConstructorType) {
-    this._launcherButtons = [];
+    this._fontSize = fontSize;
+    this._height = height;
+    this._screenInfo = screenInfo;
+    this._backgroundColor = backgroundColor;
+    this._launchersConfig = launchers;
+    this._onToggleButtonClick = onToggleButtonClick;
+    this._onWindowButtonClick = onWindowButtonClick;
 
-    // Create objects that live in the taskbar, left to right
-    const y = screenInfo.y + screenInfo.height - height;
-    let x = screenInfo.x;
-
-    this._leftToggleButton = new ToggleButton({
-      fontSize: fontSize,
-      screenSide: 'left',
-      width: TOGGLE_BUTTON_WIDTH,
-      height: height,
-      topLeftX: x,
-      topLeftY: y,
-      onClick: onToggleButtonClick,
-    });
-    x += TOGGLE_BUTTON_WIDTH;
-
-    launchers.forEach((launcher) => {
-      this._launcherButtons.push(
-        new LauncherButton({
-          topLeftX: x,
-          topLeftY: y,
-          width: LAUNCHER_BUTTON_WIDTH,
-          height: height,
-          fontSize: fontSize,
-          launcherDetails: launcher,
-        })
-      );
-      x += LAUNCHER_BUTTON_WIDTH;
-    });
-
-    const windowButtonsWidth = screenInfo.width - (
-      2 * TOGGLE_BUTTON_WIDTH +
-      launchers.length * LAUNCHER_BUTTON_WIDTH
-    );
-
-    this._windowButtons = new WindowButtons({
-      topLeftX: x,
-      topLeftY: y,
-      width: windowButtonsWidth,
-      height: height,
-      backgroundColor: backgroundColor,
-      fontSize: fontSize,
-      onWindowButtonClick: onWindowButtonClick,
-    });
-    x += windowButtonsWidth;
-
-    this._rightToggleButton = new ToggleButton({
-      fontSize: fontSize,
-      screenSide: 'right',
-      width: TOGGLE_BUTTON_WIDTH,
-      height: height,
-      topLeftX: x,
-      topLeftY: y,
-      onClick: onToggleButtonClick,
-    });
+    this._createAllElements();
   }
 
   update(taskbarIsVisible: boolean, windows: Array<WindowInfoType>) {
-    this._leftToggleButton.update(taskbarIsVisible);
-    this._rightToggleButton.update(taskbarIsVisible);
-    this._windowButtons.update(taskbarIsVisible, windows);
+    if (this._leftToggleButton && this._rightToggleButton && this._windowButtons) {
+      this._leftToggleButton.update(taskbarIsVisible);
+      this._rightToggleButton.update(taskbarIsVisible);
+      this._windowButtons.update(taskbarIsVisible, windows);
 
-    this._launcherButtons.forEach((launcherButton) => {
-      launcherButton.update(taskbarIsVisible);
+      this._launcherButtons.forEach((launcherButton) => {
+        launcherButton.update(taskbarIsVisible);
+      });
+    }
+  }
+
+  _createAllElements() {
+    // Create objects that live in the taskbar, left to right
+    const y = this._screenInfo.y + this._screenInfo.height - this._height;
+    let x = this._screenInfo.x;
+
+    this._leftToggleButton = this._getNewToggleButton('left', x, y);
+    x += TOGGLE_BUTTON_WIDTH;
+
+    this._launchersConfig.forEach((launcher) => {
+      this._launcherButtons.push(this._getNewLauncherButton(x, y, launcher));
+      x += LAUNCHER_BUTTON_WIDTH;
+    });
+
+    const windowButtonsWidth = this._screenInfo.width - (
+      2 * TOGGLE_BUTTON_WIDTH +
+      this._launchersConfig.length * LAUNCHER_BUTTON_WIDTH
+    );
+
+    this._windowButtons = this._getNewWindowButtons(x, y, windowButtonsWidth);
+    x += windowButtonsWidth;
+
+    this._rightToggleButton = this._getNewToggleButton('right', x, y);
+  }
+
+  _getNewLauncherButton(x: number, y: number, launcher: LauncherConfigType) {
+    return new LauncherButton({
+      topLeftX: x,
+      topLeftY: y,
+      width: LAUNCHER_BUTTON_WIDTH,
+      height: this._height,
+      fontSize: this._fontSize,
+      launcherDetails: launcher,
+    })
+  }
+
+  _getNewToggleButton(screenSide: 'left' | 'right', x: number, y: number) {
+    return new ToggleButton({
+      fontSize: this._fontSize,
+      screenSide: screenSide,
+      width: TOGGLE_BUTTON_WIDTH,
+      height: this._height,
+      topLeftX: x,
+      topLeftY: y,
+      onClick: this._onToggleButtonClick,
+    });
+  }
+
+  _getNewWindowButtons(x: number, y: number, windowButtonsWidth: number) {
+    return new WindowButtons({
+      topLeftX: x,
+      topLeftY: y,
+      width: windowButtonsWidth,
+      height: this._height,
+      backgroundColor: this._backgroundColor,
+      fontSize: this._fontSize,
+      onWindowButtonClick: this._onWindowButtonClick,
     });
   }
 }
