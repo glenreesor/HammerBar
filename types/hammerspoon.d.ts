@@ -123,6 +123,12 @@ declare namespace hs {
     };
   }
 
+  namespace hotkey {
+    // There are a bazillion overrides that hammerspoon accepts. Just create
+    // the one I need
+    function bind(this: void, mods: string, key: string, pressedFunction: () => void): void;
+  }
+
   namespace image {
     function imageFromAppBundle(this: void, bundleID: string): Object;
     function imageFromPath(this: void, path: string): Object;
