@@ -1,4 +1,5 @@
 import { LauncherConfigType } from 'src/types';
+import { printDiagnostic } from 'src/utils';
 import { ScreenInfoType, WindowInfoType } from 'src/hammerspoonUtils';
 import LauncherButton from './components/LauncherButton';
 import ToggleButton  from './components/ToggleButton';
@@ -72,7 +73,10 @@ export default class Taskbar {
       newScreenInfo.width !== this._screenInfo.width ||
       newScreenInfo.height !== this._screenInfo.height
     ) {
-      print(`Recreating taskbar for screen ${newScreenInfo.id} because size and/or position has changed`);
+      printDiagnostic([
+        `Recreating taskbar for screen ${newScreenInfo.name} (${newScreenInfo.id})`,
+        'because size and/or position has changed',
+      ]);
 
       // Hide all existing elements
       this._leftToggleButton?.hide();

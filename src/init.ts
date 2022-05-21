@@ -7,6 +7,7 @@ import {
 } from './hammerspoonUtils';
 
 import Taskbar from './Taskbar';
+import { printDiagnostic } from './utils';
 
 interface ConfigType {
   fontSize: number;
@@ -100,17 +101,16 @@ function onToggleButtonClick(this: void) {
 
 function printWindowInfo(hsWindow: hs.WindowType) {
   const window = getWindowInfo(hsWindow);
-  print('');
-  print('Window info:');
-  print(`    appName    : ${window.appName}`);
-  print(`    bundleId   : ${window.bundleId}`);
-  print(`    id         : ${window.id}`);
-  print(`    isMinimized: ${window.isMinimized}`);
-  print(`    isStandard : ${window.isStandard}`);
-  print(`    role       : ${window.role}`);
-  print(`    screenId   : ${window.screenId}`);
-  print(`    windowTitle: ${window.windowTitle}`);
-  print('');
+  printDiagnostic([
+    `appName    : ${window.appName}`,
+    `bundleId   : ${window.bundleId}`,
+    `id         : ${window.id}`,
+    `isMinimized: ${window.isMinimized}`,
+    `isStandard : ${window.isStandard}`,
+    `role       : ${window.role}`,
+    `screenId   : ${window.screenId}`,
+    `windowTitle: ${window.windowTitle}`,
+  ]);
 }
 
 function subscribeWindowFilterToEvents() {
@@ -178,7 +178,9 @@ function updateAllTaskbars() {
     );
     const taskbar = state.taskbarsByScreenId.get(screen.id);
     if (!taskbar) {
-      print(`HammerBar: No taskbar for screen ${screen.id}`);
+      printDiagnostic(
+        `Unexpected error: No taskbar for screen ${screen.name} (${screen.id})`
+      );
     } else {
       taskbar.update(state.taskbarsAreVisible, windowsThisScreen);
     }
@@ -197,8 +199,7 @@ function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
     if (taskbar) {
       taskbar.updateSizeAndPosition(screen);
     } else {
-      print(`Adding taskbar for screen: ${screen.id}`);
-
+      printDiagnostic(`Adding taskbar for screen ${screen.name} (${screen.id})`);
 
       const newTaskbar = new Taskbar({
         fontSize: config.fontSize,
@@ -218,7 +219,7 @@ function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
   state.taskbarsByScreenId.forEach((taskbar, screenId) => {
     const foundScreens = allScreens.filter((screen) => screen.id === screenId);
     if (foundScreens.length === 0) {
-      print(`Removing taskbar for screen: ${screenId}`);
+      printDiagnostic(`Removing taskbar for screen ${screenId}`);
 
       // We know it'll eventually get garbage collected, but make it invisible
       // in case screen topology changes prior to garbage collection
@@ -326,13 +327,7 @@ export function addAppMenu(menuConfig: any) {
   if (validation === true) {
     config.launchers.push({ type: 'appMenu', apps: menuConfig });
   } else {
-    print();
-    print('------- HammerBar error :-(');
-    print('Error encountered with addAppMenu()');
-    validation.forEach((msg) => {
-      print(msg);
-    });
-    print();
+    printDiagnostic(['Error encountered with addAppMenu()'].concat(validation));
   }
 
 }
@@ -343,13 +338,7 @@ export function addAppLauncher(bundleId: any) {
   if (validation === true) {
     config.launchers.push({ type: 'app', bundleId: bundleId });
   } else {
-    print();
-    print('------- HammerBar error :-(');
-    print('Error encountered with addAppLauncher()');
-    validation.forEach((msg) => {
-      print(msg);
-    });
-    print();
+    printDiagnostic(['Error encountered with addAppLauncher()'].concat(validation));
   }
 }
 
