@@ -1,3 +1,5 @@
+const VERSION = '2022-05-21';
+
 import { AppMenuEntryConfigType, LauncherConfigType } from './types';
 import {
   ScreenInfoType,
@@ -355,6 +357,7 @@ export function allowAllWindows() {
 }
 
 export function start() {
+  printDiagnostic(`Version: ${VERSION}`);
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
   state.windowFilter = hs.window.filter.new(windowFilterCallback);
   subscribeWindowFilterToEvents();
