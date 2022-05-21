@@ -34,13 +34,15 @@ declare namespace hs {
     blue: number;
   }
 
+  interface FrameType {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  }
+
   interface ScreenType {
-    frame: () => {
-      x: number;
-      y: number;
-      w: number;
-      h: number;
-    };
+    frame: () => FrameType;
     id: () => number;
     name: () => string;
   }
@@ -55,13 +57,15 @@ declare namespace hs {
       bundleID: () => string | null,
     };
     focus: () => void;
+    frame: () => FrameType;
     id: () => number;
     isMinimized: () => boolean;
     isStandard: () => boolean;
     minimize: () => void;
     raise: () => void;
     role: () => string;
-    screen: () => { id: () => number };
+    screen: () => ScreenType;
+    setFrame: ({x, y, w, h}: FrameType) => void;
     title: () => string;
     unminimize: () => void;
   }
