@@ -43,6 +43,10 @@ export default class ToggleButton {
     this.update(true);
   }
 
+  hide() {
+    this._canvas.hide();
+  }
+
   update(taskbarIsVisible: boolean) {
     let toggleSymbol;
 

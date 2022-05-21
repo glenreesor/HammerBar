@@ -174,9 +174,16 @@ function updateAllTaskbars() {
 
 function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
 
-  // Ensure each screen has a corresponding taskbar
+  // Ensure each screen has a corresponding taskbar with proper coordinates
+  // and size.
+  // Screen positions can change when monitors are added or removed.
+  // Screen sizes can change due to retina displays reporting different resolutions
+  // depending on whether external monitors are attached or not
   allScreens.forEach((screen) => {
-    if (!state.taskbarsByScreenId.get(screen.id)) {
+    const taskbar = state.taskbarsByScreenId.get(screen.id);
+    if (taskbar) {
+      taskbar.updateSizeAndPosition(screen);
+    } else {
       print(`Adding taskbar for screen: ${screen.id}`);
 
 
