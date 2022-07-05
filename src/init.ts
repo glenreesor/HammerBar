@@ -27,6 +27,7 @@ const config:ConfigType = {
 
 interface StateType {
   allowAllWindows: boolean;
+  clockTimer?: hs.TimerType;
   taskbarsByScreenId: Map<number, Taskbar>;
   taskbarsAreVisible: boolean;
   windowFilter: hs.WindowFilter | undefined;
@@ -34,6 +35,7 @@ interface StateType {
 
 const state:StateType = {
   allowAllWindows: false,
+  clockTimer: undefined,
   taskbarsByScreenId: new Map<number, Taskbar>(),
   taskbarsAreVisible: true,
   windowFilter: undefined,
@@ -362,9 +364,16 @@ export function start() {
   state.windowFilter = hs.window.filter.new(windowFilterCallback);
   subscribeWindowFilterToEvents();
   updateAllTaskbars();
+
+  const now = os.date('*t') as os.DateTable;
+  state.clockTimer = hs.timer.doAt(
+    `${now.hour}:${now.min + 1}`,
+    '1m',
+  updateAllTaskbars);
 }
 
 export function stop() {
   state.windowFilter?.unsubscribeAll();
+  state.clockTimer?.stop();
 }
 

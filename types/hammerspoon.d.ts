@@ -147,6 +147,22 @@ declare namespace hs {
   }
 
   namespace timer {
+    function doAt(
+      this: void,
+      time: number | string,
+      callback: Function,
+      continueOnError?: boolean,
+    ): TimerType;
+
+    function doAt(
+      this: void,
+      time: number | string,
+      repeatInterval: number | string,
+      callback: Function,
+      continueOnError?: boolean,
+    ): TimerType;
+
+
     function doEvery(this: void, seconds: number, callback: Function): TimerType;
   }
 
