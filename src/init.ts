@@ -13,6 +13,7 @@ import { printDiagnostic } from './utils';
 
 interface ConfigType {
   fontSize: number;
+  showClock: boolean;
   taskbarHeight: number;
   taskbarColor: hs.ColorType;
   launchers: LauncherConfigType[];
@@ -20,6 +21,7 @@ interface ConfigType {
 
 const config:ConfigType = {
   fontSize: 13,
+  showClock: false,
   taskbarHeight: 45,
   taskbarColor: { red: 220/255, green: 220/255, blue: 220/255 },
   launchers: [],
@@ -211,6 +213,7 @@ function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
         screenInfo: screen,
         backgroundColor: config.taskbarColor,
         launchers: config.launchers,
+        showClock: config.showClock,
         onToggleButtonClick: onToggleButtonClick,
         onWindowButtonClick: onTaskbarWindowButtonClick,
       });
@@ -346,6 +349,10 @@ export function addAppLauncher(bundleId: any) {
   }
 }
 
+export function addClock() {
+  config.showClock = true;
+}
+
 export function addLaunchpadLauncher() {
   config.launchers.push({ type: 'app', bundleId: 'com.apple.launchpad.launcher' });
 }
@@ -365,11 +372,15 @@ export function start() {
   subscribeWindowFilterToEvents();
   updateAllTaskbars();
 
-  const now = os.date('*t') as os.DateTable;
-  state.clockTimer = hs.timer.doAt(
-    `${now.hour}:${now.min + 1}`,
-    '1m',
-  updateAllTaskbars);
+  if (config.showClock) {
+    // Schedule clock updates every minute starting at 0s of the next minute
+    const now = os.date('*t') as os.DateTable;
+    state.clockTimer = hs.timer.doAt(
+      `${now.hour}:${now.min + 1}`,
+      '1m',
+      updateAllTaskbars
+    );
+  }
 }
 
 export function stop() {
