@@ -1,6 +1,7 @@
 import { LauncherConfigType } from 'src/types';
 import { printDiagnostic } from 'src/utils';
 import { ScreenInfoType, WindowInfoType } from 'src/hammerspoonUtils';
+import Clock from './components/Clock';
 import LauncherButton from './components/LauncherButton';
 import ToggleButton  from './components/ToggleButton';
 import WindowButtons from './components/WindowButtons';
@@ -16,8 +17,9 @@ interface ConstructorType {
     (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
 }
 
-const TOGGLE_BUTTON_WIDTH = 20;
+const CLOCK_WIDTH = 100;
 const LAUNCHER_BUTTON_WIDTH = 40;
+const TOGGLE_BUTTON_WIDTH = 20;
 
 export default class Taskbar {
   _fontSize: number;
@@ -29,6 +31,7 @@ export default class Taskbar {
   _onWindowButtonClick:
     (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
 
+  _clock?: Clock;
   _launcherButtons: LauncherButton[] = [];
   _leftToggleButton?: ToggleButton;
   _rightToggleButton?: ToggleButton;
@@ -63,6 +66,8 @@ export default class Taskbar {
       this._launcherButtons.forEach((launcherButton) => {
         launcherButton.update(taskbarIsVisible);
       });
+
+      this._clock?.update(taskbarIsVisible);
     }
   }
 
@@ -85,6 +90,7 @@ export default class Taskbar {
         launcherButton.update(false);
       });
       this._windowButtons?.update(false, []);
+      this._clock?.hide();
 
       // Create new elements (thus letting garbage collector deal with old ones)
       this._screenInfo = newScreenInfo;
@@ -108,13 +114,28 @@ export default class Taskbar {
 
     const windowButtonsWidth = this._screenInfo.width - (
       2 * TOGGLE_BUTTON_WIDTH +
-      this._launchersConfig.length * LAUNCHER_BUTTON_WIDTH
+      this._launchersConfig.length * LAUNCHER_BUTTON_WIDTH +
+      CLOCK_WIDTH
     );
 
     this._windowButtons = this._getNewWindowButtons(x, y, windowButtonsWidth);
     x += windowButtonsWidth;
 
+    this._clock = this._getNewClock(x, y);
+    x += CLOCK_WIDTH;
+
     this._rightToggleButton = this._getNewToggleButton('right', x, y);
+  }
+
+  _getNewClock(x: number, y: number) {
+    return new Clock({
+      fontSize: this._fontSize,
+      topLeftX: x,
+      topLeftY: y,
+      width: CLOCK_WIDTH,
+      height: this._height,
+      backgroundColor: this._backgroundColor,
+    });
   }
 
   _getNewLauncherButton(x: number, y: number, launcher: LauncherConfigType) {
