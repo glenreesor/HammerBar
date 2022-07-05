@@ -1,4 +1,4 @@
-const VERSION = '2022-05-21';
+const VERSION = '2022-07-04';
 
 import { AppMenuEntryConfigType, LauncherConfigType } from './types';
 import {
