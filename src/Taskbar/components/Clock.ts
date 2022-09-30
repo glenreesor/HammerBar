@@ -97,7 +97,7 @@ export default class Clock {
 
     const hour = now.hour < 13 ? now.hour : now.hour - 12;
     const minute = `${now.min < 10 ? '0' : ''}${now.min}`;
-    const ampm = now.hour < 13 ? 'am' : 'pm';
+    const ampm = now.hour < 12 ? 'am' : 'pm';
 
     const year = now.year;
     const month = `${now.month < 10 ? '0' : ''}${now.month}`;
