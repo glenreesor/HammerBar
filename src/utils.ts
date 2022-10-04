@@ -15,6 +15,14 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Print the specifed text to the Hammerspoon console (one or multiple lines).
+ *
+ * If `text` is a single line, prefix it with `HammerBar: `
+ * If `text` is multiple lines wrap those lines between:
+ *  `HammerBar diagnostic start`
+ *  `HammerBar diagnostic end`
+ */
 export function printDiagnostic(text: string | string[]) {
   if (typeof text === 'string') {
     print(`HammerBar: ${text}`);

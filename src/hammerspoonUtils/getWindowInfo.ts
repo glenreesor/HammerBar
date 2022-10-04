@@ -26,6 +26,10 @@ export interface WindowInfoType {
   windowTitle: string;
 }
 
+/**
+ * Return an object with all the relevant info that Hammerspoon provides about
+ * the specified window
+ */
 export function getWindowInfo(window: hs.WindowType): WindowInfoType {
   const application = window.application();
   let appName;

@@ -15,16 +15,10 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-// Return a table with the following fields corresponding to the passed-in
-// hammerspoon screen object
-//
-//  id     - string
-//  name   - string
-//  x      - number
-//  y      - number
-//  width  - number
-//  height - number
-
+/**
+ * Return an object with all the relevant info that Hammerspoon provides about
+ * the specified screen (monitor)
+ */
 export interface ScreenInfoType {
   id: number;
   name: string;

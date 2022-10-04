@@ -17,15 +17,9 @@
 
 import { BLACK } from 'src/constants';
 
-interface ConstructorType {
-  fontSize: number;
-  topLeftX: number;
-  topLeftY: number;
-  width: number;
-  height: number;
-  backgroundColor: hs.ColorType;
-}
-
+/**
+ * An object that renders a canvas with a digital clock
+ */
 export default class Clock {
   _backgroundColor: hs.ColorType;
   _canvas: hs.CanvasType;
@@ -33,7 +27,26 @@ export default class Clock {
   _height: number;
   _width: number;
 
-  constructor({ fontSize, topLeftX, topLeftY, width, height, backgroundColor }: ConstructorType) {
+  /**
+   * Create a canvas that renders a digital clock with the current time.
+   * Calling code must call the update() method in order to update the rendered
+   * time.
+   *
+   * @param fontSize
+   * @param topLeftX The x-coordinate of the top left of the canvas
+   * @param topLeftY The y-coordinate of the top left of the canvas
+   * @param width
+   * @param height
+   * @param backgroundColor
+   */
+  constructor({ fontSize, topLeftX, topLeftY, width, height, backgroundColor }: {
+    fontSize: number;
+    topLeftX: number;
+    topLeftY: number;
+    width: number;
+    height: number;
+    backgroundColor: hs.ColorType;
+  }) {
     this._fontSize = fontSize;
     this._width = width;
     this._height = height;
@@ -62,6 +75,9 @@ export default class Clock {
     }
   }
 
+  /**
+   * Get all the canvas elements required to render a clock with the current time
+   */
   _getCanvasElements(): Array<hs.CanvasElementType> {
     const { formattedTime, formattedDate } = this._getFormattedDateTime();
 

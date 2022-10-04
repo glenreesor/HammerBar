@@ -17,16 +17,11 @@
 
 import { BLACK } from 'src/constants';
 
-interface ConstructorType {
-  fontSize: number;
-  screenSide: 'left' | 'right';
-  width: number;
-  height: number;
-  topLeftX: number;
-  topLeftY: number;
-  onClick: (this: void) => void;
-}
-
+/**
+ * An object that renders a canvas containing a button on either the left or
+ * right side of the screen. It is intended that this button toggles the taskbar
+ * (handled by a click handler).
+ */
 export default class ToggleButton {
   _fontSize: number;
   _canvas: hs.CanvasType;
@@ -34,16 +29,30 @@ export default class ToggleButton {
   _width: number;
   _height: number;
 
-  constructor(
+  /**
+   * Create a button for toggling the taskbar
+   *
+   * @param fontSize Seems weird, right? It's because we use `<` or `>` in the button
+   * @param screenSide
+   * @param height   Button height
+   * @param width    Button Width
+   * @param topLeftX The x-coordinate of the top left of the button
+   * @param topLeftY The y-coordinate of the top left of the button
+   * @param onClick  The function to call when this button is clicked
+   *                 (this component doesn't directly hide the taskbar)
+   */
+  constructor(args:
   {
-    fontSize,
-    screenSide,
-    height,
-    width,
-    topLeftX,
-    topLeftY,
-    onClick,
-  }: ConstructorType) {
+    fontSize: number,
+    screenSide: 'left' | 'right',
+    height: number,
+    width: number,
+    topLeftX: number,
+    topLeftY: number,
+    onClick: (this: void) => void,
+  }) {
+    const { fontSize, screenSide, width, height, topLeftX, topLeftY, onClick } = args;
+
     this._canvas = hs.canvas.new({
       x: topLeftX,
       y: topLeftY,
@@ -60,10 +69,17 @@ export default class ToggleButton {
     this.update(true);
   }
 
+  /**
+   * Hide this ToggleButton
+   */
   hide() {
     this._canvas.hide();
   }
 
+  /**
+   * Update the contents of this ToggleButton based on whether the taskbar is
+   * visible or not
+   */
   update(taskbarIsVisible: boolean) {
     let toggleSymbol;
 
@@ -77,6 +93,9 @@ export default class ToggleButton {
     this._canvas.show();
   }
 
+  /**
+   * Get the canvas elements required to render this ToggleButton
+   */
   _getCanvasElements(toggleSymbol: string): Array<hs.CanvasElementType> {
     return [
       {

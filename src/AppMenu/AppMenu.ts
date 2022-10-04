@@ -18,13 +18,6 @@
 import { BLACK, WHITE } from 'src/constants';
 import { MenuAppType } from 'src/Taskbar';
 
-interface ConstructorType {
-  bottomLeftX: number;
-  bottomLeftY: number;
-  fontSize: number;
-  appList: Array<MenuAppType>;
-}
-
 const MENU_WIDTH = 120;
 
 const HEIGHT_PER_APP = 30;
@@ -32,12 +25,33 @@ const VERTICAL_PADDING_TOP = 4;
 const VERTICAL_PADDING_BOTTOM = 4;
 const VERTICAL_PADDING_BETWEEN_APPS = 4;
 
+/**
+ * An object that renders a canvas with a list of clickable app buttons.
+ * Clicking an app button launches the app and hides this AppMenu's canvas.
+ * If Command or Control is pressed while clicking, this AppMenu's canvas will
+ * not be hidden.
+ */
 export default class AppMenu {
   _canvas: hs.CanvasType;
   _iAmVisible: boolean;
   _appList: Array<MenuAppType>;
 
-  constructor({bottomLeftX, bottomLeftY, fontSize, appList}: ConstructorType) {
+  /**
+   * Create a visible canvas that renders a vertical list of clickable app
+   * buttons
+   *
+   * @param args.bottomLeftX The x-coordinate of the bottom left of the entire menu
+   * @param args.bottomLeftY The y-coordinate of the bottom left of the entire menu
+   * @param args.fontSize
+   * @param args.appList     An array of objects that each describe an app button to render
+   */
+  constructor(args: {
+    bottomLeftX: number,
+    bottomLeftY: number,
+    fontSize: number,
+    appList: MenuAppType[]
+  }) {
+    const { bottomLeftX, bottomLeftY, fontSize, appList } = args;
     this._appList = appList;
 
     const height = appList.length * HEIGHT_PER_APP +
@@ -93,6 +107,9 @@ export default class AppMenu {
     this._iAmVisible = true;
   }
 
+  /**
+   * Add canvas elements required to render all apps in this menu
+   */
   _addApps(fontSize: number, appList: Array<MenuAppType>) {
     const HORIZONTAL_PADDING = 4;
     let y = VERTICAL_PADDING_TOP;
@@ -113,6 +130,18 @@ export default class AppMenu {
     });
   }
 
+  /**
+   * Return the canvas elements required for one app button
+   *
+   * @param x      The x-coordinate of the top left corner of the button
+   * @param y      The y-coordinate of the top left corner of the button
+   * @param height The required button height
+   * @param width  The required button width
+   * @param fontSize
+   * @param app    An object that describes the app name and icon
+   * @param appId  An ID to associate with the button (which will be used by
+   *               the click handler
+   */
   _getOneAppElements(
     x: number,
     y: number,
@@ -186,6 +215,18 @@ export default class AppMenu {
     ];
   }
 
+  /**
+   * Handle clicks on an app button.
+   *
+   * This will launch the specified app and hide this menu.
+   * If Command or Control is pressed at the same time, this menu will remain
+   * visible.
+   *
+   * @param _canvas  Unused
+   * @param _message Unused
+   * @param id       The ID that was in the canvas element. We're expecting
+   *                 this to be the index into our array of apps
+   */
   _onAppClick(_canvas: hs.CanvasType, _message: string, id: number | string) {
     const idAsNumber = (typeof id === 'number') ? id : parseInt(id);
     const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();

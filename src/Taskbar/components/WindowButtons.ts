@@ -18,18 +18,13 @@
 import { BLACK, WHITE } from 'src/constants';
 import { WindowInfoType } from 'src/hammerspoonUtils/getWindowInfo';
 
-interface ConstructorType {
-  topLeftX: number;
-  topLeftY: number;
-  width: number;
-  height: number;
-  backgroundColor: hs.ColorType;
-  fontSize: number;
-  onWindowButtonClick: (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
-}
-
 const MAX_BUTTON_WIDTH = 130;
 
+/**
+ * An object that renders a canvas that can be populated with buttons for a
+ * passed-in list of windows. Calling code must call the update() method
+ * to specified the list of window buttons.
+ */
 export default class WindowButtons {
   _HORIZONTAL_PADDING = 4;
   _VERTICAL_PADDING = 4;
@@ -40,15 +35,38 @@ export default class WindowButtons {
   _backgroundColor: hs.ColorType;
   _fontSize: number;
 
-  constructor({
-    topLeftX,
-    topLeftY,
-    width,
-    height,
-    backgroundColor,
-    fontSize,
-    onWindowButtonClick,
-  }: ConstructorType) {
+  /**
+   * Create a canvas to hold buttons for a list of windows (see `update()`).
+   *
+   * @param args.topLeftX
+   * @param args.topLeftY
+   * @param args.width
+   * @param args.height
+   * @param args.backgroundColor
+   * @param args.fontSize
+   * @param args.onWindowButtonClick A function to call when a button is clicked.
+   *                                 The parameter `id` will be the windowId for
+   *                                 the clicked button
+   */
+  constructor(args: {
+    topLeftX: number,
+    topLeftY: number,
+    width: number,
+    height: number,
+    backgroundColor: hs.ColorType,
+    fontSize: number,
+    onWindowButtonClick: (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void,
+  }) {
+    const {
+      topLeftX,
+      topLeftY,
+      width,
+      height,
+      backgroundColor,
+      fontSize,
+      onWindowButtonClick
+    } = args;
+
     this._canvas = hs.canvas.new({
       x: topLeftX,
       y: topLeftY,

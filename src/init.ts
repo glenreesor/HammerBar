@@ -75,6 +75,26 @@ function verticallyMaximizeCurrentWindow() {
   }
 }
 
+/**
+ * Handle clicking on an app button in a taskbar.
+ *
+ * If no keyboard modifiers are pressed, this function will toggle visibility of
+ * the corresponding app.
+ *
+ * If Shift is also pressed:
+ *  - print window info to the Hammerspoon console (this includes the bundleId,
+ *    which users will need if they want to add the clicked app to a menu)
+ *
+ * If Command or Control is pressed:
+ *  - Just focus the window (for example if it's not minimized, but obscured
+ *    by another window, this will bring it to the foreground)
+ *
+ * @param this     Must be `void` so it plays nicely with lua
+ * @param _canvas  Unused
+ * @param _message Unused
+ * @param id       The ID of the clicked canvas element. We're expecting this
+ *                 to be the window's ID
+ */
 function onTaskbarWindowButtonClick(
   this: void,
   _canvas: hs.CanvasType,
@@ -122,6 +142,12 @@ function onToggleButtonClick(this: void) {
   updateAllTaskbars();
 }
 
+/**
+ * Print a bunch of information to the Hammerspoon console for the specified window.
+ *
+ * This is useful for debugging or getting the app's bundle ID so users can add
+ * the app to a menu
+ */
 function printWindowInfo(hsWindow: hs.WindowType) {
   const window = getWindowInfo(hsWindow);
   printDiagnostic([
@@ -136,6 +162,10 @@ function printWindowInfo(hsWindow: hs.WindowType) {
   ]);
 }
 
+/**
+ * Tell the Hammerspoon window filter which window events we're interested in
+ * and what callback to use when any of those events are triggered
+ */
 function subscribeWindowFilterToEvents() {
   state.windowFilter?.subscribe(
     [
@@ -169,6 +199,10 @@ function toggleTaskbarVisibility() {
   state.taskbarsAreVisible = !state.taskbarsAreVisible;
 }
 
+/**
+ * Update the contents of all taskbars (there will be multiple taskbars if
+ * there are multiple screens)
+ */
 function updateAllTaskbars() {
   const allWindows:WindowInfoType[] = [];
   const allScreens:ScreenInfoType[] = [];
@@ -210,6 +244,9 @@ function updateAllTaskbars() {
   });
 }
 
+/**
+ * Ensure a taskbar exists for each screen, since user may add or remove monitors
+ */
 function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
 
   // Ensure each screen has a corresponding taskbar with proper coordinates
@@ -253,6 +290,13 @@ function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
   });
 }
 
+/**
+ * A callback for the Hammerspoon window filter. This returns whether the
+ * specified window should be included in our list of windows in the taskbar.
+ *
+ * We need this because there are many Mac "windows" that don't actually
+ * correspond to something you'd normally see in a taskbar
+ */
 function windowFilterCallback(this: void, hsWindow: hs.WindowType) {
   if (state.allowAllWindows) {
     return true;
@@ -280,6 +324,11 @@ function windowFilterCallback(this: void, hsWindow: hs.WindowType) {
   );
 }
 
+/**
+ * Determine if user-supplied configuraton for an app launcher is correct
+ *
+ * @returns true or an array of strings to be presented to the user
+ */
 function validateAppLauncherConfig(bundleId: any): true | string[] {
   if (typeof bundleId === 'string') return true;
 
@@ -289,6 +338,11 @@ function validateAppLauncherConfig(bundleId: any): true | string[] {
   ];
 }
 
+/**
+ * Determine if user-supplied configuraton for an app menu is correct
+ *
+ * @returns true or an array of strings to be presented to the user
+ */
 function validateAppMenuConfig(menuConfig: any): true | string[] {
   const errors: string[] = [];
 
@@ -345,6 +399,10 @@ function validateAppMenuConfig(menuConfig: any): true | string[] {
 // Public Interface
 //------------------------------------------------------------------------------
 
+/**
+ * Add a list of apps to be displayed when an Taskbar button is clicked.
+ * See the validator function for syntax.
+ */
 export function addAppMenu(menuConfig: any) {
   const validation = validateAppMenuConfig(menuConfig);
 
@@ -356,6 +414,9 @@ export function addAppMenu(menuConfig: any) {
 
 }
 
+/**
+ * Add a single app button to the Taskbar
+ */
 export function addAppLauncher(bundleId: any) {
   const validation = validateAppLauncherConfig(bundleId);
 
@@ -366,10 +427,16 @@ export function addAppLauncher(bundleId: any) {
   }
 }
 
+/**
+ * Add a clock to the right side of the Taskbar
+ */
 export function addClock() {
   config.showClock = true;
 }
 
+/**
+ * Add a button to the Taskbar that will display the OS launcher
+ */
 export function addLaunchpadLauncher() {
   config.launchers.push({ type: 'app', bundleId: 'com.apple.launchpad.launcher' });
 }
