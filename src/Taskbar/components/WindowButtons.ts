@@ -83,7 +83,7 @@ export default class WindowButtons {
     this.update(true, []);
   }
 
-  update(taskbarIsVisible: boolean, windows: Array<WindowInfoType>) {
+  update(taskbarIsVisible: boolean, windows: WindowInfoType[]) {
     if (taskbarIsVisible) {
       this._canvas.show();
 
@@ -103,7 +103,7 @@ export default class WindowButtons {
     });
   }
 
-  _addWindowsElements(windows: Array<WindowInfoType>): void {
+  _addWindowsElements(windows: WindowInfoType[]): void {
     const buttonHeight = this._height - 2 * this._VERTICAL_PADDING;
 
     this._orderWindowsConsistently(windows);
@@ -142,7 +142,7 @@ export default class WindowButtons {
     buttonWidth: number,
     buttonHeight: number,
     window: WindowInfoType
-  ): Array<hs.CanvasElementType> {
+  ): hs.CanvasElementType[] {
     const MINIMIZED_BACKGROUND_COLOR = { red: 190/255, green: 190/255, blue: 190/255 };
 
     const APP_ICON_PADDING_LEFT = 2;

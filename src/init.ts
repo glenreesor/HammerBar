@@ -247,7 +247,7 @@ function updateAllTaskbars() {
 /**
  * Ensure a taskbar exists for each screen, since user may add or remove monitors
  */
-function ensureTaskbarsExistForAllScreens(allScreens: Array<ScreenInfoType>) {
+function ensureTaskbarsExistForAllScreens(allScreens: ScreenInfoType[]) {
 
   // Ensure each screen has a corresponding taskbar with proper coordinates
   // and size.

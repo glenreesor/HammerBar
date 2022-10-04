@@ -95,7 +95,7 @@ export default class Taskbar {
   /**
    * Update a taskbar -- both its visibility and the list of window buttons to render
    */
-  update(taskbarIsVisible: boolean, windows: Array<WindowInfoType>) {
+  update(taskbarIsVisible: boolean, windows: WindowInfoType[]) {
     if (this._leftToggleButton && this._rightToggleButton && this._windowButtons) {
       this._leftToggleButton.update(taskbarIsVisible);
       this._rightToggleButton.update(taskbarIsVisible);

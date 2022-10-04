@@ -34,7 +34,7 @@ const VERTICAL_PADDING_BETWEEN_APPS = 4;
 export default class AppMenu {
   _canvas: hs.CanvasType;
   _iAmVisible: boolean;
-  _appList: Array<MenuAppType>;
+  _appList: MenuAppType[];
 
   /**
    * Create a visible canvas that renders a vertical list of clickable app
@@ -110,7 +110,7 @@ export default class AppMenu {
   /**
    * Add canvas elements required to render all apps in this menu
    */
-  _addApps(fontSize: number, appList: Array<MenuAppType>) {
+  _addApps(fontSize: number, appList: MenuAppType[]) {
     const HORIZONTAL_PADDING = 4;
     let y = VERTICAL_PADDING_TOP;
 
@@ -150,7 +150,7 @@ export default class AppMenu {
     fontSize: number,
     app: MenuAppType,
     appId: number,
-  ): Array<hs.CanvasElementType> {
+  ):hs.CanvasElementType[] {
     const APP_ICON_PADDING_LEFT = 2;
 
     const TEXT_PADDING_LEFT = 0;

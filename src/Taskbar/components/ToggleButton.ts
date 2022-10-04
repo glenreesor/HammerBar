@@ -96,7 +96,7 @@ export default class ToggleButton {
   /**
    * Get the canvas elements required to render this ToggleButton
    */
-  _getCanvasElements(toggleSymbol: string): Array<hs.CanvasElementType> {
+  _getCanvasElements(toggleSymbol: string): hs.CanvasElementType[] {
     return [
       {
         type: 'rectangle',

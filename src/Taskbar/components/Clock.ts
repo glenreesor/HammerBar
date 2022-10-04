@@ -78,7 +78,7 @@ export default class Clock {
   /**
    * Get all the canvas elements required to render a clock with the current time
    */
-  _getCanvasElements(): Array<hs.CanvasElementType> {
+  _getCanvasElements(): hs.CanvasElementType[] {
     const { formattedTime, formattedDate } = this._getFormattedDateTime();
 
     const timeY = this._height / 2 - this._fontSize - this._fontSize / 2;
@@ -122,7 +122,7 @@ export default class Clock {
           h: this._fontSize * 1.2,
         },
       },
-    ] as Array<hs.CanvasElementType>;
+    ] as hs.CanvasElementType[];
   }
 
   _getFormattedDateTime(): { formattedTime: string, formattedDate: string } {
