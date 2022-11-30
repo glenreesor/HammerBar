@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-const VERSION = '2022-07-04';
+const VERSION = '0.9';
 
 import { AppMenuEntryConfigType, LauncherConfigType } from './types';
 import {
