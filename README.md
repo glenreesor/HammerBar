@@ -13,7 +13,8 @@ year and I think other people may find it useful.
 ## Getting Started
 - install [Hammerspoon](https://www.hammerspoon.org)
 - create the directory `~/.hammerspoon/Spoons/HammerBar.spoon/`
-- copy `appMenuButton.png` and `init.lua` to `~/.hammerspoon/Spoons/HammerBar.spoon/`
+- copy `appMenuButton.png` and `init.lua`
+  (from https://github.com/glenreesor/HammerBar/releases/tag/v0.9) to `~/.hammerspoon/Spoons/HammerBar.spoon/`
 - add the following lines to `~/.Hammerspoon/init.lua`:
 
       hs.loadSpoon("HammerBar")
