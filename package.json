@@ -1,8 +1,7 @@
 {
   "scripts": {
     "build": "tstl",
-    "dev": "tstl --watch",
-    "test": "jest"
+    "dev": "tstl --watch"
   },
   "dependencies": {},
   "devDependencies": {
