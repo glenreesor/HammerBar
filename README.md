@@ -1,4 +1,4 @@
-#HammerBar - A Windows-Like Taskbar for Macs
+# HammerBar - A Windows-Like Taskbar for Macs
 
 HammerBar is a "Spoon" for [HammerSpoon](https://www.hammerspoon.org) that displays
 a clickable taskbar along the bottom of your screen and includes support for
@@ -16,8 +16,8 @@ year and I think other people may find it useful.
 - copy `appMenuButton.png` and `init.lua` to `~/.hammerspoon/Spoons/HammerBar.spoon/`
 - add the following lines to `~/.Hammerspoon/init.lua`:
 
-    hs.loadSpoon("HammerBar")
-    spoon.HammerBar:start()
+      hs.loadSpoon("HammerBar")
+      spoon.HammerBar:start()
 
 - set your Dock to autohide, otherwise the HammerBar taskbar will be *above* the dock.
 - restart Hammerspoon
