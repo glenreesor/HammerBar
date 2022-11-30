@@ -1,18 +1,30 @@
+// Copyright 2022 Glen Reesor
+//
+// This file is part of HammerBar.
+//
+// HammerBar is free software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// HammerBar is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// HammerBar. If not, see <https://www.gnu.org/licenses/>.
+
 import { BLACK, WHITE } from 'src/constants';
 import { WindowInfoType } from 'src/hammerspoonUtils/getWindowInfo';
 
-interface ConstructorType {
-  topLeftX: number;
-  topLeftY: number;
-  width: number;
-  height: number;
-  backgroundColor: hs.ColorType;
-  fontSize: number;
-  onWindowButtonClick: (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
-}
-
 const MAX_BUTTON_WIDTH = 130;
 
+/**
+ * An object that renders a canvas that can be populated with buttons for a
+ * passed-in list of windows. Calling code must call the update() method
+ * to specified the list of window buttons.
+ */
 export default class WindowButtons {
   _HORIZONTAL_PADDING = 4;
   _VERTICAL_PADDING = 4;
@@ -23,15 +35,38 @@ export default class WindowButtons {
   _backgroundColor: hs.ColorType;
   _fontSize: number;
 
-  constructor({
-    topLeftX,
-    topLeftY,
-    width,
-    height,
-    backgroundColor,
-    fontSize,
-    onWindowButtonClick,
-  }: ConstructorType) {
+  /**
+   * Create a canvas to hold buttons for a list of windows (see `update()`).
+   *
+   * @param args.topLeftX
+   * @param args.topLeftY
+   * @param args.width
+   * @param args.height
+   * @param args.backgroundColor
+   * @param args.fontSize
+   * @param args.onWindowButtonClick A function to call when a button is clicked.
+   *                                 The parameter `id` will be the windowId for
+   *                                 the clicked button
+   */
+  constructor(args: {
+    topLeftX: number,
+    topLeftY: number,
+    width: number,
+    height: number,
+    backgroundColor: hs.ColorType,
+    fontSize: number,
+    onWindowButtonClick: (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void,
+  }) {
+    const {
+      topLeftX,
+      topLeftY,
+      width,
+      height,
+      backgroundColor,
+      fontSize,
+      onWindowButtonClick
+    } = args;
+
     this._canvas = hs.canvas.new({
       x: topLeftX,
       y: topLeftY,
@@ -48,7 +83,7 @@ export default class WindowButtons {
     this.update(true, []);
   }
 
-  update(taskbarIsVisible: boolean, windows: Array<WindowInfoType>) {
+  update(taskbarIsVisible: boolean, windows: WindowInfoType[]) {
     if (taskbarIsVisible) {
       this._canvas.show();
 
@@ -68,7 +103,7 @@ export default class WindowButtons {
     });
   }
 
-  _addWindowsElements(windows: Array<WindowInfoType>): void {
+  _addWindowsElements(windows: WindowInfoType[]): void {
     const buttonHeight = this._height - 2 * this._VERTICAL_PADDING;
 
     this._orderWindowsConsistently(windows);
@@ -107,7 +142,7 @@ export default class WindowButtons {
     buttonWidth: number,
     buttonHeight: number,
     window: WindowInfoType
-  ): Array<hs.CanvasElementType> {
+  ): hs.CanvasElementType[] {
     const MINIMIZED_BACKGROUND_COLOR = { red: 190/255, green: 190/255, blue: 190/255 };
 
     const APP_ICON_PADDING_LEFT = 2;

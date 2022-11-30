@@ -1,14 +1,25 @@
+// Copyright 2022 Glen Reesor
+//
+// This file is part of HammerBar.
+//
+// HammerBar is free software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// HammerBar is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// HammerBar. If not, see <https://www.gnu.org/licenses/>.
+
 import { BLACK } from 'src/constants';
 
-interface ConstructorType {
-  fontSize: number;
-  topLeftX: number;
-  topLeftY: number;
-  width: number;
-  height: number;
-  backgroundColor: hs.ColorType;
-}
-
+/**
+ * An object that renders a canvas with a digital clock
+ */
 export default class Clock {
   _backgroundColor: hs.ColorType;
   _canvas: hs.CanvasType;
@@ -16,7 +27,26 @@ export default class Clock {
   _height: number;
   _width: number;
 
-  constructor({ fontSize, topLeftX, topLeftY, width, height, backgroundColor }: ConstructorType) {
+  /**
+   * Create a canvas that renders a digital clock with the current time.
+   * Calling code must call the update() method in order to update the rendered
+   * time.
+   *
+   * @param fontSize
+   * @param topLeftX The x-coordinate of the top left of the canvas
+   * @param topLeftY The y-coordinate of the top left of the canvas
+   * @param width
+   * @param height
+   * @param backgroundColor
+   */
+  constructor({ fontSize, topLeftX, topLeftY, width, height, backgroundColor }: {
+    fontSize: number;
+    topLeftX: number;
+    topLeftY: number;
+    width: number;
+    height: number;
+    backgroundColor: hs.ColorType;
+  }) {
     this._fontSize = fontSize;
     this._width = width;
     this._height = height;
@@ -45,7 +75,10 @@ export default class Clock {
     }
   }
 
-  _getCanvasElements(): Array<hs.CanvasElementType> {
+  /**
+   * Get all the canvas elements required to render a clock with the current time
+   */
+  _getCanvasElements(): hs.CanvasElementType[] {
     const { formattedTime, formattedDate } = this._getFormattedDateTime();
 
     const timeY = this._height / 2 - this._fontSize - this._fontSize / 2;
@@ -89,7 +122,7 @@ export default class Clock {
           h: this._fontSize * 1.2,
         },
       },
-    ] as Array<hs.CanvasElementType>;
+    ] as hs.CanvasElementType[];
   }
 
   _getFormattedDateTime(): { formattedTime: string, formattedDate: string } {

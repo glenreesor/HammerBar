@@ -1,3 +1,20 @@
+// Copyright 2022 Glen Reesor
+//
+// This file is part of HammerBar.
+//
+// HammerBar is free software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// HammerBar is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// HammerBar. If not, see <https://www.gnu.org/licenses/>.
+
 import { LauncherConfigType } from 'src/types';
 import { printDiagnostic } from 'src/utils';
 import { ScreenInfoType, WindowInfoType } from 'src/hammerspoonUtils';
@@ -6,22 +23,13 @@ import LauncherButton from './components/LauncherButton';
 import ToggleButton  from './components/ToggleButton';
 import WindowButtons from './components/WindowButtons';
 
-interface ConstructorType {
-  fontSize: number;
-  height: number;
-  screenInfo: ScreenInfoType;
-  backgroundColor: hs.ColorType;
-  launchers: LauncherConfigType[];
-  showClock: boolean;
-  onToggleButtonClick: (this: void) => void;
-  onWindowButtonClick:
-    (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
-}
-
 const CLOCK_WIDTH = 100;
 const LAUNCHER_BUTTON_WIDTH = 40;
 const TOGGLE_BUTTON_WIDTH = 20;
 
+/**
+ * An object that creates all the objects required to render a taskbar
+ */
 export default class Taskbar {
   _fontSize: number;
   _height: number;
@@ -39,6 +47,19 @@ export default class Taskbar {
   _rightToggleButton?: ToggleButton;
   _windowButtons?: WindowButtons;
 
+  /**
+   * Create and render all the objects required to render a taskbar
+   *
+   * @param fontSize
+   * @param height              Total height of the taskbar
+   * @param screenInfo          An object describing the screen (monitor) on which to render the taskbar
+   * @param backgroundColor
+   * @param launchers           A list of objects describing launchers to be rendered, in the order
+   *                            left to right
+   * @param showClock           Whether to show a clock at the right side of the taskbar
+   * @param onToggleButtonClick Click handler for the left and right toggle buttons
+   * @param onWindowButtonClick Click handler for any of the app/window buttons in the taskbar
+   */
   constructor({
     fontSize,
     height,
@@ -48,7 +69,17 @@ export default class Taskbar {
     showClock,
     onToggleButtonClick,
     onWindowButtonClick
-  }: ConstructorType) {
+  }: {
+    fontSize: number;
+    height: number;
+    screenInfo: ScreenInfoType;
+    backgroundColor: hs.ColorType;
+    launchers: LauncherConfigType[];
+    showClock: boolean;
+    onToggleButtonClick: (this: void) => void;
+    onWindowButtonClick:
+      (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
+  }) {
     this._fontSize = fontSize;
     this._height = height;
     this._screenInfo = screenInfo;
@@ -61,7 +92,10 @@ export default class Taskbar {
     this._createAllElements();
   }
 
-  update(taskbarIsVisible: boolean, windows: Array<WindowInfoType>) {
+  /**
+   * Update a taskbar -- both its visibility and the list of window buttons to render
+   */
+  update(taskbarIsVisible: boolean, windows: WindowInfoType[]) {
     if (this._leftToggleButton && this._rightToggleButton && this._windowButtons) {
       this._leftToggleButton.update(taskbarIsVisible);
       this._rightToggleButton.update(taskbarIsVisible);
@@ -75,6 +109,9 @@ export default class Taskbar {
     }
   }
 
+  /**
+   * Update the size and position of this taskbar (useful when monitors are added or removed)
+   */
   updateSizeAndPosition(newScreenInfo: ScreenInfoType) {
     if (
       newScreenInfo.x !== this._screenInfo.x ||
@@ -103,6 +140,9 @@ export default class Taskbar {
     }
   }
 
+  /**
+   * Create all the elements that make up a taskbar, and assigning those to instance variables
+   */
   _createAllElements() {
     // Create objects that live in the taskbar, left to right
     const y = this._screenInfo.y + this._screenInfo.height - this._height;
@@ -133,6 +173,9 @@ export default class Taskbar {
     this._rightToggleButton = this._getNewToggleButton('right', x, y);
   }
 
+  /**
+   * Return a newly created clock component
+   */
   _getNewClock(x: number, y: number) {
     return new Clock({
       fontSize: this._fontSize,
@@ -144,6 +187,9 @@ export default class Taskbar {
     });
   }
 
+  /**
+   * Return a newly created launcher button
+   */
   _getNewLauncherButton(x: number, y: number, launcher: LauncherConfigType) {
     return new LauncherButton({
       topLeftX: x,
@@ -155,6 +201,9 @@ export default class Taskbar {
     })
   }
 
+  /**
+   * Return a newly created toggle button
+   */
   _getNewToggleButton(screenSide: 'left' | 'right', x: number, y: number) {
     return new ToggleButton({
       fontSize: this._fontSize,
@@ -167,6 +216,9 @@ export default class Taskbar {
     });
   }
 
+  /**
+   * Return a newly created component that renders all the specified window buttons
+   */
   _getNewWindowButtons(x: number, y: number, windowButtonsWidth: number) {
     return new WindowButtons({
       topLeftX: x,

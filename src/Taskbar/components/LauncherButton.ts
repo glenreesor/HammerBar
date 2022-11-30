@@ -1,18 +1,30 @@
+// Copyright 2022 Glen Reesor
+//
+// This file is part of HammerBar.
+//
+// HammerBar is free software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or (at your
+// option) any later version.
+//
+// HammerBar is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// HammerBar. If not, see <https://www.gnu.org/licenses/>.
+
 import { LauncherConfigType } from 'src/types';
 import AppMenu from 'src/AppMenu';
-
-interface ConstructorType {
-  topLeftX: number;
-  topLeftY: number;
-  width: number;
-  height: number;
-  fontSize: number;
-  launcherDetails: LauncherConfigType;
-}
 
 const BACKGROUND_COLOR = { red: 100/255, green: 100/255, blue: 100/255 };
 const IMAGE_PADDING = 2;
 
+/**
+ * An object that renders a canvas containing a button intended to launch
+ * something like an app or an app menu
+ */
 export default class LauncherButton {
   _appMenu: AppMenu | undefined;
   _canvas: hs.CanvasType;
@@ -21,14 +33,27 @@ export default class LauncherButton {
   _topLeftX: number;
   _topLeftY: number;
 
-  constructor({
-    topLeftX,
-    topLeftY,
-    width,
-    height,
-    fontSize,
-    launcherDetails,
-  }: ConstructorType) {
+  /**
+   * Create a canvas to hold a button for launching things
+   *
+   * @param args.topLeftX
+   * @param args.topLeftY
+   * @param args.width
+   * @param args.height
+   * @param args.fontSize
+   * @param args.launcherDetails An object that describes what should happen when
+   *                             this button is clicked
+   */
+  constructor(args: {
+    topLeftX: number,
+    topLeftY: number,
+    width: number,
+    height: number,
+    fontSize: number,
+    launcherDetails: LauncherConfigType,
+  }) {
+    const { topLeftX, topLeftY, width, height, fontSize, launcherDetails } = args;
+
     this._fontSize = fontSize;
     this._launcherConfig = launcherDetails;
     this._topLeftX = topLeftX;
@@ -79,6 +104,9 @@ export default class LauncherButton {
     this._canvas.show();
   }
 
+  /**
+   * Update the visibility of this button's canvas
+   */
   update(isVisible: boolean) {
     if (isVisible) {
       this._canvas.show();
@@ -87,6 +115,10 @@ export default class LauncherButton {
     }
   }
 
+  /**
+   * Handle clicking on this button -- either launch the corresponding app
+   * or show the corresponding app menu
+   */
   _onClick() {
     if (this._launcherConfig.type === 'app') {
       hs.application.launchOrFocusByBundleID(this._launcherConfig.bundleId);
