@@ -1,4 +1,4 @@
-# HammerBar - A Windows-Like Taskbar for Macs
+# HammerBar - A Windows-Like Taskbar for MacOS
 
 HammerBar is a "Spoon" for [HammerSpoon](https://www.hammerspoon.org) that displays
 a clickable taskbar along the bottom of your screen and includes support for
