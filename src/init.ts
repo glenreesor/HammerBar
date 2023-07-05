@@ -34,6 +34,7 @@ interface ConfigType {
   taskbarHeight: number;
   taskbarColor: hs.ColorType;
   launchers: LauncherConfigType[];
+  bundleIdsRequiringFocusHack: string[];
 }
 
 const config:ConfigType = {
@@ -42,6 +43,7 @@ const config:ConfigType = {
   taskbarHeight: 45,
   taskbarColor: { red: 220/255, green: 220/255, blue: 220/255 },
   launchers: [],
+  bundleIdsRequiringFocusHack: [],
 };
 
 interface StateType {
@@ -74,6 +76,50 @@ function verticallyMaximizeCurrentWindow() {
     });
   }
 }
+
+/**
+ * Launch the app corresponding to the specified bundleId, using a hack to
+ * work around Hammerspoon focus bug if required
+ */
+function launchAppWithOptionalHack(this: void, bundleId: string) {
+    hs.application.launchOrFocusByBundleID(bundleId);
+
+    function waitAndApplyFocusHack() {
+      print('');
+      print('    Looking for app');
+      const launchedApp = hs.application.find(bundleId);
+      if (!launchedApp) {
+        print('    Not found');
+        hs.timer.doAfter(1, waitAndApplyFocusHack);
+        return;
+      }
+
+      print('    Found. Looking for at least one window.');
+
+      const appWindows = launchedApp.allWindows();
+      if (appWindows.length === 0) {
+        print('    Not found.');
+        hs.timer.doAfter(1, waitAndApplyFocusHack);
+        return;
+      }
+
+      print('    Found. Applying focus hack.');
+
+      // For whatever reason, this set of steps works around the Hammerspoon
+      // bug where some apps like Firefox and LibreOffice don't generate any
+      // window filter events until they've been focused after a different app
+      // has been focused.
+      launchedApp.hide();
+      launchedApp.unhide();
+      hs.application.launchOrFocusByBundleID(bundleId);
+    }
+
+    if (config.bundleIdsRequiringFocusHack.includes(bundleId)) {
+      print(`App ${bundleId} requires focus hack`);
+      waitAndApplyFocusHack();
+    }
+}
+
 
 /**
  * Handle clicking on an app button in a taskbar.
@@ -270,6 +316,7 @@ function ensureTaskbarsExistForAllScreens(allScreens: ScreenInfoType[]) {
         showClock: config.showClock,
         onToggleButtonClick: onToggleButtonClick,
         onWindowButtonClick: onTaskbarWindowButtonClick,
+        launchAppWithOptionalHack: launchAppWithOptionalHack,
       });
 
       state.taskbarsByScreenId.set(screen.id, newTaskbar);
@@ -395,6 +442,24 @@ function validateAppMenuConfig(menuConfig: any): true | string[] {
   ]);
 }
 
+function validateFocusHackAppsArg(arg: any): true | string[] {
+  const errors = [];
+  if (!Array.isArray(arg)) {
+    errors.push('Argument must be a list');
+  }
+
+  if (errors.length === 0) {
+    // Need this type assertion so typescript to lua compiler will properly
+    // polyfill
+    (arg as any[]).forEach((element: any, i: number) => {
+      if (typeof element !== 'string') {
+        errors.push(`Element ${i + 1} must be a bundleID string, like 'org.mozilla.firefox'`);
+      }
+    });
+  }
+
+  return errors.length === 0 ? true : errors;
+}
 //------------------------------------------------------------------------------
 // Public Interface
 //------------------------------------------------------------------------------
@@ -447,6 +512,16 @@ export function addLaunchpadLauncher() {
 // all the hammerspoon info about it
 export function allowAllWindows() {
   state.allowAllWindows = true;
+}
+
+export function setFocusHackApps(bundleIds: any[]) {
+  const validation = validateFocusHackAppsArg(bundleIds);
+
+  if (validation === true) {
+    config.bundleIdsRequiringFocusHack = bundleIds;
+  } else {
+    printDiagnostic(['Error encountered with setFocusHackApps()'].concat(validation));
+  }
 }
 
 export function start() {
