@@ -1,4 +1,10 @@
 declare namespace hs {
+  interface Application {
+    allWindows: () => WindowType[];
+    hide: () => boolean;
+    unhide: () => boolean;
+  }
+
   interface CanvasElementType {
     type: string;
     id?: number;
@@ -111,6 +117,7 @@ declare namespace hs {
   }
 
   namespace application {
+    function find(this: void, bundleId: string): Application;
     function launchOrFocusByBundleID(this: void, name: string): boolean;
   }
 
@@ -147,6 +154,12 @@ declare namespace hs {
   }
 
   namespace timer {
+    function doAfter(
+      this: void,
+      afterSeconds: number,
+      callback: Function,
+    ): TimerType;
+
     function doAt(
       this: void,
       time: number | string,
@@ -161,7 +174,6 @@ declare namespace hs {
       callback: Function,
       continueOnError?: boolean,
     ): TimerType;
-
 
     function doEvery(this: void, seconds: number, callback: Function): TimerType;
   }
