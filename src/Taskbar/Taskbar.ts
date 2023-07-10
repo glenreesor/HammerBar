@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2023 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -46,6 +46,7 @@ export default class Taskbar {
   _leftToggleButton?: ToggleButton;
   _rightToggleButton?: ToggleButton;
   _windowButtons?: WindowButtons;
+  _launchAppWithOptionalHack: (this: void, bundleId: string) => void;
 
   /**
    * Create and render all the objects required to render a taskbar
@@ -68,7 +69,8 @@ export default class Taskbar {
     launchers,
     showClock,
     onToggleButtonClick,
-    onWindowButtonClick
+    onWindowButtonClick,
+    launchAppWithOptionalHack,
   }: {
     fontSize: number;
     height: number;
@@ -79,6 +81,7 @@ export default class Taskbar {
     onToggleButtonClick: (this: void) => void;
     onWindowButtonClick:
       (this: void, _canvas: hs.CanvasType, _message: string, id: string | number) => void;
+    launchAppWithOptionalHack: (this: void, bundleId: string) => void;
   }) {
     this._fontSize = fontSize;
     this._height = height;
@@ -88,6 +91,7 @@ export default class Taskbar {
     this._showClock = showClock,
     this._onToggleButtonClick = onToggleButtonClick;
     this._onWindowButtonClick = onWindowButtonClick;
+    this._launchAppWithOptionalHack = launchAppWithOptionalHack;
 
     this._createAllElements();
   }
@@ -198,6 +202,7 @@ export default class Taskbar {
       height: this._height,
       fontSize: this._fontSize,
       launcherDetails: launcher,
+      launchAppWithOptionalHack: this._launchAppWithOptionalHack,
     })
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2023 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -35,6 +35,7 @@ export default class AppMenu {
   _canvas: hs.CanvasType;
   _iAmVisible: boolean;
   _appList: MenuAppType[];
+  _launchAppWithOptionalHack: (this: void, bundleId: string) => void;
 
   /**
    * Create a visible canvas that renders a vertical list of clickable app
@@ -49,10 +50,19 @@ export default class AppMenu {
     bottomLeftX: number,
     bottomLeftY: number,
     fontSize: number,
-    appList: MenuAppType[]
+    appList: MenuAppType[],
+    launchAppWithOptionalHack: (this: void, bundleId: string) => void,
   }) {
-    const { bottomLeftX, bottomLeftY, fontSize, appList } = args;
+    const {
+      bottomLeftX,
+      bottomLeftY,
+      fontSize,
+      appList,
+      launchAppWithOptionalHack
+    } = args;
+
     this._appList = appList;
+    this._launchAppWithOptionalHack = launchAppWithOptionalHack;
 
     const height = appList.length * HEIGHT_PER_APP +
       VERTICAL_PADDING_TOP +
@@ -231,8 +241,7 @@ export default class AppMenu {
     const idAsNumber = (typeof id === 'number') ? id : parseInt(id);
     const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();
 
-    hs.application.launchOrFocusByBundleID(this._appList[idAsNumber].bundleId);
-
+    this._launchAppWithOptionalHack(this._appList[idAsNumber].bundleId);
     if (!keyboardModifiers.cmd && !keyboardModifiers.ctrl) {
       this._hide();
     }

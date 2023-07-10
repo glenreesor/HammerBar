@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2023 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -32,6 +32,7 @@ export default class LauncherButton {
   _launcherConfig: LauncherConfigType;
   _topLeftX: number;
   _topLeftY: number;
+  _launchAppWithOptionalHack: (this: void, bundleId: string) => void;
 
   /**
    * Create a canvas to hold a button for launching things
@@ -51,11 +52,21 @@ export default class LauncherButton {
     height: number,
     fontSize: number,
     launcherDetails: LauncherConfigType,
+    launchAppWithOptionalHack: (this: void, bundleId: string) => void,
   }) {
-    const { topLeftX, topLeftY, width, height, fontSize, launcherDetails } = args;
+    const {
+      topLeftX,
+      topLeftY,
+      width,
+      height,
+      fontSize,
+      launcherDetails,
+      launchAppWithOptionalHack
+    } = args;
 
     this._fontSize = fontSize;
     this._launcherConfig = launcherDetails;
+    this._launchAppWithOptionalHack = launchAppWithOptionalHack;
     this._topLeftX = topLeftX;
     this._topLeftY = topLeftY;
 
@@ -121,7 +132,7 @@ export default class LauncherButton {
    */
   _onClick() {
     if (this._launcherConfig.type === 'app') {
-      hs.application.launchOrFocusByBundleID(this._launcherConfig.bundleId);
+      this._launchAppWithOptionalHack(this._launcherConfig.bundleId);
     } else {
       if (!this._appMenu) {
         this._appMenu = new AppMenu({
@@ -129,6 +140,7 @@ export default class LauncherButton {
           bottomLeftY: this._topLeftY - 1,
           fontSize: this._fontSize,
           appList: this._launcherConfig.apps,
+          launchAppWithOptionalHack: this._launchAppWithOptionalHack,
         });
       } else {
         this._appMenu.toggleVisibility();
