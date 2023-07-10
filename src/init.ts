@@ -533,11 +533,14 @@ export function start() {
 
   if (config.showClock) {
     // Schedule clock updates every minute starting at 0s of the next minute
+    // and every 60s thereafter
     const now = os.date('*t') as os.DateTable;
-    state.clockTimer = hs.timer.doAt(
-      `${now.hour}:${now.min + 1}`,
-      '1m',
-      updateAllTaskbars
+    state.clockTimer = hs.timer.doAfter(
+      60 - now.sec,
+      () => {
+        updateAllTaskbars()
+        state.clockTimer = hs.timer.doEvery(60, updateAllTaskbars);
+      }
     );
   }
 }
