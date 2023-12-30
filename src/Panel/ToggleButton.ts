@@ -28,7 +28,27 @@ export default function ToggleButton(
     onClick: () => void;
   }
 ) {
-  function render(panelIsVisible: boolean) {
+  const mouseCallback: hs.CanvasMouseCallbackType = function(
+    this: void,
+    _canvas: hs.CanvasType,
+    msg: 'mouseEnter' | 'mouseExit' | 'mouseUp',
+  ) {
+    if (msg === 'mouseEnter') {
+      mouseInsideButton = true;
+      render();
+    } else if (msg === 'mouseExit') {
+      mouseInsideButton = false;
+      render();
+    } else if (msg === 'mouseUp') {
+      onClick();
+    }
+  }
+
+  function render() {
+    const bgColor = mouseInsideButton
+      ? { red: 120/255, green: 120/255, blue: 120/255 }
+      : { red: 100/255, green: 100/255, blue: 100/255 }
+
     const fontSize = 14;
     let toggleSymbol;
 
@@ -41,14 +61,15 @@ export default function ToggleButton(
     canvas.replaceElements([
       {
         type: 'rectangle',
-        fillColor: { red: 40/255, green: 40/255, blue: 100/255 },
-        strokeColor: { red: 40/255, green: 40/255, blue: 100/255 },
+        fillColor: bgColor,
+        strokeColor: bgColor,
         frame: {
           x: 0,
           y: 0,
           w: 20,
           h: panelHeight,
         },
+        trackMouseEnterExit: true,
         trackMouseUp: true,
       },
       {
@@ -62,20 +83,29 @@ export default function ToggleButton(
           w: fontSize,
           h: fontSize * 1.2,
         },
+        trackMouseEnterExit: true,
         trackMouseUp: true,
       },
     ]);
   }
 
+  function setPanelVisibility(visible: boolean) {
+    panelIsVisible = visible;
+    render();
+  }
+
+  let mouseInsideButton = false;
+  let panelIsVisible = true;
+
   const buttonWidth = 20;
   const x = side === 'left' ? panelX : panelX + panelWidth - buttonWidth;
   const canvas = hs.canvas.new({ x, y: panelY, w: buttonWidth, h: panelHeight });
-  render(true);
-  canvas.mouseCallback(onClick);
+  render();
+  canvas.mouseCallback(mouseCallback);
   canvas.show();
 
   return {
-    setPanelVisibility: (visible: boolean) => render(visible),
+    setPanelVisibility,
     showCanvas: () => canvas.show(),
   };
 }

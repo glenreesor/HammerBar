@@ -35,6 +35,7 @@ export default function Panel (
     {
       type: 'rectangle',
       fillColor: color,
+      strokeColor: color,
       frame: {
         x: 0,
         y: 0,
@@ -45,23 +46,23 @@ export default function Panel (
   ]);
   canvas.show();
 
-    function toggleVisibility() {
-      state.isVisible = !state.isVisible;
-      if (state.isVisible) {
-        canvas.show();
+  function toggleVisibility() {
+    state.isVisible = !state.isVisible;
+    if (state.isVisible) {
+      canvas.show();
 
-        toggleButtons.forEach((button) => {
-          button.setPanelVisibility(true);
-          button.showCanvas();
-        });
-      } else {
-        canvas.hide();
-        toggleButtons.forEach((button) => {
-          button.setPanelVisibility(false);
-          button.showCanvas();
-        });
-      }
-    };
+      toggleButtons.forEach((button) => {
+        button.setPanelVisibility(true);
+        button.showCanvas();
+      });
+    } else {
+      canvas.hide();
+      toggleButtons.forEach((button) => {
+        button.setPanelVisibility(false);
+        button.showCanvas();
+      });
+    }
+  };
 
   // Left Toggle Button
   toggleButtons.push(ToggleButton({
