@@ -554,7 +554,7 @@ export function start() {
   }
 }
 
-const panels: Panel[] = [];
+const panels: { destroy: () => void }[] = [];
 
 export function startV2() {
   const panelColor = { red: 100/255, green: 100/255, blue: 100/255 };
@@ -563,7 +563,7 @@ export function startV2() {
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
-    panels.push(new Panel({
+    panels.push(Panel({
       x: screenInfo.x,
       y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
       width: screenInfo.width,
