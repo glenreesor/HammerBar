@@ -30,6 +30,7 @@ export default function ToggleButton(
   }
 ): {
   bringToFront: () => void,
+  destroy: () => void,
   setPanelVisibility: (visible: boolean) => void,
 } {
   const state = {
@@ -111,6 +112,7 @@ export default function ToggleButton(
 
   return {
     bringToFront: () => canvas.show(),
+    destroy: () => canvas.delete(),
     setPanelVisibility,
   };
 }
