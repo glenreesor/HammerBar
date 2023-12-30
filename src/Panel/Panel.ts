@@ -27,7 +27,7 @@ export default function Panel (
 
   const toggleButtons: {
     setPanelVisibility: (visible: boolean) => void,
-    showCanvas: () => void,
+    bringToFront: () => void,
   }[] = [];
 
   const canvas = hs.canvas.new({ x, y, w: width, h: height });
@@ -50,16 +50,15 @@ export default function Panel (
     state.isVisible = !state.isVisible;
     if (state.isVisible) {
       canvas.show();
-
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(true);
-        button.showCanvas();
+        button.bringToFront();
       });
     } else {
       canvas.hide();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(false);
-        button.showCanvas();
+        button.bringToFront();
       });
     }
   };

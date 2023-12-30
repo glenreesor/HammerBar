@@ -106,6 +106,6 @@ export default function ToggleButton(
 
   return {
     setPanelVisibility,
-    showCanvas: () => canvas.show(),
+    bringToFront: () => canvas.show(),
   };
 }
