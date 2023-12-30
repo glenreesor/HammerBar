@@ -75,7 +75,7 @@ export default function ToggleButton(
         frame: {
           x: 0,
           y: 0,
-          w: 20,
+          w: TOGGLE_BUTTON_WIDTH,
           h: panelHeight,
         },
         trackMouseEnterExit: true,
