@@ -16,6 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
+import { TOGGLE_BUTTON_WIDTH } from './constants';
 
 export default function ToggleButton(
   { panelX, panelY, panelWidth, panelHeight, side, onClick }:
@@ -83,7 +84,7 @@ export default function ToggleButton(
         textColor: BLACK,
         textSize: fontSize,
         frame: {
-          x: buttonWidth / 4,
+          x: TOGGLE_BUTTON_WIDTH / 4,
           y: panelHeight / 2 - fontSize / 1.5,
           w: fontSize,
           h: fontSize * 1.2,
@@ -99,9 +100,8 @@ export default function ToggleButton(
     render();
   }
 
-  const buttonWidth = 20;
-  const x = side === 'left' ? panelX : panelX + panelWidth - buttonWidth;
-  const canvas = hs.canvas.new({ x, y: panelY, w: buttonWidth, h: panelHeight });
+  const x = side === 'left' ? panelX : panelX + panelWidth - TOGGLE_BUTTON_WIDTH;
+  const canvas = hs.canvas.new({ x, y: panelY, w: TOGGLE_BUTTON_WIDTH, h: panelHeight });
   render();
   canvas.mouseCallback(mouseCallback);
   canvas.show();
