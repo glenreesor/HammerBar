@@ -15,10 +15,15 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import ToggleButton from './ToggleButton';
+
 export default class Panel {
   _canvas: hs.CanvasType;
   _height: number;
   _width: number;
+
+  _isVisible: boolean;
+  _toggleButtons: ToggleButton[] = [];
 
   constructor(
     { x, y, width, height, color }:
@@ -26,6 +31,7 @@ export default class Panel {
   ) {
     this._height = height;
     this._width = width;
+    this._isVisible = true;
     this._canvas = hs.canvas.new({ x, y, w: width, h: height });
     this._canvas.replaceElements([
       {
@@ -40,5 +46,43 @@ export default class Panel {
       },
     ]);
     this._canvas.show();
+
+    const toggleVisibility = () => {
+      this._isVisible = !this._isVisible;
+      if (this._isVisible) {
+        this._canvas.show();
+
+        this._toggleButtons.forEach((button) => {
+          button.setPanelVisibility(true);
+          button.showCanvas();
+        });
+      } else {
+        this._canvas.hide();
+        this._toggleButtons.forEach((button) => {
+          button.setPanelVisibility(false);
+          button.showCanvas();
+        });
+      }
+    };
+
+    // Left Toggle Button
+    this._toggleButtons.push(new ToggleButton({
+      panelX: x,
+      panelY: y,
+      panelWidth: width,
+      panelHeight: height,
+      side: 'left',
+      onClick: toggleVisibility
+    }));
+
+    // Right Right Button
+    this._toggleButtons.push(new ToggleButton({
+      panelX: x,
+      panelY: y,
+      panelWidth: width,
+      panelHeight: height,
+      side: 'right',
+      onClick: toggleVisibility
+    }));
   }
 }
