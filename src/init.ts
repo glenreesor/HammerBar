@@ -25,8 +25,17 @@ import {
   getWindowInfo,
 } from './hammerspoonUtils';
 
+import Panel from './Panel';
 import Taskbar from './Taskbar';
 import { printDiagnostic } from './utils';
+
+type ConfigV2 = {
+  panelHeight: number;
+};
+
+const configV2: ConfigV2 = {
+  panelHeight: 45,
+};
 
 interface ConfigType {
   fontSize: number;
@@ -543,6 +552,25 @@ export function start() {
       }
     );
   }
+}
+
+const panels: Panel[] = [];
+
+export function startV2() {
+  const panelColor = { red: 100/255, green: 100/255, blue: 100/255 };
+
+  hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
+
+  hs.screen.allScreens().forEach((hammerspoonScreen) => {
+    const screenInfo = getScreenInfo(hammerspoonScreen);
+    panels.push(new Panel({
+      x: screenInfo.x,
+      y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
+      width: screenInfo.width,
+      height: configV2.panelHeight,
+      color: panelColor,
+    }));
+  });
 }
 
 export function stop() {
