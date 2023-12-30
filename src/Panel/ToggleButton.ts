@@ -28,7 +28,10 @@ export default function ToggleButton(
     side: 'left' | 'right';
     onClick: () => void;
   }
-) {
+): {
+  bringToFront: () => void,
+  setPanelVisibility: (visible: boolean) => void,
+} {
   const state = {
     mouseIsInsideButton: false,
     panelIsVisible: true,
@@ -107,7 +110,7 @@ export default function ToggleButton(
   canvas.show();
 
   return {
-    setPanelVisibility,
     bringToFront: () => canvas.show(),
+    setPanelVisibility,
   };
 }

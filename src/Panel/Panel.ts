@@ -20,15 +20,25 @@ import ToggleButton from './ToggleButton';
 export default function Panel (
   { x, y, width, height, color }:
   { x: number, y: number, width: number, height: number, color: hs.ColorType }
-) {
-  const state = {
-    isVisible: true,
+): {
+  destroy: () => void,
+} {
+  function toggleVisibility() {
+    state.isVisible = !state.isVisible;
+    if (state.isVisible) {
+      canvas.show();
+      toggleButtons.forEach((button) => {
+        button.setPanelVisibility(true);
+        button.bringToFront();
+      });
+    } else {
+      canvas.hide();
+      toggleButtons.forEach((button) => {
+        button.setPanelVisibility(false);
+        button.bringToFront();
+      });
+    }
   };
-
-  const toggleButtons: {
-    setPanelVisibility: (visible: boolean) => void,
-    bringToFront: () => void,
-  }[] = [];
 
   const canvas = hs.canvas.new({ x, y, w: width, h: height });
   canvas.replaceElements([
@@ -46,22 +56,11 @@ export default function Panel (
   ]);
   canvas.show();
 
-  function toggleVisibility() {
-    state.isVisible = !state.isVisible;
-    if (state.isVisible) {
-      canvas.show();
-      toggleButtons.forEach((button) => {
-        button.setPanelVisibility(true);
-        button.bringToFront();
-      });
-    } else {
-      canvas.hide();
-      toggleButtons.forEach((button) => {
-        button.setPanelVisibility(false);
-        button.bringToFront();
-      });
-    }
+  const state = {
+    isVisible: true,
   };
+
+  const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
 
   // Left Toggle Button
   toggleButtons.push(ToggleButton({
