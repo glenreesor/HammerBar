@@ -28,16 +28,21 @@ export default function ToggleButton(
     onClick: () => void;
   }
 ) {
+  const state = {
+    mouseIsInsideButton: false,
+    panelIsVisible: true,
+  };
+
   const mouseCallback: hs.CanvasMouseCallbackType = function(
     this: void,
     _canvas: hs.CanvasType,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseUp',
   ) {
     if (msg === 'mouseEnter') {
-      mouseInsideButton = true;
+      state.mouseIsInsideButton = true;
       render();
     } else if (msg === 'mouseExit') {
-      mouseInsideButton = false;
+      state.mouseIsInsideButton = false;
       render();
     } else if (msg === 'mouseUp') {
       onClick();
@@ -45,7 +50,7 @@ export default function ToggleButton(
   }
 
   function render() {
-    const bgColor = mouseInsideButton
+    const bgColor = state.mouseIsInsideButton
       ? { red: 120/255, green: 120/255, blue: 120/255 }
       : { red: 100/255, green: 100/255, blue: 100/255 }
 
@@ -53,9 +58,9 @@ export default function ToggleButton(
     let toggleSymbol;
 
     if (side === 'left') {
-      toggleSymbol = panelIsVisible ? '<' : '>';
+      toggleSymbol = state.panelIsVisible ? '<' : '>';
     } else {
-      toggleSymbol = panelIsVisible ? '>' : '<';
+      toggleSymbol = state.panelIsVisible ? '>' : '<';
     }
 
     canvas.replaceElements([
@@ -90,12 +95,9 @@ export default function ToggleButton(
   }
 
   function setPanelVisibility(visible: boolean) {
-    panelIsVisible = visible;
+    state.panelIsVisible = visible;
     render();
   }
-
-  let mouseInsideButton = false;
-  let panelIsVisible = true;
 
   const buttonWidth = 20;
   const x = side === 'left' ? panelX : panelX + panelWidth - buttonWidth;

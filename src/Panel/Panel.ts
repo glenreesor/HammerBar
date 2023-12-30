@@ -73,7 +73,7 @@ export default function Panel (
     onClick: toggleVisibility
   }));
 
-  // Right Right Button
+  // Right Toggle Button
   toggleButtons.push(ToggleButton({
     panelX: x,
     panelY: y,
