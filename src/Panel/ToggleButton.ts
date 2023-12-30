@@ -17,58 +17,28 @@
 
 import { BLACK } from 'src/constants';
 
-export default class ToggleButton {
-  _buttonWidth = 20;
-
-  _buttonHeight: number;
-  _canvas: hs.CanvasType;
-  _panelSide: 'left' | 'right';
-
-  constructor(
-    { panelX, panelY, panelWidth, panelHeight, side, onClick }:
-    {
-      panelX: number;
-      panelY: number;
-      panelWidth: number;
-      panelHeight: number;
-      side: 'left' | 'right';
-      onClick: () => void;
-    }
-  ) {
-    const x = side === 'left' ? panelX : panelX + panelWidth - this._buttonWidth;
-
-    this._buttonHeight = panelHeight;
-    this._panelSide = side;
-
-    this._canvas = hs.canvas.new({ x, y: panelY, w: this._buttonWidth, h: panelHeight });
-    this._render(true);
-    this._canvas.mouseCallback(onClick);
-    this._canvas.show();
+export default function ToggleButton(
+  { panelX, panelY, panelWidth, panelHeight, side, onClick }:
+  {
+    panelX: number;
+    panelY: number;
+    panelWidth: number;
+    panelHeight: number;
+    side: 'left' | 'right';
+    onClick: () => void;
   }
-
-  setPanelVisibility(visible: boolean) {
-    this._render(visible);
-  }
-
-  /**
-   * Tell the underlying canvas to show itself, which results in Hammerspoon
-   * drawing it on top of any other canvases
-   */
-  showCanvas() {
-    this._canvas.show();
-  }
-
-  _render(panelIsVisible: boolean) {
+) {
+  function render(panelIsVisible: boolean) {
     const fontSize = 14;
     let toggleSymbol;
 
-    if (this._panelSide === 'left') {
+    if (side === 'left') {
       toggleSymbol = panelIsVisible ? '<' : '>';
     } else {
       toggleSymbol = panelIsVisible ? '>' : '<';
     }
 
-    this._canvas.replaceElements([
+    canvas.replaceElements([
       {
         type: 'rectangle',
         fillColor: { red: 40/255, green: 40/255, blue: 100/255 },
@@ -77,7 +47,7 @@ export default class ToggleButton {
           x: 0,
           y: 0,
           w: 20,
-          h: this._buttonHeight,
+          h: panelHeight,
         },
         trackMouseUp: true,
       },
@@ -87,8 +57,8 @@ export default class ToggleButton {
         textColor: BLACK,
         textSize: fontSize,
         frame: {
-          x: this._buttonWidth / 4,
-          y: this._buttonHeight / 2 - fontSize / 1.5,
+          x: buttonWidth / 4,
+          y: panelHeight / 2 - fontSize / 1.5,
           w: fontSize,
           h: fontSize * 1.2,
         },
@@ -96,4 +66,16 @@ export default class ToggleButton {
       },
     ]);
   }
+
+  const buttonWidth = 20;
+  const x = side === 'left' ? panelX : panelX + panelWidth - buttonWidth;
+  const canvas = hs.canvas.new({ x, y: panelY, w: buttonWidth, h: panelHeight });
+  render(true);
+  canvas.mouseCallback(onClick);
+  canvas.show();
+
+  return {
+    setPanelVisibility: (visible: boolean) => render(visible),
+    showCanvas: () => canvas.show(),
+  };
 }

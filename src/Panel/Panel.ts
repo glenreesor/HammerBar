@@ -15,10 +15,21 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import ToggleButton from './ToggleButton';
+
 export default function Panel (
   { x, y, width, height, color }:
   { x: number, y: number, width: number, height: number, color: hs.ColorType }
 ) {
+  const state = {
+    isVisible: true,
+  };
+
+  const toggleButtons: {
+    setPanelVisibility: (visible: boolean) => void,
+    showCanvas: () => void,
+  }[] = [];
+
   const canvas = hs.canvas.new({ x, y, w: width, h: height });
   canvas.replaceElements([
     {
@@ -33,6 +44,44 @@ export default function Panel (
     },
   ]);
   canvas.show();
+
+    function toggleVisibility() {
+      state.isVisible = !state.isVisible;
+      if (state.isVisible) {
+        canvas.show();
+
+        toggleButtons.forEach((button) => {
+          button.setPanelVisibility(true);
+          button.showCanvas();
+        });
+      } else {
+        canvas.hide();
+        toggleButtons.forEach((button) => {
+          button.setPanelVisibility(false);
+          button.showCanvas();
+        });
+      }
+    };
+
+  // Left Toggle Button
+  toggleButtons.push(ToggleButton({
+    panelX: x,
+    panelY: y,
+    panelWidth: width,
+    panelHeight: height,
+    side: 'left',
+    onClick: toggleVisibility
+  }));
+
+  // Right Right Button
+  toggleButtons.push(ToggleButton({
+    panelX: x,
+    panelY: y,
+    panelWidth: width,
+    panelHeight: height,
+    side: 'right',
+    onClick: toggleVisibility
+  }));
 
   return {
     destroy: canvas.delete,
