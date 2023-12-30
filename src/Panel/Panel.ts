@@ -15,7 +15,9 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import { getClockBuilder } from 'src/widgets/clock';
 import ToggleButton from './ToggleButton';
+import { TOGGLE_BUTTON_WIDTH } from './constants';
 
 export default function Panel (
   { x, y, width, height, color }:
@@ -23,6 +25,12 @@ export default function Panel (
 ): {
   destroy: () => void,
 } {
+  function destroy() {
+    canvas.delete();
+    toggleButtons.forEach((button) => button.destroy());
+    widgets.forEach((widget) => widget.destroy());
+  }
+
   function toggleVisibility() {
     state.isVisible = !state.isVisible;
     if (state.isVisible) {
@@ -31,11 +39,18 @@ export default function Panel (
         button.setPanelVisibility(true);
         button.bringToFront();
       });
+      widgets.forEach((widget) => {
+        widget.show();
+        widget.bringToFront();
+      });
     } else {
       canvas.hide();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(false);
         button.bringToFront();
+      });
+      widgets.forEach((widget) => {
+        widget.hide();
       });
     }
   };
@@ -61,6 +76,12 @@ export default function Panel (
   };
 
   const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
+  const widgets: {
+    bringToFront: () => void
+    destroy: () => void,
+    hide: () => void,
+    show: () => void,
+  }[] = [];
 
   // Left Toggle Button
   toggleButtons.push(ToggleButton({
@@ -82,7 +103,14 @@ export default function Panel (
     onClick: toggleVisibility
   }));
 
+  const clockBuilder = getClockBuilder();
+  widgets.push(clockBuilder({
+    x: width - TOGGLE_BUTTON_WIDTH - 100,
+    y,
+    height,
+  }));
+
   return {
-    destroy: canvas.delete,
+    destroy,
   };
 }
