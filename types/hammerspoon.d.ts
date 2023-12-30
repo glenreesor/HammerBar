@@ -32,6 +32,7 @@ declare namespace hs {
     roundedRectRadii?: {xRadius: number, yRadius: number };
     strokeColor?: ColorType;
     text?: string;
+    textAlignment?: 'center' | 'justified' | 'left' | 'natural' | 'right',
     textColor?: ColorType;
     textLineBreak?: string;
     textSize?: number;
