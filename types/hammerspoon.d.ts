@@ -1,4 +1,4 @@
-// Copyright 2023 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -36,6 +36,7 @@ declare namespace hs {
     textColor?: ColorType;
     textLineBreak?: string;
     textSize?: number;
+    trackMouseDown?: boolean;
     trackMouseEnterExit?: boolean;
     trackMouseUp?: boolean;
   }
