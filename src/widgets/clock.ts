@@ -19,7 +19,7 @@ import { BLACK } from 'src/constants';
 import type { WidgetBuilder } from 'src/Panel';
 
 export function getClockBuilder(): WidgetBuilder {
-  return function Clock({ x, y, height }) {
+  return function getClock({ x, y, height }) {
     function destroy() {
       canvas.delete();
       if (state.timer) {

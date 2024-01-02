@@ -18,7 +18,7 @@
 import type { WidgetBuilder } from 'src/Panel';
 
 export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
-  return function AppLauncher({ x, y, height, panelColor, panelHoverColor }) {
+  return function getAppLauncher({ x, y, height, panelColor, panelHoverColor }) {
     function destroy() {
       canvas.delete();
     }
