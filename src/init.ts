@@ -560,8 +560,6 @@ export function start() {
 const panels: { destroy: () => void }[] = [];
 
 export function startV2() {
-  const panelColor = { red: 100/255, green: 100/255, blue: 100/255 };
-
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
 
   const widgetBuilders: WidgetBuilder[] = [
@@ -579,7 +577,6 @@ export function startV2() {
       y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      color: panelColor,
       widgetBuilders,
     }));
 
@@ -588,7 +585,6 @@ export function startV2() {
       y: screenInfo.y + screenInfo.height - 5 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      color: panelColor,
       widgetBuilders,
     }));
   });

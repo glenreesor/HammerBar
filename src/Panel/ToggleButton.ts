@@ -1,4 +1,4 @@
-// Copyright 2023 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -19,13 +19,15 @@ import { BLACK } from 'src/constants';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 
 export default function ToggleButton(
-  { panelX, panelY, panelWidth, panelHeight, side, onClick }:
+  { panelX, panelY, panelWidth, panelHeight, side, panelColor, panelHoverColor, onClick }:
   {
     panelX: number;
     panelY: number;
     panelWidth: number;
     panelHeight: number;
     side: 'left' | 'right';
+    panelColor: hs.ColorType;
+    panelHoverColor: hs.ColorType;
     onClick: () => void;
   }
 ): {
@@ -56,8 +58,8 @@ export default function ToggleButton(
 
   function render() {
     const bgColor = state.mouseIsInsideButton
-      ? { red: 120/255, green: 120/255, blue: 120/255 }
-      : { red: 100/255, green: 100/255, blue: 100/255 }
+      ? panelHoverColor
+      : panelColor
 
     const fontSize = 14;
     let toggleSymbol;

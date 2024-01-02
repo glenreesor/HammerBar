@@ -16,7 +16,8 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 export type WidgetBuilder = (
-  { x, y , height }: { x: number, y: number, height: number }
+  { x, y , height, panelColor, panelHoverColor }:
+  { x: number, y: number, height: number, panelColor: hs.ColorType, panelHoverColor: hs.ColorType }
 ) => {
   bringToFront: () => void
   destroy: () => void,

@@ -20,13 +20,12 @@ import { TOGGLE_BUTTON_WIDTH } from './constants';
 import type { WidgetBuilder } from './types';
 
 export default function Panel (
-  { x, y, width, height, color, widgetBuilders }:
+  { x, y, width, height, widgetBuilders }:
   {
     x: number,
     y: number,
     width: number,
     height: number,
-    color: hs.ColorType,
     widgetBuilders: WidgetBuilder[],
   }
 ): {
@@ -61,13 +60,15 @@ export default function Panel (
       });
     }
   };
+  const panelColor = { red: 100/255, green: 100/255, blue: 100/255 };
+  const panelHoverColor = { red: 120/255, green: 120/255, blue: 120/255 };
 
   const canvas = hs.canvas.new({ x, y, w: width, h: height });
   canvas.replaceElements([
     {
       type: 'rectangle',
-      fillColor: color,
-      strokeColor: color,
+      fillColor: panelColor,
+      strokeColor: panelColor,
       frame: {
         x: 0,
         y: 0,
@@ -91,6 +92,8 @@ export default function Panel (
     panelWidth: width,
     panelHeight: height,
     side: 'left',
+    panelColor,
+    panelHoverColor,
     onClick: toggleVisibility
   }));
 
@@ -101,6 +104,8 @@ export default function Panel (
     panelWidth: width,
     panelHeight: height,
     side: 'right',
+    panelColor,
+    panelHoverColor,
     onClick: toggleVisibility
   }));
 
@@ -111,7 +116,9 @@ export default function Panel (
     widgets.push(builder({
       x: widgetX,
       y,
-      height
+      height,
+      panelColor,
+      panelHoverColor,
     }));
     widgetX += 100;
   });

@@ -18,27 +18,45 @@
 import type { WidgetBuilder } from 'src/Panel';
 
 export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
-  return function AppLauncher({ x, y, height }) {
+  return function AppLauncher({ x, y, height, panelColor, panelHoverColor }) {
     function destroy() {
       canvas.delete();
     }
 
-    const mouseCallback: hs.CanvasMouseCallbackType = function(this: void) {
-      hs.application.launchOrFocusByBundleID(bundleId);
+    const mouseCallback: hs.CanvasMouseCallbackType = function(
+      this: void,
+      _canvas: hs.CanvasType,
+      msg: 'mouseEnter' | 'mouseExit' | 'mouseUp',
+    ) {
+      if (msg === 'mouseEnter') {
+        state.mouseIsInsideButton = true;
+        render();
+      } else if (msg === 'mouseExit') {
+        state.mouseIsInsideButton = false;
+        render();
+      } else if (msg === 'mouseUp') {
+        hs.application.launchOrFocusByBundleID(bundleId);
+      }
     }
 
     function render() {
+      const bgColor = state.mouseIsInsideButton
+        ? panelHoverColor
+        : panelColor;
+
       canvas.appendElements(
         [
           {
             type: 'rectangle',
-            fillColor: { red: 1, green: 1, blue: 1 },
+            fillColor: bgColor,
+            strokeColor: bgColor,
             frame: {
               x: 0,
               y: 0,
               w: height,
               h: height,
             },
+            trackMouseEnterExit: true,
             trackMouseUp: true,
           },
           {
@@ -50,10 +68,16 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
               h: imageWidth,
             },
             image: hs.image.imageFromAppBundle(bundleId),
+            trackMouseEnterExit: true,
+            trackMouseUp: true,
           },
         ]
       );
     }
+
+    const state = {
+      mouseIsInsideButton: false,
+    };
 
     const width = height;
     const IMAGE_PADDING = 2;
