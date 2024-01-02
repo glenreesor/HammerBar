@@ -15,5 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export { default } from './Panel';
-export type { WidgetBuilder } from './types';
+export type WidgetBuilder = (
+  { x, y , height }: { x: number, y: number, height: number }
+) => {
+  bringToFront: () => void
+  destroy: () => void,
+  hide: () => void,
+  show: () => void,
+};

@@ -15,20 +15,10 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export function getAppLauncherBuilder(bundleId: string) {
-  return function AppLauncher(
-    { x, y, height }:
-    {
-      x: number,
-      y: number,
-      height: number,
-    }
-  ): {
-    bringToFront: () => void,
-    destroy: () => void,
-    hide: () => void,
-    show: () => void,
-  } {
+import type { WidgetBuilder } from 'src/Panel';
+
+export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
+  return function AppLauncher({ x, y, height }) {
     function destroy() {
       canvas.delete();
     }

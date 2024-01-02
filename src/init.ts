@@ -26,6 +26,7 @@ import {
 } from './hammerspoonUtils';
 
 import Panel from './Panel';
+import type { WidgetBuilder } from './Panel';
 import Taskbar from './Taskbar';
 import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
@@ -563,7 +564,7 @@ export function startV2() {
 
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
 
-  const widgetBuilders = [
+  const widgetBuilders: WidgetBuilder[] = [
     getAppLauncherBuilder('org.mozilla.firefox'),
     getAppLauncherBuilder('com.google.Chrome'),
     getClockBuilder(),

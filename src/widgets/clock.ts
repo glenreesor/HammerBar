@@ -1,4 +1,4 @@
-// Copyright 2023 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -16,21 +16,10 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
+import type { WidgetBuilder } from 'src/Panel';
 
-export function getClockBuilder() {
-  return function Clock(
-    { x, y, height }:
-    {
-      x: number,
-      y: number,
-      height: number,
-    }
-  ): {
-    bringToFront: () => void,
-    destroy: () => void,
-    hide: () => void,
-    show: () => void,
-  } {
+export function getClockBuilder(): WidgetBuilder {
+  return function Clock({ x, y, height }) {
     function destroy() {
       canvas.delete();
       if (state.timer) {

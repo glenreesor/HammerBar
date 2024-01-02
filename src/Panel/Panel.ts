@@ -17,6 +17,7 @@
 
 import ToggleButton from './ToggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
+import type { WidgetBuilder } from './types';
 
 export default function Panel (
   { x, y, width, height, color, widgetBuilders }:
@@ -26,14 +27,7 @@ export default function Panel (
     width: number,
     height: number,
     color: hs.ColorType,
-    widgetBuilders:
-      (
-        ({ x, y , height }: { x: number, y: number, height: number }) => {
-        bringToFront: () => void
-        destroy: () => void,
-        hide: () => void,
-        show: () => void,
-      })[],
+    widgetBuilders: WidgetBuilder[],
   }
 ): {
   destroy: () => void,
@@ -110,12 +104,7 @@ export default function Panel (
     onClick: toggleVisibility
   }));
 
-  const widgets: {
-      bringToFront: () => void
-      destroy: () => void,
-      hide: () => void,
-      show: () => void,
-  }[] = [];
+  const widgets: ReturnType<WidgetBuilder>[] = [];
 
   let widgetX = TOGGLE_BUTTON_WIDTH;
   widgetBuilders.forEach((builder) => {
