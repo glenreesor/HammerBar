@@ -26,15 +26,21 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
     const mouseCallback: hs.CanvasMouseCallbackType = function(
       this: void,
       _canvas: hs.CanvasType,
-      msg: 'mouseEnter' | 'mouseExit' | 'mouseUp',
+      msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
     ) {
       if (msg === 'mouseEnter') {
         state.mouseIsInsideButton = true;
         render();
       } else if (msg === 'mouseExit') {
         state.mouseIsInsideButton = false;
+        state.mouseButtonIsDown = false;
+        render();
+      } else if (msg === 'mouseDown') {
+        state.mouseButtonIsDown = true;
         render();
       } else if (msg === 'mouseUp') {
+        state.mouseButtonIsDown = false;
+        render();
         hs.application.launchOrFocusByBundleID(bundleId);
       }
     }
@@ -43,6 +49,14 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
       const bgColor = state.mouseIsInsideButton
         ? panelHoverColor
         : panelColor;
+
+      const imageWidth = state.mouseButtonIsDown
+        ? 0.8 * normalImageWidth
+        : normalImageWidth;
+
+      const imageX = state.mouseButtonIsDown
+        ? IMAGE_PADDING + 0.1 * normalImageWidth
+        : IMAGE_PADDING;
 
       canvas.appendElements(
         [
@@ -57,18 +71,20 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
               h: height,
             },
             trackMouseEnterExit: true,
+            trackMouseDown: true,
             trackMouseUp: true,
           },
           {
             type: 'image',
             frame: {
-              x: IMAGE_PADDING,
+              x: imageX,
               y: (height - imageWidth) / 2,
               w: imageWidth,
               h: imageWidth,
             },
             image: hs.image.imageFromAppBundle(bundleId),
             trackMouseEnterExit: true,
+            trackMouseDown: true,
             trackMouseUp: true,
           },
         ]
@@ -76,12 +92,13 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
     }
 
     const state = {
+      mouseButtonIsDown: false,
       mouseIsInsideButton: false,
     };
 
     const width = height;
     const IMAGE_PADDING = 2;
-    const imageWidth = width - 2 * IMAGE_PADDING;
+    const normalImageWidth = width - 2 * IMAGE_PADDING;
     const canvas = hs.canvas.new({ x, y, w: width, h: height });
 
     render();
