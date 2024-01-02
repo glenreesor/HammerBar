@@ -1,4 +1,4 @@
-// Copyright 2023 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -28,6 +28,8 @@ import {
 import Panel from './Panel';
 import Taskbar from './Taskbar';
 import { printDiagnostic } from './utils';
+import { getAppLauncherBuilder } from './widgets/appLauncher';
+import { getClockBuilder } from './widgets/clock';
 
 type ConfigV2 = {
   panelHeight: number;
@@ -561,14 +563,32 @@ export function startV2() {
 
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
 
+  const widgetBuilders = [
+    getAppLauncherBuilder('org.mozilla.firefox'),
+    getAppLauncherBuilder('com.google.Chrome'),
+    getClockBuilder(),
+  ];
+
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
+
+    // Two panels for testing
     panels.push(Panel({
       x: screenInfo.x,
       y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
       color: panelColor,
+      widgetBuilders,
+    }));
+
+    panels.push(Panel({
+      x: screenInfo.x,
+      y: screenInfo.y + screenInfo.height - 5 * configV2.panelHeight,
+      width: screenInfo.width,
+      height: configV2.panelHeight,
+      color: panelColor,
+      widgetBuilders,
     }));
   });
 }

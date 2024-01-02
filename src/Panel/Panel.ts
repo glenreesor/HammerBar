@@ -1,4 +1,4 @@
-// Copyright 2023 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,13 +15,26 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { getClockBuilder } from 'src/widgets/clock';
 import ToggleButton from './ToggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 
 export default function Panel (
-  { x, y, width, height, color }:
-  { x: number, y: number, width: number, height: number, color: hs.ColorType }
+  { x, y, width, height, color, widgetBuilders }:
+  {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color: hs.ColorType,
+    widgetBuilders:
+      (
+        ({ x, y , height }: { x: number, y: number, height: number }) => {
+        bringToFront: () => void
+        destroy: () => void,
+        hide: () => void,
+        show: () => void,
+      })[],
+  }
 ): {
   destroy: () => void,
 } {
@@ -76,12 +89,6 @@ export default function Panel (
   };
 
   const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
-  const widgets: {
-    bringToFront: () => void
-    destroy: () => void,
-    hide: () => void,
-    show: () => void,
-  }[] = [];
 
   // Left Toggle Button
   toggleButtons.push(ToggleButton({
@@ -103,12 +110,22 @@ export default function Panel (
     onClick: toggleVisibility
   }));
 
-  const clockBuilder = getClockBuilder();
-  widgets.push(clockBuilder({
-    x: width - TOGGLE_BUTTON_WIDTH - 100,
-    y,
-    height,
-  }));
+  const widgets: {
+      bringToFront: () => void
+      destroy: () => void,
+      hide: () => void,
+      show: () => void,
+  }[] = [];
+
+  let widgetX = TOGGLE_BUTTON_WIDTH;
+  widgetBuilders.forEach((builder) => {
+    widgets.push(builder({
+      x: widgetX,
+      y,
+      height
+    }));
+    widgetX += 100;
+  });
 
   return {
     destroy,
