@@ -120,6 +120,7 @@ export function getClockBuilder(): WidgetBuildingInfo {
   }
 
   return {
+    buildErrors: [],
     getWidth: () => CLOCK_WIDTH,
     getWidget: getClock,
   };

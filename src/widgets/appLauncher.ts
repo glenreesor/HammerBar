@@ -18,6 +18,9 @@
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
 export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
+  const buildErrors = bundleId === ''
+    ? ['AppLauncher: bundleId must not be empty']
+    : [];
 
   function getAppLauncher(
     { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
@@ -118,6 +121,7 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
   }
 
   return {
+    buildErrors,
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getAppLauncher,
   };
