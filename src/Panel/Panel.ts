@@ -1,4 +1,4 @@
-// Copyright 2023 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -16,13 +16,27 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import ToggleButton from './ToggleButton';
+import { TOGGLE_BUTTON_WIDTH } from './constants';
+import type { WidgetBuilder, WidgetBuildingInfo } from './types';
 
 export default function Panel (
-  { x, y, width, height, color }:
-  { x: number, y: number, width: number, height: number, color: hs.ColorType }
+  { x, y, width, height, widgetsBuildingInfo }:
+  {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    widgetsBuildingInfo: WidgetBuildingInfo[],
+  }
 ): {
   destroy: () => void,
 } {
+  function destroy() {
+    canvas.delete();
+    toggleButtons.forEach((button) => button.destroy());
+    widgets.forEach((widget) => widget.destroy());
+  }
+
   function toggleVisibility() {
     state.isVisible = !state.isVisible;
     if (state.isVisible) {
@@ -31,21 +45,30 @@ export default function Panel (
         button.setPanelVisibility(true);
         button.bringToFront();
       });
+      widgets.forEach((widget) => {
+        widget.show();
+        widget.bringToFront();
+      });
     } else {
       canvas.hide();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(false);
         button.bringToFront();
       });
+      widgets.forEach((widget) => {
+        widget.hide();
+      });
     }
   };
+  const panelColor = { red: 100/255, green: 100/255, blue: 100/255 };
+  const panelHoverColor = { red: 120/255, green: 120/255, blue: 120/255 };
 
   const canvas = hs.canvas.new({ x, y, w: width, h: height });
   canvas.replaceElements([
     {
       type: 'rectangle',
-      fillColor: color,
-      strokeColor: color,
+      fillColor: panelColor,
+      strokeColor: panelColor,
       frame: {
         x: 0,
         y: 0,
@@ -69,6 +92,8 @@ export default function Panel (
     panelWidth: width,
     panelHeight: height,
     side: 'left',
+    panelColor,
+    panelHoverColor,
     onClick: toggleVisibility
   }));
 
@@ -79,10 +104,26 @@ export default function Panel (
     panelWidth: width,
     panelHeight: height,
     side: 'right',
+    panelColor,
+    panelHoverColor,
     onClick: toggleVisibility
   }));
 
+  const widgets: ReturnType<WidgetBuilder>[] = [];
+
+  let widgetX = TOGGLE_BUTTON_WIDTH;
+  widgetsBuildingInfo.forEach((builderInfo) => {
+    widgets.push(builderInfo.getWidget({
+      x: widgetX,
+      y,
+      height,
+      panelColor,
+      panelHoverColor,
+    }));
+    widgetX += builderInfo.getWidth(height);
+  });
+
   return {
-    destroy: canvas.delete,
+    destroy,
   };
 }

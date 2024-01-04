@@ -1,4 +1,4 @@
-// Copyright 2023 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -32,9 +32,11 @@ declare namespace hs {
     roundedRectRadii?: {xRadius: number, yRadius: number };
     strokeColor?: ColorType;
     text?: string;
+    textAlignment?: 'center' | 'justified' | 'left' | 'natural' | 'right',
     textColor?: ColorType;
     textLineBreak?: string;
     textSize?: number;
+    trackMouseDown?: boolean;
     trackMouseEnterExit?: boolean;
     trackMouseUp?: boolean;
   }

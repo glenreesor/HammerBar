@@ -1,4 +1,4 @@
-// Copyright 2023 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -26,8 +26,11 @@ import {
 } from './hammerspoonUtils';
 
 import Panel from './Panel';
+import type { WidgetBuildingInfo } from './Panel';
 import Taskbar from './Taskbar';
 import { printDiagnostic } from './utils';
+import { getAppLauncherBuilder } from './widgets/appLauncher';
+import { getClockBuilder } from './widgets/clock';
 
 type ConfigV2 = {
   panelHeight: number;
@@ -557,18 +560,45 @@ export function start() {
 const panels: { destroy: () => void }[] = [];
 
 export function startV2() {
-  const panelColor = { red: 100/255, green: 100/255, blue: 100/255 };
-
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
+
+  const widgetsBuildingInfo: WidgetBuildingInfo[] = [
+    getAppLauncherBuilder('org.mozilla.firefox'),
+    getAppLauncherBuilder('com.google.Chrome'),
+    getClockBuilder(),
+    getAppLauncherBuilder(''), // For testing error handling
+    getAppLauncherBuilder('com.apple.finder'),
+  ];
+
+  const errorFreeWidgetBuilders: WidgetBuildingInfo[] = [];
+  widgetsBuildingInfo.forEach((info) => {
+    if (info.buildErrors.length === 0) {
+      errorFreeWidgetBuilders.push(info);
+    } else {
+      print('Error building widget:');
+      info.buildErrors.forEach((txt) => print(`    ${txt}`));
+    }
+  });
+
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
+
+    // Two panels for testing
     panels.push(Panel({
       x: screenInfo.x,
       y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      color: panelColor,
+      widgetsBuildingInfo: errorFreeWidgetBuilders,
+    }));
+
+    panels.push(Panel({
+      x: screenInfo.x,
+      y: screenInfo.y + screenInfo.height - 5 * configV2.panelHeight,
+      width: screenInfo.width,
+      height: configV2.panelHeight,
+      widgetsBuildingInfo: errorFreeWidgetBuilders,
     }));
   });
 }
