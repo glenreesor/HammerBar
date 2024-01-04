@@ -19,6 +19,7 @@ import { BLACK } from 'src/constants';
 import type { WidgetBuilder } from 'src/Panel';
 
 export function getClockBuilder(): WidgetBuilder {
+
   return function getClock({ x, y, height }) {
     function destroy() {
       canvas.delete();
@@ -45,6 +46,7 @@ export function getClockBuilder(): WidgetBuilder {
     }
 
     function render() {
+      const bgColor = { red: 1, green: 1, blue: 1 };
       const { formattedTime, formattedDate } = getFormattedDateTime();
       const fontSize = 12;
       const timeY = height / 2 - fontSize - fontSize / 2;
@@ -93,7 +95,6 @@ export function getClockBuilder(): WidgetBuilder {
     const state: { timer?: hs.TimerType } = { };
 
     const width = 100;
-    const bgColor = { red: 1, green: 1, blue: 1 };
     const canvas = hs.canvas.new({ x, y, w: width, h: height });
 
     render();

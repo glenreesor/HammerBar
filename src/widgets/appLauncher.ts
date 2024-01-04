@@ -18,6 +18,7 @@
 import type { WidgetBuilder } from 'src/Panel';
 
 export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
+
   return function getAppLauncher({ x, y, height, panelColor, panelHoverColor }) {
     function destroy() {
       canvas.delete();
@@ -46,6 +47,9 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
     }
 
     function render() {
+      const IMAGE_PADDING = 2;
+      const normalImageWidth = width - 2 * IMAGE_PADDING;
+
       const bgColor = state.mouseIsInsideButton
         ? panelHoverColor
         : panelColor;
@@ -97,8 +101,6 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
     };
 
     const width = height;
-    const IMAGE_PADDING = 2;
-    const normalImageWidth = width - 2 * IMAGE_PADDING;
     const canvas = hs.canvas.new({ x, y, w: width, h: height });
 
     render();
