@@ -17,16 +17,16 @@
 
 import ToggleButton from './ToggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
-import type { WidgetBuilder } from './types';
+import type { WidgetBuilder, WidgetBuildingInfo } from './types';
 
 export default function Panel (
-  { x, y, width, height, widgetBuilders }:
+  { x, y, width, height, widgetsBuildingInfo }:
   {
     x: number,
     y: number,
     width: number,
     height: number,
-    widgetBuilders: WidgetBuilder[],
+    widgetsBuildingInfo: WidgetBuildingInfo[],
   }
 ): {
   destroy: () => void,
@@ -112,15 +112,15 @@ export default function Panel (
   const widgets: ReturnType<WidgetBuilder>[] = [];
 
   let widgetX = TOGGLE_BUTTON_WIDTH;
-  widgetBuilders.forEach((builder) => {
-    widgets.push(builder({
+  widgetsBuildingInfo.forEach((builderInfo) => {
+    widgets.push(builderInfo.getWidget({
       x: widgetX,
       y,
       height,
       panelColor,
       panelHoverColor,
     }));
-    widgetX += 100;
+    widgetX += builderInfo.getWidth(height);
   });
 
   return {

@@ -15,11 +15,13 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilder } from 'src/Panel';
+import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
+export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
 
-  return function getAppLauncher({ x, y, height, panelColor, panelHoverColor }) {
+  function getAppLauncher(
+    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
+  ) {
     function destroy() {
       canvas.delete();
     }
@@ -114,4 +116,9 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuilder {
       show: () => canvas.show(),
     };
   }
+
+  return {
+    getWidth: (widgetHeight) => widgetHeight,
+    getWidget: getAppLauncher,
+  };
 };

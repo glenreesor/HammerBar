@@ -17,10 +17,23 @@
 
 export type WidgetBuilder = (
   { x, y , height, panelColor, panelHoverColor }:
-  { x: number, y: number, height: number, panelColor: hs.ColorType, panelHoverColor: hs.ColorType }
+  {
+    x: number,
+    y: number,
+    height: number,
+    panelColor: hs.ColorType,
+    panelHoverColor: hs.ColorType
+  }
 ) => {
   bringToFront: () => void
   destroy: () => void,
   hide: () => void,
   show: () => void,
+};
+
+export type WidgetBuilderParams = Parameters<WidgetBuilder>[0];
+
+export type WidgetBuildingInfo = {
+  getWidth: (widgetHeight: number) => number,
+  getWidget: WidgetBuilder,
 };

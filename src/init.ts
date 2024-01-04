@@ -26,7 +26,7 @@ import {
 } from './hammerspoonUtils';
 
 import Panel from './Panel';
-import type { WidgetBuilder } from './Panel';
+import type { WidgetBuildingInfo } from './Panel';
 import Taskbar from './Taskbar';
 import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
@@ -562,10 +562,11 @@ const panels: { destroy: () => void }[] = [];
 export function startV2() {
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
 
-  const widgetBuilders: WidgetBuilder[] = [
+  const widgetsBuildingInfo: WidgetBuildingInfo[] = [
     getAppLauncherBuilder('org.mozilla.firefox'),
     getAppLauncherBuilder('com.google.Chrome'),
     getClockBuilder(),
+    getAppLauncherBuilder('com.apple.finder'),
   ];
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
@@ -577,7 +578,7 @@ export function startV2() {
       y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      widgetBuilders,
+      widgetsBuildingInfo,
     }));
 
     panels.push(Panel({
@@ -585,7 +586,7 @@ export function startV2() {
       y: screenInfo.y + screenInfo.height - 5 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      widgetBuilders,
+      widgetsBuildingInfo,
     }));
   });
 }

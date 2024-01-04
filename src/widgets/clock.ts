@@ -16,11 +16,12 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
-import type { WidgetBuilder } from 'src/Panel';
+import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getClockBuilder(): WidgetBuilder {
+export function getClockBuilder(): WidgetBuildingInfo {
+  const CLOCK_WIDTH = 100;
 
-  return function getClock({ x, y, height }) {
+  function getClock({ x, y, height }: WidgetBuilderParams) {
     function destroy() {
       canvas.delete();
       if (state.timer) {
@@ -60,7 +61,7 @@ export function getClockBuilder(): WidgetBuilder {
           frame: {
             x: 0,
             y: 0,
-            w: width,
+            w: CLOCK_WIDTH,
             h: height,
           },
         },
@@ -73,7 +74,7 @@ export function getClockBuilder(): WidgetBuilder {
           frame: {
             x: 0,
             y: timeY,
-            w: width,
+            w: CLOCK_WIDTH,
             h: fontSize * 1.2,
           },
         },
@@ -86,7 +87,7 @@ export function getClockBuilder(): WidgetBuilder {
           frame: {
             x: 0,
             y: dateY,
-            w: width,
+            w: CLOCK_WIDTH,
             h: fontSize * 1.2,
           },
         },
@@ -94,8 +95,7 @@ export function getClockBuilder(): WidgetBuilder {
     }
     const state: { timer?: hs.TimerType } = { };
 
-    const width = 100;
-    const canvas = hs.canvas.new({ x, y, w: width, h: height });
+    const canvas = hs.canvas.new({ x, y, w: CLOCK_WIDTH, h: height });
 
     render();
     canvas.show();
@@ -118,4 +118,9 @@ export function getClockBuilder(): WidgetBuilder {
       show: () => canvas.show(),
     };
   }
+
+  return {
+    getWidth: () => CLOCK_WIDTH,
+    getWidget: getClock,
+  };
 };
