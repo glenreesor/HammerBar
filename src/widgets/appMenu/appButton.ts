@@ -15,20 +15,19 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams } from 'src/Panel';
 
-type ImageInfo = { bundleId: string; imagePath?: undefined } |
-  { bundleId?: undefined; imagePath: string };
-
-export function getPanelButton(
+export function getAppButton(
   {
     x,
     y,
     height,
     panelColor,
     panelHoverColor,
-    imageInfo,
-    onClick, }: WidgetBuilderParams & { imageInfo: ImageInfo, onClick: () => void }
+    bundleId,
+    label,
+    onClick, }: WidgetBuilderParams & { bundleId: string, label: string, onClick: () => void }
 ) {
   function destroy() {
     canvas.delete();
@@ -57,52 +56,83 @@ export function getPanelButton(
   }
 
   function render() {
-    const IMAGE_PADDING = 2;
-    const normalImageWidth = width - 2 * IMAGE_PADDING;
-
-    const image = imageInfo.bundleId !== undefined
-      ? hs.image.imageFromAppBundle(imageInfo.bundleId)
-      : hs.image.imageFromPath(imageInfo.imagePath);
+    // const IMAGE_PADDING = 2;
+    // const normalImageWidth = width - 2 * IMAGE_PADDING;
 
     const bgColor = state.mouseIsInsideButton
       ? panelHoverColor
       : panelColor;
 
-    const imageWidth = state.mouseButtonIsDown
-      ? 0.8 * normalImageWidth
-      : normalImageWidth;
+    // const imageWidth = state.mouseButtonIsDown
+    //   ? 0.8 * normalImageWidth
+    //   : normalImageWidth;
 
-    const imageX = state.mouseButtonIsDown
-      ? IMAGE_PADDING + 0.1 * normalImageWidth
-      : IMAGE_PADDING;
+    // const imageX = state.mouseButtonIsDown
+    //   ? IMAGE_PADDING + 0.1 * normalImageWidth
+    //   : IMAGE_PADDING;
+      //
+    const APP_ICON_PADDING_LEFT = 2;
+
+    const TEXT_PADDING_LEFT = 0;
+    const TEXT_PADDING_RIGHT = 5;
+
+    const appIconWidth = height;
+    const appIconHeight = appIconWidth;
+    const appIconX = APP_ICON_PADDING_LEFT;
+    const appIconY = 0;
+
+    const textX = appIconX + appIconWidth + TEXT_PADDING_LEFT;
+
+    // We're only expecting one line of text, so center it on the icon
+    const fontSize = 12;
+    const textY = appIconY + appIconHeight / 2 - 1.4 * fontSize / 2;
+
+    const maxTextWidth = (
+      CANVAS_WIDTH -
+      APP_ICON_PADDING_LEFT -
+      appIconWidth -
+      TEXT_PADDING_LEFT -
+      TEXT_PADDING_RIGHT
+    );
 
     canvas.replaceElements(
       [
         {
           type: 'rectangle',
           fillColor: bgColor,
-          strokeColor: bgColor,
           frame: {
             x: 0,
             y: 0,
-            w: height,
+            w: CANVAS_WIDTH,
             h: height,
           },
+          roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
           trackMouseEnterExit: true,
-          trackMouseDown: true,
-          trackMouseUp: true,
         },
         {
           type: 'image',
           frame: {
-            x: imageX,
-            y: (height - imageWidth) / 2,
-            w: imageWidth,
-            h: imageWidth,
+            x: appIconX,
+            y: appIconY,
+            w: appIconWidth,
+            h: appIconHeight,
           },
-          image,
+          image: hs.image.imageFromAppBundle(bundleId),
           trackMouseEnterExit: true,
-          trackMouseDown: true,
+          trackMouseUp: true,
+        },
+        {
+          type: 'text',
+          text: label,
+          textColor: BLACK,
+          textSize: fontSize,
+          frame: {
+            x: textX,
+            y: textY,
+            w: maxTextWidth,
+            h: height,
+          },
+          trackMouseEnterExit: true,
           trackMouseUp: true,
         },
       ]
@@ -114,8 +144,8 @@ export function getPanelButton(
     mouseIsInsideButton: false,
   };
 
-  const width = height;
-  const canvas = hs.canvas.new({ x, y, w: width, h: height });
+  const CANVAS_WIDTH = 120;
+  const canvas = hs.canvas.new({ x, y, w: CANVAS_WIDTH, h: height });
 
   render();
   canvas.mouseCallback(mouseCallback);

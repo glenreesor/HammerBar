@@ -30,6 +30,7 @@ import type { WidgetBuildingInfo } from './Panel';
 import Taskbar from './Taskbar';
 import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
+import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
 
 type ConfigV2 = {
@@ -568,6 +569,7 @@ export function startV2() {
     getClockBuilder(),
     getAppLauncherBuilder(''), // For testing error handling
     getAppLauncherBuilder('com.apple.finder'),
+    getAppMenuBuilder(),
   ];
 
   const errorFreeWidgetBuilders: WidgetBuildingInfo[] = [];
@@ -595,7 +597,7 @@ export function startV2() {
 
     panels.push(Panel({
       x: screenInfo.x,
-      y: screenInfo.y + screenInfo.height - 5 * configV2.panelHeight,
+      y: screenInfo.y + screenInfo.height - 10 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
       widgetsBuildingInfo: errorFreeWidgetBuilders,
