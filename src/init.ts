@@ -569,7 +569,20 @@ export function startV2() {
     getClockBuilder(),
     getAppLauncherBuilder(''), // For testing error handling
     getAppLauncherBuilder('com.apple.finder'),
-    getAppMenuBuilder(),
+    getAppMenuBuilder([
+      {
+        bundleId: 'org.mozilla.firefox',
+        label: 'Firefox',
+      },
+      {
+        bundleId: 'com.google.Chrome',
+        label: 'Chrome',
+      },
+      {
+        bundleId: 'com.apple.systempreferences',
+        label: 'Settings',
+      },
+    ]),
   ];
 
   const errorFreeWidgetBuilders: WidgetBuildingInfo[] = [];

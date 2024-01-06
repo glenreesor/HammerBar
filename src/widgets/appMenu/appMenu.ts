@@ -19,15 +19,10 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 import { getPanelButton } from '../helpers/panelButton';
 import { getAppButton } from './appButton';
 
-export function getAppMenuBuilder(): WidgetBuildingInfo {
+export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]): WidgetBuildingInfo {
   function getAppMenu(
     { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
-    const appsTestData = [
-      { bundleId: 'org.mozilla.firefox', label: 'Firefox' },
-      { bundleId: 'com.google.Chrome', label: 'Chrome' },
-    ];
-
     const appButtons: ReturnType<typeof getAppButton>[] = [];
 
     function bringToFront() {
@@ -61,9 +56,9 @@ export function getAppMenuBuilder(): WidgetBuildingInfo {
     }
 
     function showMenu() {
-      let widgetY = y - 30 * appsTestData.length;
+      let widgetY = y - 30 * appList.length;
 
-      appsTestData.forEach((app) => {
+      appList.forEach((app) => {
         appButtons.push(
           getAppButton({
             x,
