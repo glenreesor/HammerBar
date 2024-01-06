@@ -30,6 +30,7 @@ import type { WidgetBuildingInfo } from './Panel';
 import Taskbar from './Taskbar';
 import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
+import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
 
 type ConfigV2 = {
@@ -562,24 +563,52 @@ const panels: { destroy: () => void }[] = [];
 export function startV2() {
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
 
-  const widgetsBuildingInfo: WidgetBuildingInfo[] = [
+  const widgetsBuildingInfoLeft: WidgetBuildingInfo[] = [
+    getAppMenuBuilder([
+      {
+        bundleId: 'org.mozilla.firefox',
+        label: 'Firefox',
+      },
+      {
+        bundleId: 'com.google.Chrome',
+        label: 'Chrome',
+      },
+      {
+        bundleId: 'com.apple.systempreferences',
+        label: 'Settings',
+      },
+    ]),
     getAppLauncherBuilder('org.mozilla.firefox'),
     getAppLauncherBuilder('com.google.Chrome'),
-    getClockBuilder(),
     getAppLauncherBuilder(''), // For testing error handling
     getAppLauncherBuilder('com.apple.finder'),
   ];
 
-  const errorFreeWidgetBuilders: WidgetBuildingInfo[] = [];
-  widgetsBuildingInfo.forEach((info) => {
+  const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
+    getClockBuilder(),
+    getAppLauncherBuilder('org.mozilla.firefox'),
+  ];
+
+  const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];
+  const errorFreeWidgetBuildersRight: WidgetBuildingInfo[] = [];
+
+  widgetsBuildingInfoLeft.forEach((info) => {
     if (info.buildErrors.length === 0) {
-      errorFreeWidgetBuilders.push(info);
+      errorFreeWidgetBuildersLeft.push(info);
     } else {
       print('Error building widget:');
       info.buildErrors.forEach((txt) => print(`    ${txt}`));
     }
   });
 
+  widgetsBuildingInfoRight.forEach((info) => {
+    if (info.buildErrors.length === 0) {
+      errorFreeWidgetBuildersRight.push(info);
+    } else {
+      print('Error building widget:');
+      info.buildErrors.forEach((txt) => print(`    ${txt}`));
+    }
+  });
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
@@ -590,15 +619,21 @@ export function startV2() {
       y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      widgetsBuildingInfo: errorFreeWidgetBuilders,
+      widgetsBuildingInfo: {
+        left: errorFreeWidgetBuildersLeft,
+        right: errorFreeWidgetBuildersRight,
+      },
     }));
 
     panels.push(Panel({
       x: screenInfo.x,
-      y: screenInfo.y + screenInfo.height - 5 * configV2.panelHeight,
+      y: screenInfo.y + screenInfo.height - 10 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      widgetsBuildingInfo: errorFreeWidgetBuilders,
+      widgetsBuildingInfo: {
+        left: errorFreeWidgetBuildersLeft,
+        right: errorFreeWidgetBuildersRight,
+      },
     }));
   });
 }
