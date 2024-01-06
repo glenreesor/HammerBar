@@ -25,7 +25,7 @@ export function getAppMenuBuilder(): WidgetBuildingInfo {
   ) {
     const appsTestData = [
       { bundleId: 'org.mozilla.firefox', label: 'Firefox' },
-      { bundleId: 'com.google.Chrome', label: 'chrome' },
+      { bundleId: 'com.google.Chrome', label: 'Chrome' },
     ];
 
     const appButtons: ReturnType<typeof getAppButton>[] = [];
@@ -74,7 +74,8 @@ export function getAppMenuBuilder(): WidgetBuildingInfo {
             bundleId: app.bundleId,
             label: app.label,
             onClick: () => {
-              toggleMenu();
+              // Just enough of a delay to allow the click animation complete
+              hs.timer.doAfter(0, toggleMenu);
               hs.application.launchOrFocusByBundleID(app.bundleId);
             },
           })

@@ -56,43 +56,46 @@ export function getAppButton(
   }
 
   function render() {
-    // const IMAGE_PADDING = 2;
-    // const normalImageWidth = width - 2 * IMAGE_PADDING;
+    let bgColor;
+    let fontSize;
+    let iconHeight;
+    let iconWidth;
+    let iconY;
+    let paddingLeft;
+    let paddingRight;
 
-    const bgColor = state.mouseIsInsideButton
-      ? panelHoverColor
-      : panelColor;
+    if (state.mouseIsInsideButton) {
+      bgColor = panelColor;
+    } else {
+      bgColor = panelHoverColor;
+    }
 
-    // const imageWidth = state.mouseButtonIsDown
-    //   ? 0.8 * normalImageWidth
-    //   : normalImageWidth;
+    if (state.mouseButtonIsDown) {
+      fontSize = 10;
+      iconWidth = 0.8 * height;
+      iconHeight = iconWidth;
+      iconY = 0.1 * height;
+      paddingLeft = 2 + 0.2 * height;
+      paddingRight = 5;
+    } else {
+      fontSize = 12;
+      iconWidth = height;
+      iconHeight = iconWidth;
+      iconY = 0;
+      paddingLeft = 2;
+      paddingRight = 5;
+    }
 
-    // const imageX = state.mouseButtonIsDown
-    //   ? IMAGE_PADDING + 0.1 * normalImageWidth
-    //   : IMAGE_PADDING;
-      //
-    const APP_ICON_PADDING_LEFT = 2;
-
-    const TEXT_PADDING_LEFT = 0;
-    const TEXT_PADDING_RIGHT = 5;
-
-    const appIconWidth = height;
-    const appIconHeight = appIconWidth;
-    const appIconX = APP_ICON_PADDING_LEFT;
-    const appIconY = 0;
-
-    const textX = appIconX + appIconWidth + TEXT_PADDING_LEFT;
+    const textX = paddingLeft + iconWidth;
 
     // We're only expecting one line of text, so center it on the icon
-    const fontSize = 12;
-    const textY = appIconY + appIconHeight / 2 - 1.4 * fontSize / 2;
+    const textY = iconY + iconHeight / 2 - 1.4 * fontSize / 2;
 
     const maxTextWidth = (
       CANVAS_WIDTH -
-      APP_ICON_PADDING_LEFT -
-      appIconWidth -
-      TEXT_PADDING_LEFT -
-      TEXT_PADDING_RIGHT
+      paddingLeft -
+      iconWidth -
+      paddingRight
     );
 
     canvas.replaceElements(
@@ -107,17 +110,20 @@ export function getAppButton(
             h: height,
           },
           roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+          trackMouseDown: true,
           trackMouseEnterExit: true,
+          trackMouseUp: true,
         },
         {
           type: 'image',
           frame: {
-            x: appIconX,
-            y: appIconY,
-            w: appIconWidth,
-            h: appIconHeight,
+            x: paddingLeft,
+            y: iconY,
+            w: iconWidth,
+            h: iconWidth,
           },
           image: hs.image.imageFromAppBundle(bundleId),
+          trackMouseDown: true,
           trackMouseEnterExit: true,
           trackMouseUp: true,
         },
@@ -132,6 +138,7 @@ export function getAppButton(
             w: maxTextWidth,
             h: height,
           },
+          trackMouseDown: true,
           trackMouseEnterExit: true,
           trackMouseUp: true,
         },
