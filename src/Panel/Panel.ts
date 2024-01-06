@@ -26,7 +26,10 @@ export default function Panel (
     y: number,
     width: number,
     height: number,
-    widgetsBuildingInfo: WidgetBuildingInfo[],
+    widgetsBuildingInfo: {
+      left: WidgetBuildingInfo[],
+      right: WidgetBuildingInfo[],
+    },
   }
 ): {
   destroy: () => void,
@@ -111,8 +114,9 @@ export default function Panel (
 
   const widgets: ReturnType<WidgetBuilder>[] = [];
 
+  // Left Widgets
   let widgetX = TOGGLE_BUTTON_WIDTH;
-  widgetsBuildingInfo.forEach((builderInfo) => {
+  widgetsBuildingInfo.left.forEach((builderInfo) => {
     widgets.push(builderInfo.getWidget({
       x: widgetX,
       y,
@@ -121,6 +125,19 @@ export default function Panel (
       panelHoverColor,
     }));
     widgetX += builderInfo.getWidth(height);
+  });
+
+  // Right Widgets
+  widgetX = width - TOGGLE_BUTTON_WIDTH;
+  widgetsBuildingInfo.right.forEach((builderInfo) => {
+    widgetX -= builderInfo.getWidth(height);
+    widgets.push(builderInfo.getWidget({
+      x: widgetX,
+      y,
+      height,
+      panelColor,
+      panelHoverColor,
+    }));
   });
 
   return {

@@ -563,12 +563,7 @@ const panels: { destroy: () => void }[] = [];
 export function startV2() {
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
 
-  const widgetsBuildingInfo: WidgetBuildingInfo[] = [
-    getAppLauncherBuilder('org.mozilla.firefox'),
-    getAppLauncherBuilder('com.google.Chrome'),
-    getClockBuilder(),
-    getAppLauncherBuilder(''), // For testing error handling
-    getAppLauncherBuilder('com.apple.finder'),
+  const widgetsBuildingInfoLeft: WidgetBuildingInfo[] = [
     getAppMenuBuilder([
       {
         bundleId: 'org.mozilla.firefox',
@@ -583,18 +578,37 @@ export function startV2() {
         label: 'Settings',
       },
     ]),
+    getAppLauncherBuilder('org.mozilla.firefox'),
+    getAppLauncherBuilder('com.google.Chrome'),
+    getAppLauncherBuilder(''), // For testing error handling
+    getAppLauncherBuilder('com.apple.finder'),
   ];
 
-  const errorFreeWidgetBuilders: WidgetBuildingInfo[] = [];
-  widgetsBuildingInfo.forEach((info) => {
+  const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
+    getClockBuilder(),
+    getAppLauncherBuilder('org.mozilla.firefox'),
+  ];
+
+  const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];
+  const errorFreeWidgetBuildersRight: WidgetBuildingInfo[] = [];
+
+  widgetsBuildingInfoLeft.forEach((info) => {
     if (info.buildErrors.length === 0) {
-      errorFreeWidgetBuilders.push(info);
+      errorFreeWidgetBuildersLeft.push(info);
     } else {
       print('Error building widget:');
       info.buildErrors.forEach((txt) => print(`    ${txt}`));
     }
   });
 
+  widgetsBuildingInfoRight.forEach((info) => {
+    if (info.buildErrors.length === 0) {
+      errorFreeWidgetBuildersRight.push(info);
+    } else {
+      print('Error building widget:');
+      info.buildErrors.forEach((txt) => print(`    ${txt}`));
+    }
+  });
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
@@ -605,7 +619,10 @@ export function startV2() {
       y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      widgetsBuildingInfo: errorFreeWidgetBuilders,
+      widgetsBuildingInfo: {
+        left: errorFreeWidgetBuildersLeft,
+        right: errorFreeWidgetBuildersRight,
+      },
     }));
 
     panels.push(Panel({
@@ -613,7 +630,10 @@ export function startV2() {
       y: screenInfo.y + screenInfo.height - 10 * configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
-      widgetsBuildingInfo: errorFreeWidgetBuilders,
+      widgetsBuildingInfo: {
+        left: errorFreeWidgetBuildersLeft,
+        right: errorFreeWidgetBuildersRight,
+      },
     }));
   });
 }
