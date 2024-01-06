@@ -32,6 +32,7 @@ import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
 import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
+import { getWindowListBuilder } from './widgets/windowList';
 
 type ConfigV2 = {
   panelHeight: number;
@@ -582,6 +583,7 @@ export function startV2() {
     getAppLauncherBuilder('com.google.Chrome'),
     getAppLauncherBuilder(''), // For testing error handling
     getAppLauncherBuilder('com.apple.finder'),
+    getWindowListBuilder(),
   ];
 
   const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
