@@ -15,31 +15,35 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
+import { getWindowInfo } from 'src/hammerspoonUtils';
+import { getWindowButton } from './windowButton';
 
-export function getWindowListBuilder(): WidgetBuildingInfo {
-  function getWindowList(
-    { x, y, height }: WidgetBuilderParams
+export function getWindowListBuilder(screenId: number) {
+  return function getWindowList(
+    { x, y, height, width }: { x: number, y: number, height: number, width: number }
   ) {
     function bringToFront() {
       canvas.show();
+      state.windowButtons.forEach((w) => w.bringToFront());
     }
 
     function destroy() {
       canvas.delete();
-      state.timer.stop();
+      state.windowButtons.forEach((w) => w.destroy());
+      state.timer?.stop();
     }
 
     function hide() {
       canvas.hide();
+      state.windowButtons.forEach((w) => w.hide());
     }
 
     function show() {
       canvas.show();
+      state.windowButtons.forEach((w) => w.show());
     }
 
     function render() {
-      print('rendering');
       const color = { red: 150/255, green: 150/255, blue: 150/255 };
 
       canvas.replaceElements([
@@ -50,7 +54,7 @@ export function getWindowListBuilder(): WidgetBuildingInfo {
           frame: {
             x: 0,
             y: 0,
-            w: 400,
+            w: width,
             h: height,
           },
         },
@@ -58,12 +62,65 @@ export function getWindowListBuilder(): WidgetBuildingInfo {
       canvas.show();
     }
 
-    const canvas = hs.canvas.new({ x, y, w: 400, h: height });
+    function updateWindowButtonsList() {
+      const windows = hs.window.allWindows().map((hsWindow) => getWindowInfo(hsWindow));
+      const regularWindows = windows.filter(
+        (w) => w.screenId == screenId && w.role === 'AXWindow' && (w.appName !== 'Hammerspoon' || w.windowTitle === 'Hammerspoon Console')
+      );
+      const windowListUniquenessString = regularWindows.reduce(
+        (acc, w) => `${acc}_${w.id}${w.isMinimized}${w.windowTitle}`,
+         ''
+      );
+
+      if (windowListUniquenessString !== state.previousWindowList) {
+        state.previousWindowList = windowListUniquenessString;
+
+        const oldWindowButtons = state.windowButtons;
+
+        state.windowButtons = [];
+        let buttonX = x;
+
+        regularWindows.forEach((w) => {
+          state.windowButtons.push(getWindowButton({
+            x: buttonX,
+            y: y + 4,
+            height: 35,
+            bundleId: w.bundleId,
+            windowTitle: w.windowTitle,
+            isMinimized: w.isMinimized,
+            onClick: () => print(w.isMinimized ? 'isMinimized' : 'isNotMinimized'),
+          }));
+          buttonX += 125;
+        });
+
+        // Delay destroying these buttons so there's time for the new list of
+        // window buttons to be rendered (on top of these ones), thereby eliminating
+        // flash of redraw
+        hs.timer.doAfter(0, () => oldWindowButtons.forEach((w) => w.destroy()));
+      }
+
+      state.timer = hs.timer.doAfter(1, updateWindowButtonsList);
+    }
+
+    const canvas = hs.canvas.new({ x, y, w: width, h: height });
     render();
 
-    const state = {
-      timer: hs.timer.doEvery(2, render),
+    const state: {
+      timer: hs.TimerType | undefined,
+      previousWindowList: string,
+      windowButtons: {
+        bringToFront: () => void,
+        destroy: () => void,
+        hide: () => void,
+        show: () => void,
+      }[]
+    } = {
+      timer: undefined,
+      previousWindowList: '',
+      windowButtons: [],
     };
+
+    updateWindowButtonsList();
 
     return {
       bringToFront,
@@ -72,10 +129,4 @@ export function getWindowListBuilder(): WidgetBuildingInfo {
       show,
     };
   }
-
-  return {
-    buildErrors: [],
-    getWidth: () => 400,
-    getWidget: getWindowList,
-  };
 };

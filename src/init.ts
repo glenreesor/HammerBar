@@ -583,7 +583,6 @@ export function startV2() {
     getAppLauncherBuilder('com.google.Chrome'),
     getAppLauncherBuilder(''), // For testing error handling
     getAppLauncherBuilder('com.apple.finder'),
-    getWindowListBuilder(),
   ];
 
   const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
@@ -614,6 +613,7 @@ export function startV2() {
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
+    print(`Adding panel for screen ${screenInfo.name}`);
 
     // Two panels for testing
     panels.push(Panel({
@@ -625,6 +625,7 @@ export function startV2() {
         left: errorFreeWidgetBuildersLeft,
         right: errorFreeWidgetBuildersRight,
       },
+      windowListBuilder: getWindowListBuilder(screenInfo.id),
     }));
 
     panels.push(Panel({
@@ -636,6 +637,7 @@ export function startV2() {
         left: errorFreeWidgetBuildersLeft,
         right: errorFreeWidgetBuildersRight,
       },
+      windowListBuilder: getWindowListBuilder(screenInfo.id),
     }));
   });
 }

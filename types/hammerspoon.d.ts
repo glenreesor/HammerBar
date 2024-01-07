@@ -31,6 +31,7 @@ declare namespace hs {
     imageAlpha?: number;
     roundedRectRadii?: {xRadius: number, yRadius: number };
     strokeColor?: ColorType;
+    strokeWidth?: number;
     text?: string;
     textAlignment?: 'center' | 'justified' | 'left' | 'natural' | 'right',
     textColor?: ColorType;
