@@ -628,17 +628,17 @@ export function startV2() {
       windowListBuilder: getWindowListBuilder(screenInfo.id),
     }));
 
-    panels.push(Panel({
-      x: screenInfo.x,
-      y: screenInfo.y + screenInfo.height - 10 * configV2.panelHeight,
-      width: screenInfo.width,
-      height: configV2.panelHeight,
-      widgetsBuildingInfo: {
-        left: errorFreeWidgetBuildersLeft,
-        right: errorFreeWidgetBuildersRight,
-      },
-      windowListBuilder: getWindowListBuilder(screenInfo.id),
-    }));
+    // panels.push(Panel({
+    //   x: screenInfo.x,
+    //   y: screenInfo.y + screenInfo.height - 10 * configV2.panelHeight,
+    //   width: screenInfo.width,
+    //   height: configV2.panelHeight,
+    //   widgetsBuildingInfo: {
+    //     left: errorFreeWidgetBuildersLeft,
+    //     right: errorFreeWidgetBuildersRight,
+    //   },
+    //   windowListBuilder: getWindowListBuilder(screenInfo.id),
+    // }));
   });
 }
 

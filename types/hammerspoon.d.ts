@@ -58,6 +58,8 @@ declare namespace hs {
     mouseCallback: (callback: CanvasMouseCallbackType) => void;
     replaceElements: (element?: CanvasElementType | Array<CanvasElementType>) => void;
     show: () => void;
+    topLeft: ((point: {x: number, y: number}) => CanvasType) |
+      (() => {x: number, y: number}[]);
   }
 
   interface ColorType {

@@ -95,7 +95,7 @@ export function getWindowButton(
 
     const borderColor = { red: 0.5, green: 0.5, blue: 0.5 };
 
-    const bgColor = isMinimized
+    const bgColor = state.isMinimized
       ? { red: 0.7, green: 0.7, blue: 0.7 }
       : { red: 1, green: 1, blue: 1 }
 
@@ -143,7 +143,7 @@ export function getWindowButton(
         },
         {
           type: 'text',
-          text: windowTitle,
+          text: state.windowTitle,
           textColor: BLACK,
           textSize: fontSize,
           frame: {
@@ -160,9 +160,28 @@ export function getWindowButton(
     );
   }
 
+  function update(
+    { x, windowTitle, isMinimized }:
+    { x: number, windowTitle: string, isMinimized: boolean }
+  ) {
+    if (x !== state.x) {
+      canvas.topLeft({x, y});
+    }
+
+    if (windowTitle !== state.windowTitle || isMinimized !== state.isMinimized) {
+      state.windowTitle = windowTitle;
+      state.isMinimized = isMinimized;
+      render();
+    }
+
+  }
+
   const state = {
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
+    x,
+    windowTitle,
+    isMinimized,
   };
 
   const CANVAS_WIDTH = 120;
@@ -177,5 +196,6 @@ export function getWindowButton(
     destroy,
     hide: () => canvas.hide(),
     show: () => canvas.show(),
+    update,
   };
 }
