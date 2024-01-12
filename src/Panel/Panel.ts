@@ -124,7 +124,7 @@ export default function Panel (
   const widgets: ReturnType<WidgetBuilder>[] = [];
 
   // Left Widgets
-  let widgetX = TOGGLE_BUTTON_WIDTH;
+  let widgetX = x + TOGGLE_BUTTON_WIDTH;
   widgetsBuildingInfo.left.forEach((builderInfo) => {
     widgets.push(builderInfo.getWidget({
       x: widgetX,
@@ -139,7 +139,7 @@ export default function Panel (
   const endOfLeftWidgets = widgetX;
 
   // Right Widgets
-  widgetX = width - TOGGLE_BUTTON_WIDTH;
+  widgetX = x + width - TOGGLE_BUTTON_WIDTH;
   widgetsBuildingInfo.right.forEach((builderInfo) => {
     widgetX -= builderInfo.getWidth(height);
     widgets.push(builderInfo.getWidget({
