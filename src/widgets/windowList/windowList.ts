@@ -16,7 +16,9 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { getWindowInfo } from 'src/hammerspoonUtils';
+import type { WindowInfoType } from 'src/hammerspoonUtils';
 import { getWindowButton } from './windowButton';
+import { listenToWindows } from './windowListWatcher';
 
 export function getWindowListBuilder(screenId: number) {
   return function getWindowList(
@@ -62,15 +64,7 @@ export function getWindowListBuilder(screenId: number) {
       canvas.show();
     }
 
-    function updateWindowButtonsList() {
-      const allWindows = hs.window.allWindows().map((hsWindow) => getWindowInfo(hsWindow));
-      const currentWindows = allWindows.filter(
-        (w) => (
-          w.screenId == screenId &&
-          w.role === 'AXWindow' &&
-          (w.appName !== 'Hammerspoon' || w.windowTitle === 'Hammerspoon Console')
-        )
-      );
+    function updateWindowButtonsList(currentWindows: WindowInfoType[]) {
       const windowListUniquenessString = currentWindows.reduce(
         (acc, w) => `${acc}_${w.id}${w.isMinimized}${w.windowTitle}`,
          ''
@@ -132,7 +126,6 @@ export function getWindowListBuilder(screenId: number) {
           }
         });
       }
-      state.timer = hs.timer.doAfter(1, updateWindowButtonsList);
     }
 
     const canvas = hs.canvas.new({ x, y, w: width, h: height });
@@ -160,7 +153,8 @@ export function getWindowListBuilder(screenId: number) {
       windowButtonsWithId: [],
     };
 
-    updateWindowButtonsList();
+    // Need to save response so we can unsubscribe later
+    listenToWindows(screenId, updateWindowButtonsList);
 
     return {
       bringToFront,
