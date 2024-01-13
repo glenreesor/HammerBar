@@ -15,13 +15,10 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { getWindowInfo } from 'src/hammerspoonUtils';
-import type { WindowInfoType } from 'src/hammerspoonUtils';
-
-let windowListListeners: { screenId: number, callback: (windows: WindowInfoType[]) => void}[] = [];
+let windowListListeners: { screenId: number, callback: (windows: hs.WindowType[]) => void}[] = [];
 let timer: hs.TimerType | undefined;
 
-export function listenToWindows(screenId: number, callback: (windows: WindowInfoType[]) => void) {
+export function subscribeToWindowLists(screenId: number, callback: (windows: hs.WindowType[]) => void) {
   windowListListeners.push({ screenId, callback });
   if (windowListListeners.length === 1) {
     start();
@@ -51,22 +48,19 @@ function unsubscribe(screenId: number) {
 }
 
 function getWindowList() {
-  print('Retrieving window list');
-  const allWindows = hs.window.allWindows().map((hsWindow) => getWindowInfo(hsWindow));
-  const currentRegularWindows = allWindows.filter(
+  const allWindows = hs.window.allWindows();
+  const regularWindows = allWindows.filter(
     (w) => (
-      w.role === 'AXWindow' &&
-      (w.appName !== 'Hammerspoon' || w.windowTitle === 'Hammerspoon Console')
+      w.role() === 'AXWindow' &&
+      (w.application().name() !== 'Hammerspoon' || w.title() === 'Hammerspoon Console')
     )
   );
 
-  print('    Calling callbacks');
   windowListListeners.forEach((l) =>{
-    const windows = currentRegularWindows.filter((w) => w.screenId === l.screenId);
-    print(`    screen ${l.screenId}`);
-    l.callback(windows);
+    const windowsThisScreen = regularWindows.filter(
+      (w) => w.screen().id() === l.screenId);
+    l.callback(windowsThisScreen);
   });
 
-  print('    done');
   timer = hs.timer.doAfter(3, getWindowList);
 }
