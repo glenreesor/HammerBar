@@ -162,7 +162,15 @@ export function getWindowButton(
       w.raise();
       w.focus();
     } else {
-      w.minimize();
+      // If window is already completely visible minimize it, otherwise bring
+      // it to the foreground
+      const windowsFrontToBack = hs.window.orderedWindows();
+      if (windowsFrontToBack[0].id() === w.id()) {
+        w.minimize();
+      } else {
+        w.raise();
+        w.focus();
+      }
     }
   }
 

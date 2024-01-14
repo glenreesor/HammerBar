@@ -210,6 +210,7 @@ declare namespace hs {
     function allWindows(this: void): Array<WindowType>;
     function focusedWindow(this: void): WindowType;
     function get(this: void, windowId: number): WindowType | undefined;
+    function orderedWindows(this: void): WindowType[];
     const filter: WindowFilter;
   }
 }
