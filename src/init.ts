@@ -33,6 +33,7 @@ import { getAppLauncherBuilder } from './widgets/appLauncher';
 import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
 import { getDotGraphBuilder } from './widgets/dotGraph';
+import { getLineGraphBuilder } from './widgets/lineGraph';
 import { getTextBuilder } from './widgets/text';
 import { getWindowListBuilder } from './widgets/windowList';
 import { getXEyesBuilder } from './widgets/xeyes';
@@ -596,6 +597,12 @@ export function startV2() {
       return output;
     }),
     getDotGraphBuilder('CPU', 5, 100, () => {
+      const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
+      const output = parseInt(handle.read('*a'));
+      handle.close();
+      return output;
+    }),
+    getLineGraphBuilder('CPU', 5, 100, () => {
       const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
       const output = parseInt(handle.read('*a'));
       handle.close();
