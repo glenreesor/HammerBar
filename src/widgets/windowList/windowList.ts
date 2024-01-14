@@ -24,23 +24,23 @@ export function getWindowListBuilder(screenId: number) {
   ) {
     function bringToFront() {
       canvas.show();
-      state.windowButtonsWithId.forEach((w) => w.actions.bringToFront());
+      state.windowButtonsInfo.forEach((w) => w.actions.bringToFront());
     }
 
     function destroy() {
       canvas.delete();
-      state.windowButtonsWithId.forEach((w) => w.actions.destroy());
+      state.windowButtonsInfo.forEach((w) => w.actions.destroy());
       state.timer?.stop();
     }
 
     function hide() {
       canvas.hide();
-      state.windowButtonsWithId.forEach((w) => w.actions.hide());
+      state.windowButtonsInfo.forEach((w) => w.actions.hide());
     }
 
     function show() {
       canvas.show();
-      state.windowButtonsWithId.forEach((w) => w.actions.show());
+      state.windowButtonsInfo.forEach((w) => w.actions.show());
     }
 
     function onWindowButtonClick(w: hs.WindowType) {
@@ -72,8 +72,8 @@ export function getWindowListBuilder(screenId: number) {
       canvas.show();
     }
 
-    function updateWindowButtonsList(windows: hs.WindowType[]) {
-      const windowListUniquenessString = windows.reduce(
+    function updateWindowButtonsList(newWindowsList: hs.WindowType[]) {
+      const windowListUniquenessString = newWindowsList.reduce(
         (acc, w) => `${acc}_${w.id()}${w.isMinimized()}${w.title()}`,
          ''
       );
@@ -81,28 +81,28 @@ export function getWindowListBuilder(screenId: number) {
       if (windowListUniquenessString !== state.previousWindowList) {
         state.previousWindowList = windowListUniquenessString;
 
-        const windowIds = windows.map((w) => w.id());
+        const newWindowsListIds = newWindowsList.map((w) => w.id());
 
         // Delete buttons for windows that no longer exist
-        const deletedWindowIds: number[] = [];
+        const windowButtonIdsToDelete: number[] = [];
 
-        state.windowButtonsWithId.forEach((windowButton) => {
-          if (!windowIds.includes(windowButton.id)) {
+        state.windowButtonsInfo.forEach((windowButton) => {
+          if (!newWindowsListIds.includes(windowButton.id)) {
             windowButton.actions.destroy();
-            deletedWindowIds.push(windowButton.id);
+            windowButtonIdsToDelete.push(windowButton.id);
           }
         });
 
-        state.windowButtonsWithId = state.windowButtonsWithId.filter(
-          (windowButton) => !deletedWindowIds.includes(windowButton.id)
+        state.windowButtonsInfo = state.windowButtonsInfo.filter(
+          (windowButton) => !windowButtonIdsToDelete.includes(windowButton.id)
         );
 
         // Update existing windows (position in bar, minimized state, or window
         // title may have changed)
         let widgetX = x;
 
-        state.windowButtonsWithId.forEach((windowButton) => {
-          const newWindowInfo = windows.find((w) => w.id() === windowButton.id);
+        state.windowButtonsInfo.forEach((windowButton) => {
+          const newWindowInfo = newWindowsList.find((w) => w.id() === windowButton.id);
 
           if (newWindowInfo) {
             windowButton.actions.update({
@@ -116,13 +116,13 @@ export function getWindowListBuilder(screenId: number) {
         });
 
         // Add buttons that have been created since last render
-        windows.forEach((w) => {
-          const existingWindowButton = state.windowButtonsWithId.find(
+        newWindowsList.forEach((w) => {
+          const existingWindowButton = state.windowButtonsInfo.find(
             (windowButton) => windowButton.id === w.id()
           );
 
           if (!existingWindowButton) {
-            state.windowButtonsWithId.push({
+            state.windowButtonsInfo.push({
               id: w.id(),
               actions: getWindowButton({
                 x: widgetX,
@@ -146,7 +146,7 @@ export function getWindowListBuilder(screenId: number) {
     const state: {
       timer: hs.TimerType | undefined,
       previousWindowList: string,
-      windowButtonsWithId: {
+      windowButtonsInfo: {
         id: number,
         actions: {
           bringToFront: () => void,
@@ -162,7 +162,7 @@ export function getWindowListBuilder(screenId: number) {
     } = {
       timer: undefined,
       previousWindowList: '',
-      windowButtonsWithId: [],
+      windowButtonsInfo: [],
     };
 
     // Need to save response so we can unsubscribe later
