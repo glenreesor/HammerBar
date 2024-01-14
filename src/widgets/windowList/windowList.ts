@@ -18,29 +18,47 @@
 import { getWindowButton } from './windowButton';
 import { subscribeToWindowLists } from './windowListWatcher';
 
+type WindowButtonsInfoById = Map<
+  number,
+  {
+      w: hs.WindowType,
+      actions: {
+        bringToFront: () => void,
+        destroy: () => void,
+        hide: () => void,
+        show: () => void,
+        update: (
+          { windowTitle, isMinimized }:
+          { windowTitle: string, isMinimized: boolean }
+        ) => void,
+        updatePosition: (x: number) => void,
+      }
+  }
+>;
+
 export function getWindowListBuilder(screenId: number) {
   return function getWindowList(
     { x, y, height, width }: { x: number, y: number, height: number, width: number }
   ) {
     function bringToFront() {
       canvas.show();
-      state.windowButtonsInfo.forEach((w) => w.actions.bringToFront());
+      state.windowButtonsInfoById.forEach((w) => w.actions.bringToFront());
     }
 
     function destroy() {
       canvas.delete();
-      state.windowButtonsInfo.forEach((w) => w.actions.destroy());
+      state.windowButtonsInfoById.forEach((w) => w.actions.destroy());
       state.timer?.stop();
     }
 
     function hide() {
       canvas.hide();
-      state.windowButtonsInfo.forEach((w) => w.actions.hide());
+      state.windowButtonsInfoById.forEach((w) => w.actions.hide());
     }
 
     function show() {
       canvas.show();
-      state.windowButtonsInfo.forEach((w) => w.actions.show());
+      state.windowButtonsInfoById.forEach((w) => w.actions.show());
     }
 
     function onWindowButtonClick(w: hs.WindowType) {
@@ -72,72 +90,67 @@ export function getWindowListBuilder(screenId: number) {
       canvas.show();
     }
 
+    //--------------------------------------------------------------------------
+
     function updateWindowButtonsList(newWindowsList: hs.WindowType[]) {
-      const windowListUniquenessString = newWindowsList.reduce(
-        (acc, w) => `${acc}_${w.id()}${w.isMinimized()}${w.title()}`,
+      const windowListIds = newWindowsList.reduce(
+        (acc, w) => `${acc}_${w.id()}`,
          ''
       );
 
-      if (windowListUniquenessString !== state.previousWindowList) {
-        state.previousWindowList = windowListUniquenessString;
-
-        const newWindowsListIds = newWindowsList.map((w) => w.id());
-
-        // Delete buttons for windows that no longer exist
-        const windowButtonIdsToDelete: number[] = [];
-
-        state.windowButtonsInfo.forEach((windowButton) => {
-          if (!newWindowsListIds.includes(windowButton.id)) {
-            windowButton.actions.destroy();
-            windowButtonIdsToDelete.push(windowButton.id);
-          }
-        });
-
-        state.windowButtonsInfo = state.windowButtonsInfo.filter(
-          (windowButton) => !windowButtonIdsToDelete.includes(windowButton.id)
-        );
-
-        // Update existing windows (position in bar, minimized state, or window
-        // title may have changed)
-        let widgetX = x;
-
-        state.windowButtonsInfo.forEach((windowButton) => {
-          const newWindowInfo = newWindowsList.find((w) => w.id() === windowButton.id);
-
-          if (newWindowInfo) {
-            windowButton.actions.update({
-              x: widgetX,
-              windowTitle: newWindowInfo.title(),
-              isMinimized: newWindowInfo.isMinimized(),
-            });
-
-            widgetX += 125;
-          }
-        });
-
-        // Add buttons that have been created since last render
-        newWindowsList.forEach((w) => {
-          const existingWindowButton = state.windowButtonsInfo.find(
-            (windowButton) => windowButton.id === w.id()
-          );
-
-          if (!existingWindowButton) {
-            state.windowButtonsInfo.push({
-              id: w.id(),
-              actions: getWindowButton({
-                x: widgetX,
-                y: y + 4,
-                height: 35,
-                bundleId: w.application().bundleID() || 'unknown',
-                windowTitle: w.title(),
-                isMinimized: w.isMinimized(),
-                onClick: () => onWindowButtonClick(w),
-              })
-            });
-            widgetX += 125;
-          }
-        });
+      if (windowListIds === state.previousWindowListIds) {
+        // List of windows hasn't changed so nothing to update
+        return;
       }
+
+      // Build up a new object containing window buttons for windows that
+      // still exist
+      const newWindowsListMap = new Map(newWindowsList.map((w) => [w.id(), w]));
+      const newWindowButtonsInfoById: WindowButtonsInfoById = new Map();
+
+      let windowButtonX = x;
+      state.windowButtonsInfoById.forEach((windowButtonInfo, id) => {
+        if (newWindowsListMap.has(id)) {
+          // Window for this button still exists so add it to our new list
+          // and remove from newWindowsListMap so eventually what's remaining
+          // will be just newly added windows
+          newWindowButtonsInfoById.set(id, windowButtonInfo);
+          windowButtonInfo.actions.updatePosition(windowButtonX);
+          windowButtonX += 125;
+
+          newWindowsListMap.delete(id);
+        } else {
+          windowButtonInfo.actions.destroy();
+        }
+      });
+
+      // The only windows left in newWindowsListMap correspond to newly added
+      // windows, so create buttons for those
+      newWindowsListMap.forEach((w) => {
+        newWindowButtonsInfoById.set(
+          w.id(),
+          {
+            w,
+            actions: getWindowButton({
+              x: windowButtonX,
+              y: y + 4,
+              height: 35,
+              bundleId: w.application().bundleID() || 'unknown',
+              windowTitle: w.title(),
+              isMinimized: w.isMinimized(),
+              onClick: () => onWindowButtonClick(w),
+            })
+        });
+        windowButtonX += 125;
+      });
+
+      state.windowButtonsInfoById = newWindowButtonsInfoById;
+    }
+
+    function updateWindowButtonsTitleAndMinimized() {
+      state.windowButtonsInfoById.forEach((wb) => {
+        wb.actions.update({ windowTitle: wb.w.title(), isMinimized: wb.w.isMinimized()});
+      });
     }
 
     const canvas = hs.canvas.new({ x, y, w: width, h: height });
@@ -145,28 +158,20 @@ export function getWindowListBuilder(screenId: number) {
 
     const state: {
       timer: hs.TimerType | undefined,
-      previousWindowList: string,
-      windowButtonsInfo: {
-        id: number,
-        actions: {
-          bringToFront: () => void,
-          destroy: () => void,
-          hide: () => void,
-          show: () => void,
-          update: (
-            { x }:
-            { x: number, windowTitle: string, isMinimized: boolean }
-          ) => void,
-        }
-      }[],
+      timer2: hs.TimerType | undefined,
+      previousWindowListIds: string,
+      windowButtonsInfoById: WindowButtonsInfoById,
     } = {
       timer: undefined,
-      previousWindowList: '',
-      windowButtonsInfo: [],
+      timer2: undefined,
+      previousWindowListIds: '',
+      windowButtonsInfoById: new Map(),
     };
 
-    // Need to save response so we can unsubscribe later
+    // Still need to save response so we can unsubscribe later
     subscribeToWindowLists(screenId, updateWindowButtonsList);
+
+    state.timer2 = hs.timer.doEvery(1, updateWindowButtonsTitleAndMinimized);
 
     return {
       bringToFront,

@@ -160,14 +160,16 @@ export function getWindowButton(
     );
   }
 
-  function update(
-    { x, windowTitle, isMinimized }:
-    { x: number, windowTitle: string, isMinimized: boolean }
-  ) {
+  function updatePosition(x: number) {
     if (x !== state.x) {
       canvas.topLeft({x, y});
     }
+  }
 
+  function update(
+    { windowTitle, isMinimized }:
+    { windowTitle: string, isMinimized: boolean }
+  ) {
     if (windowTitle !== state.windowTitle || isMinimized !== state.isMinimized) {
       state.windowTitle = windowTitle;
       state.isMinimized = isMinimized;
@@ -197,5 +199,6 @@ export function getWindowButton(
     hide: () => canvas.hide(),
     show: () => canvas.show(),
     update,
+    updatePosition,
   };
 }
