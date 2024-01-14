@@ -32,6 +32,7 @@ import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
 import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
+import { getDotGraphBuilder } from './widgets/dotGraph';
 import { getTextBuilder } from './widgets/text';
 import { getWindowListBuilder } from './widgets/windowList';
 
@@ -590,6 +591,12 @@ export function startV2() {
     getTextBuilder('CPU', 1, () => {
       const handle = io.popen('~/bin/printCpuUsage.sh', 'r');
       const output = handle.read('*a') as string;
+      handle.close();
+      return output;
+    }),
+    getDotGraphBuilder('CPU', 1, 100, () => {
+      const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
+      const output = parseInt(handle.read('*a'));
       handle.close();
       return output;
     }),
