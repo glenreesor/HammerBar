@@ -22,7 +22,7 @@ export function getXEyesBuilder(): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
   function getXEyesWidget(
-    { x, y, height }: WidgetBuilderParams
+    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
     function destroy() {
       canvas.delete();
@@ -79,6 +79,17 @@ export function getXEyesBuilder(): WidgetBuildingInfo {
 
       canvas.replaceElements(
         [
+          {
+            type: 'rectangle',
+            fillColor: panelHoverColor,
+            strokeColor: panelColor,
+            frame: {
+              x: 0,
+              y: 0,
+              w: width,
+              h: height,
+            },
+          },
           {
             type: 'circle',
             radius: eyeRadius,
