@@ -21,7 +21,7 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 export function getTextBuilder(title: string, interval: number, cmd: () => string): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
-  function getAppLauncher(
+  function getTextWidget(
     { x, y, height, panelColor }: WidgetBuilderParams
   ) {
     function destroy() {
@@ -99,6 +99,6 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
   return {
     buildErrors,
     getWidth: (widgetHeight) => widgetHeight * 1.5,
-    getWidget: getAppLauncher,
+    getWidget: getTextWidget,
   };
 };
