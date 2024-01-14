@@ -22,18 +22,12 @@ export function getWindowButton(
     x,
     y,
     height,
-    bundleId,
-    windowTitle,
-    isMinimized,
-    onClick,
+    windowObject,
   }: {
     x: number,
     y: number,
     height: number,
-    bundleId: string,
-    windowTitle: string,
-    isMinimized: boolean,
-    onClick: () => void,
+    windowObject: hs.WindowType,
   }
 ) {
   function destroy() {
@@ -58,7 +52,7 @@ export function getWindowButton(
     } else if (msg === 'mouseUp') {
       state.mouseButtonIsDown = false;
       render();
-      onClick();
+      handleClick();
     }
   }
 
@@ -160,30 +154,46 @@ export function getWindowButton(
     );
   }
 
+  function handleClick() {
+    const w = state.windowObject;
+
+    if (w.isMinimized()) {
+      // Most apps require just focus(), but some like LibreOffice also require raise()
+      w.raise();
+      w.focus();
+    } else {
+      w.minimize();
+    }
+  }
+
+  function update() {
+    const newWindowTitle = state.windowObject.title();
+    const newIsMinimized = state.windowObject.isMinimized();
+    if (newWindowTitle !== state.windowTitle || newIsMinimized !== state.isMinimized) {
+      state.windowTitle = newWindowTitle;
+      state.isMinimized = newIsMinimized;
+      render();
+    }
+  }
+
   function updatePosition(x: number) {
     if (x !== state.x) {
       canvas.topLeft({x, y});
     }
   }
 
-  function update(
-    { windowTitle, isMinimized }:
-    { windowTitle: string, isMinimized: boolean }
-  ) {
-    if (windowTitle !== state.windowTitle || isMinimized !== state.isMinimized) {
-      state.windowTitle = windowTitle;
-      state.isMinimized = isMinimized;
-      render();
-    }
-
-  }
+  // Save bundleId, title, minimized status so we don't have to query a window
+  // object for simple updates like changing position. These calls might hang
+  // hammerspoon if the corresponding app is hung
+  const bundleId = windowObject.application().bundleID() || 'unknown';
 
   const state = {
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
     x,
-    windowTitle,
-    isMinimized,
+    windowObject,
+    windowTitle: windowObject.title(),
+    isMinimized: windowObject.isMinimized(),
   };
 
   const CANVAS_WIDTH = 120;

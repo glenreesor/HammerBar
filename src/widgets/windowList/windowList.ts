@@ -27,10 +27,7 @@ type WindowButtonsInfoById = Map<
         destroy: () => void,
         hide: () => void,
         show: () => void,
-        update: (
-          { windowTitle, isMinimized }:
-          { windowTitle: string, isMinimized: boolean }
-        ) => void,
+        update: () => void,
         updatePosition: (x: number) => void,
       }
   }
@@ -49,6 +46,7 @@ export function getWindowListBuilder(screenId: number) {
       canvas.delete();
       state.windowButtonsInfoById.forEach((w) => w.actions.destroy());
       state.timer?.stop();
+      state.timer2?.stop();
     }
 
     function hide() {
@@ -59,16 +57,6 @@ export function getWindowListBuilder(screenId: number) {
     function show() {
       canvas.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.show());
-    }
-
-    function onWindowButtonClick(w: hs.WindowType) {
-      if (w.isMinimized()) {
-        // Most apps require just focus(), but some like LibreOffice also require raise()
-        w.raise();
-        w.focus();
-      } else {
-        w.minimize();
-      }
     }
 
     function render() {
@@ -135,10 +123,7 @@ export function getWindowListBuilder(screenId: number) {
               x: windowButtonX,
               y: y + 4,
               height: 35,
-              bundleId: w.application().bundleID() || 'unknown',
-              windowTitle: w.title(),
-              isMinimized: w.isMinimized(),
-              onClick: () => onWindowButtonClick(w),
+              windowObject: w,
             })
         });
         windowButtonX += 125;
@@ -149,7 +134,7 @@ export function getWindowListBuilder(screenId: number) {
 
     function updateWindowButtonsTitleAndMinimized() {
       state.windowButtonsInfoById.forEach((wb) => {
-        wb.actions.update({ windowTitle: wb.w.title(), isMinimized: wb.w.isMinimized()});
+        wb.actions.update();
       });
     }
 

@@ -613,7 +613,7 @@ export function startV2() {
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
-    print(`Adding panel for screen ${screenInfo.name}`);
+    printDiagnostic(`Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`);
 
     // Two panels for testing
     panels.push(Panel({
