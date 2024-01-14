@@ -78,7 +78,7 @@ export function getLineGraphBuilder(
             x: i * xScale, y: graphY + heightForGraph - (value * yScale)
           }
           )),
-          fillColor: panelColor,
+          fillColor: panelHoverColor,
           strokeColor: {red: 0, green: 1, blue: 1},
         },
       ]);
