@@ -31,6 +31,7 @@ declare namespace hs {
     imageAlpha?: number;
     roundedRectRadii?: {xRadius: number, yRadius: number };
     strokeColor?: ColorType;
+    strokeWidth?: number;
     text?: string;
     textAlignment?: 'center' | 'justified' | 'left' | 'natural' | 'right',
     textColor?: ColorType;
@@ -57,6 +58,8 @@ declare namespace hs {
     mouseCallback: (callback: CanvasMouseCallbackType) => void;
     replaceElements: (element?: CanvasElementType | Array<CanvasElementType>) => void;
     show: () => void;
+    topLeft: ((point: {x: number, y: number}) => CanvasType) |
+      (() => {x: number, y: number}[]);
   }
 
   interface ColorType {
@@ -207,6 +210,7 @@ declare namespace hs {
     function allWindows(this: void): Array<WindowType>;
     function focusedWindow(this: void): WindowType;
     function get(this: void, windowId: number): WindowType | undefined;
+    function orderedWindows(this: void): WindowType[];
     const filter: WindowFilter;
   }
 }

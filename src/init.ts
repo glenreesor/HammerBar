@@ -32,6 +32,7 @@ import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
 import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
+import { getWindowListBuilder } from './widgets/windowList';
 
 type ConfigV2 = {
   panelHeight: number;
@@ -580,13 +581,11 @@ export function startV2() {
     ]),
     getAppLauncherBuilder('org.mozilla.firefox'),
     getAppLauncherBuilder('com.google.Chrome'),
-    getAppLauncherBuilder(''), // For testing error handling
     getAppLauncherBuilder('com.apple.finder'),
   ];
 
   const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
     getClockBuilder(),
-    getAppLauncherBuilder('org.mozilla.firefox'),
   ];
 
   const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];
@@ -612,8 +611,8 @@ export function startV2() {
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
+    printDiagnostic(`Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`);
 
-    // Two panels for testing
     panels.push(Panel({
       x: screenInfo.x,
       y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
@@ -623,17 +622,7 @@ export function startV2() {
         left: errorFreeWidgetBuildersLeft,
         right: errorFreeWidgetBuildersRight,
       },
-    }));
-
-    panels.push(Panel({
-      x: screenInfo.x,
-      y: screenInfo.y + screenInfo.height - 10 * configV2.panelHeight,
-      width: screenInfo.width,
-      height: configV2.panelHeight,
-      widgetsBuildingInfo: {
-        left: errorFreeWidgetBuildersLeft,
-        right: errorFreeWidgetBuildersRight,
-      },
+      windowListBuilder: getWindowListBuilder(screenInfo.id),
     }));
   });
 }

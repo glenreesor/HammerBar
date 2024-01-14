@@ -20,7 +20,7 @@ import { TOGGLE_BUTTON_WIDTH } from './constants';
 import type { WidgetBuilder, WidgetBuildingInfo } from './types';
 
 export default function Panel (
-  { x, y, width, height, widgetsBuildingInfo }:
+  { x, y, width, height, widgetsBuildingInfo, windowListBuilder }:
   {
     x: number,
     y: number,
@@ -29,6 +29,15 @@ export default function Panel (
     widgetsBuildingInfo: {
       left: WidgetBuildingInfo[],
       right: WidgetBuildingInfo[],
+    },
+    windowListBuilder: (
+      {x, y, height, width}:
+      { x: number, y: number, height: number, width: number }
+    ) =>  {
+      bringToFront: () => void,
+      destroy: () => void,
+      hide: () => void,
+      show: () => void,
     },
   }
 ): {
@@ -115,7 +124,7 @@ export default function Panel (
   const widgets: ReturnType<WidgetBuilder>[] = [];
 
   // Left Widgets
-  let widgetX = TOGGLE_BUTTON_WIDTH;
+  let widgetX = x + TOGGLE_BUTTON_WIDTH;
   widgetsBuildingInfo.left.forEach((builderInfo) => {
     widgets.push(builderInfo.getWidget({
       x: widgetX,
@@ -127,8 +136,10 @@ export default function Panel (
     widgetX += builderInfo.getWidth(height);
   });
 
+  const endOfLeftWidgets = widgetX;
+
   // Right Widgets
-  widgetX = width - TOGGLE_BUTTON_WIDTH;
+  widgetX = x + width - TOGGLE_BUTTON_WIDTH;
   widgetsBuildingInfo.right.forEach((builderInfo) => {
     widgetX -= builderInfo.getWidth(height);
     widgets.push(builderInfo.getWidget({
@@ -139,6 +150,19 @@ export default function Panel (
       panelHoverColor,
     }));
   });
+
+  const totalWidgetWidth = (
+    2 * TOGGLE_BUTTON_WIDTH +
+    widgetsBuildingInfo.right.reduce((acc, info) => acc + info.getWidth(height), 0) +
+    widgetsBuildingInfo.left.reduce((acc, info) => acc + info.getWidth(height), 0)
+  );
+
+  widgets.push(windowListBuilder({
+      x: endOfLeftWidgets,
+      y,
+      height,
+      width: width - totalWidgetWidth,
+  }));
 
   return {
     destroy,
