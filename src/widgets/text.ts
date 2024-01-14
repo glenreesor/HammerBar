@@ -22,7 +22,7 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
   const buildErrors: string[] = [];
 
   function getTextWidget(
-    { x, y, height, panelColor }: WidgetBuilderParams
+    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
     function destroy() {
       canvas.delete();
@@ -39,7 +39,7 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
         [
           {
             type: 'rectangle',
-            fillColor: panelColor,
+            fillColor: panelHoverColor,
             strokeColor: panelColor,
             frame: {
               x: 0,

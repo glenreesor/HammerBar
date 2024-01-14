@@ -27,7 +27,7 @@ export function getDotGraphBuilder(
   const buildErrors: string[] = [];
 
   function getDotGraphWidget(
-    { x, y, height, panelColor }: WidgetBuilderParams
+    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
     function destroy() {
       canvas.delete();
@@ -50,7 +50,7 @@ export function getDotGraphBuilder(
       canvas.replaceElements([
         {
           type: 'rectangle',
-          fillColor: panelColor,
+          fillColor: panelHoverColor,
           strokeColor: panelColor,
           frame: {
             x: 0,
