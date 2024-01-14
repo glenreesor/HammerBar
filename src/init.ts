@@ -32,6 +32,7 @@ import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
 import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
+import { getTextBuilder } from './widgets/text';
 import { getWindowListBuilder } from './widgets/windowList';
 
 type ConfigV2 = {
@@ -586,6 +587,12 @@ export function startV2() {
 
   const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
     getClockBuilder(),
+    getTextBuilder('CPU', 1, () => {
+      const handle = io.popen('~/bin/printCpuUsage.sh', 'r');
+      const output = handle.read('*a') as string;
+      handle.close();
+      return output;
+    }),
   ];
 
   const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];
