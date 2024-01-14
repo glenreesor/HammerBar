@@ -31,6 +31,7 @@ export function getWindowButton(
   }
 ) {
   function destroy() {
+    canvas.hide();
     canvas.delete();
   }
 
