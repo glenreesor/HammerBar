@@ -18,10 +18,15 @@
 import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getTextBuilder(title: string, interval: number, cmd: () => string): WidgetBuildingInfo {
+export function getDotGraphBuilder(
+  title: string,
+  interval: number,
+  maxValues: number,
+  cmd: () => number
+): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
-  function getTextWidget(
+  function getDotGraphWidget(
     { x, y, height, panelColor }: WidgetBuilderParams
   ) {
     function destroy() {
@@ -31,56 +36,60 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
     function render() {
       const fontSize = 12;
       const titleY = height / 2 - fontSize - fontSize / 2;
-      const outputY = titleY + fontSize * 1.6;
+      const graphY = titleY + fontSize * 1.5;
+      const heightForGraph = height - graphY;
 
-      const output = cmd();
+      state.values.push(cmd());
 
-      canvas.replaceElements(
-        [
-          {
-            type: 'rectangle',
-            fillColor: panelColor,
-            strokeColor: panelColor,
-            frame: {
-              x: 0,
-              y: 0,
-              w: width,
-              h: height,
-            },
-          },
-          {
-            type: 'text',
-            text: title,
-            textAlignment: 'center',
-            textColor: BLACK,
-            textSize: fontSize,
-            frame: {
-              x: 0,
-              y: titleY,
-              w: width,
-              h: fontSize * 1.2,
-            },
-          },
-          {
-            type: 'text',
-            text: output,
-            textAlignment: 'center',
-            textColor: BLACK,
-            textSize: fontSize,
-            frame: {
-              x: 0,
-              y: outputY,
-              w: width,
-              h: fontSize * 1.2,
-            },
-          },
-        ],
-      );
+      state.values = state.values.slice(-1 * maxValues);
+      const max = state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
 
+      const xScale = width / maxValues;
+      const yScale = heightForGraph / max;
+
+      canvas.replaceElements([
+        {
+          type: 'rectangle',
+          fillColor: panelColor,
+          strokeColor: panelColor,
+          frame: {
+            x: 0,
+            y: 0,
+            w: width,
+            h: height,
+          },
+        },
+        {
+          type: 'text',
+          text: title,
+          textAlignment: 'center',
+          textColor: BLACK,
+          textSize: fontSize,
+          frame: {
+            x: 0,
+            y: titleY,
+            w: width,
+            h: fontSize * 1.2,
+          },
+        },
+        {
+          type: 'points',
+          coordinates: state.values.map((value, i) => ({
+            x: i * xScale, y: graphY + heightForGraph - (value * yScale)
+          }
+          )),
+          strokeColor: {red: 0, green: 1, blue: 1},
+        },
+      ]);
       state.timer = hs.timer.doAfter(interval, render);
     }
 
-    const state: { timer?: hs.TimerType } = { };
+    const state: {
+      timer?: hs.TimerType
+      values: number[]
+    } = {
+      values: [],
+    };
 
     const width = height * 1.5;
     const canvas = hs.canvas.new({ x, y, w: width, h: height });
@@ -99,6 +108,6 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
   return {
     buildErrors,
     getWidth: (widgetHeight) => widgetHeight * 1.5,
-    getWidget: getTextWidget,
+    getWidget: getDotGraphWidget,
   };
 };
