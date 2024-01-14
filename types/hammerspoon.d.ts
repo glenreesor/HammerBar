@@ -23,12 +23,14 @@ declare namespace hs {
   }
 
   interface CanvasElementType {
-    type: string;
-    id?: number;
+    center?: { x: number, y: number };
+    coordinates?: { x: number, y: number }[];
     fillColor?: ColorType;
     frame?: { x: number, y: number, w: number, h: number };
+    id?: number;
     image?: any;
     imageAlpha?: number;
+    radius?: number;
     roundedRectRadii?: {xRadius: number, yRadius: number };
     strokeColor?: ColorType;
     strokeWidth?: number;
@@ -40,6 +42,7 @@ declare namespace hs {
     trackMouseDown?: boolean;
     trackMouseEnterExit?: boolean;
     trackMouseUp?: boolean;
+    type: string;
   }
 
   interface CanvasMouseCallbackType {
@@ -175,6 +178,10 @@ declare namespace hs {
 
   namespace inspect {
     function inspect(this: void, thing: any): string;
+  }
+
+  namespace mouse {
+    function absolutePosition(this: void): {x: number, y: number};
   }
 
   namespace screen {

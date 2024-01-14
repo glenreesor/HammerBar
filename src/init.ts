@@ -35,6 +35,7 @@ import { getClockBuilder } from './widgets/clock';
 import { getDotGraphBuilder } from './widgets/dotGraph';
 import { getTextBuilder } from './widgets/text';
 import { getWindowListBuilder } from './widgets/windowList';
+import { getXEyesBuilder } from './widgets/xeyes';
 
 type ConfigV2 = {
   panelHeight: number;
@@ -588,18 +589,19 @@ export function startV2() {
 
   const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
     getClockBuilder(),
-    getTextBuilder('CPU', 1, () => {
+    getTextBuilder('CPU', 5, () => {
       const handle = io.popen('~/bin/printCpuUsage.sh', 'r');
       const output = handle.read('*a') as string;
       handle.close();
       return output;
     }),
-    getDotGraphBuilder('CPU', 1, 100, () => {
+    getDotGraphBuilder('CPU', 5, 100, () => {
       const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
       const output = parseInt(handle.read('*a'));
       handle.close();
       return output;
     }),
+    getXEyesBuilder(),
   ];
 
   const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];
