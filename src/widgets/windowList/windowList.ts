@@ -91,6 +91,8 @@ export function getWindowListBuilder(screenId: number) {
         return;
       }
 
+      state.previousWindowListIds = windowListIds;
+
       // Build up a new object containing window buttons for windows that
       // still exist
       const newWindowsListMap = new Map(newWindowsList.map((w) => [w.id(), w]));
