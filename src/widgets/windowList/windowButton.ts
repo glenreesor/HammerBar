@@ -22,13 +22,13 @@ export function getWindowButton(
     x,
     y,
     buttonWidth,
-    height,
+    buttonHeight,
     windowObject,
   }: {
     x: number,
     y: number,
     buttonWidth: number,
-    height: number,
+    buttonHeight: number,
     windowObject: hs.WindowType,
   }
 ) {
@@ -76,14 +76,14 @@ export function getWindowButton(
 
     if (state.mouseButtonIsDown) {
       fontSize = 10;
-      iconWidth = 0.8 * height;
+      iconWidth = 0.8 * buttonHeight;
       iconHeight = iconWidth;
-      iconY = 0.1 * height;
-      paddingLeft = 2 + 0.2 * height;
+      iconY = 0.1 * buttonHeight;
+      paddingLeft = 2 + 0.2 * buttonHeight;
       paddingRight = 5;
     } else {
       fontSize = 12;
-      iconWidth = height;
+      iconWidth = buttonHeight;
       iconHeight = iconWidth;
       iconY = 0;
       paddingLeft = 2;
@@ -118,7 +118,7 @@ export function getWindowButton(
             x: 0,
             y: 0,
             w: buttonWidth,
-            h: height,
+            h: buttonHeight,
           },
           roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
           trackMouseDown: true,
@@ -147,7 +147,7 @@ export function getWindowButton(
             x: textX,
             y: textY,
             w: maxTextWidth,
-            h: height,
+            h: buttonHeight,
           },
           trackMouseDown: true,
           trackMouseEnterExit: true,
@@ -207,7 +207,7 @@ export function getWindowButton(
     isMinimized: windowObject.isMinimized(),
   };
 
-  const canvas = hs.canvas.new({ x, y, w: buttonWidth, h: height });
+  const canvas = hs.canvas.new({ x, y, w: buttonWidth, h: buttonHeight });
 
   render();
   canvas.mouseCallback(mouseCallback);

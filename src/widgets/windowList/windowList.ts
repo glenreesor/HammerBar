@@ -125,7 +125,7 @@ export function getWindowListBuilder(screenId: number) {
               x: windowButtonX,
               y: y + 4,
               buttonWidth: 120,
-              height: 35,
+              buttonHeight: 35,
               windowObject: w,
             })
         });
