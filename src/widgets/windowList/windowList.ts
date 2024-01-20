@@ -124,11 +124,12 @@ export function getWindowListBuilder(screenId: number) {
             actions: getWindowButton({
               x: windowButtonX,
               y: y + 4,
+              buttonWidth: 120,
               height: 35,
               windowObject: w,
             })
         });
-        windowButtonX += 125;
+        windowButtonX += 120;
       });
 
       state.windowButtonsInfoById = newWindowButtonsInfoById;

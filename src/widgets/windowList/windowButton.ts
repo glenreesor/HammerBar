@@ -21,11 +21,13 @@ export function getWindowButton(
   {
     x,
     y,
+    buttonWidth,
     height,
     windowObject,
   }: {
     x: number,
     y: number,
+    buttonWidth: number,
     height: number,
     windowObject: hs.WindowType,
   }
@@ -99,7 +101,7 @@ export function getWindowButton(
     const textY = 2;
 
     const maxTextWidth = (
-      CANVAS_WIDTH -
+      buttonWidth -
       paddingLeft -
       iconWidth -
       paddingRight
@@ -115,7 +117,7 @@ export function getWindowButton(
           frame: {
             x: 0,
             y: 0,
-            w: CANVAS_WIDTH,
+            w: buttonWidth,
             h: height,
           },
           roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
@@ -205,8 +207,7 @@ export function getWindowButton(
     isMinimized: windowObject.isMinimized(),
   };
 
-  const CANVAS_WIDTH = 120;
-  const canvas = hs.canvas.new({ x, y, w: CANVAS_WIDTH, h: height });
+  const canvas = hs.canvas.new({ x, y, w: buttonWidth, h: height });
 
   render();
   canvas.mouseCallback(mouseCallback);
