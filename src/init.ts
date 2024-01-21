@@ -608,7 +608,7 @@ export function startV2() {
       handle.close();
       return output;
     }),
-    getXEyesBuilder(),
+    getXEyesBuilder(3),
   ];
 
   const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];

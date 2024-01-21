@@ -18,7 +18,7 @@
 import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getXEyesBuilder(): WidgetBuildingInfo {
+export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
   function getXEyesWidget(
@@ -30,6 +30,17 @@ export function getXEyesBuilder(): WidgetBuildingInfo {
 
     function render() {
       const mouseCoords = hs.mouse.absolutePosition();
+      const dx = state.previousMouseCoords.x - mouseCoords.x;
+      const dy = state.previousMouseCoords.y - mouseCoords.y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+
+      if (d < 5) {
+        state.interval = Math.min(state.interval * 2, maxInterval);
+        state.timer = hs.timer.doAfter(state.interval, render);
+        return;
+      }
+      state.previousMouseCoords = mouseCoords;
+      state.interval = Math.max(state.interval / 3, 0.1);
 
       const eyeRadius = width / 5;
       const pupilRadius = eyeRadius / 2;
@@ -120,14 +131,24 @@ export function getXEyesBuilder(): WidgetBuildingInfo {
           },
         ],
       );
-      state.timer = hs.timer.doAfter(1, render);
+      state.timer = hs.timer.doAfter(state.interval, render);
     }
 
     const state: {
       timer?: hs.TimerType
       values: number[]
+      interval: number,
+      previousMouseCoords: {
+        x: number,
+        y: number,
+      },
     } = {
       values: [],
+      interval: maxInterval,
+      previousMouseCoords: {
+        x: 0,
+        y: 0,
+      },
     };
 
     const width = height;
