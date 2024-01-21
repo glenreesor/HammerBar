@@ -638,7 +638,7 @@ export function startV2() {
 
     panels.push(Panel({
       x: screenInfo.x,
-      y: screenInfo.y + screenInfo.height - 3 * configV2.panelHeight,
+      y: screenInfo.y + screenInfo.height - configV2.panelHeight,
       width: screenInfo.width,
       height: configV2.panelHeight,
       widgetsBuildingInfo: {

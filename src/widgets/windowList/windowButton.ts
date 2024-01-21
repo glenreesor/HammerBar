@@ -16,6 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
+import { printWindowInfo } from 'src/utils';
 
 export function getWindowButton(
   {
@@ -210,6 +211,13 @@ export function getWindowButton(
 
   function handleClick() {
     const w = state.windowObject;
+    const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();
+
+    if (keyboardModifiers.shift) {
+      // User just wants to dump the window info without toggling window visibility
+      printWindowInfo(w);
+      return;
+    }
 
     if (w.isMinimized()) {
       // Most apps require just focus(), but some like LibreOffice also require raise()
