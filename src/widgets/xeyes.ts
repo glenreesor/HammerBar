@@ -18,7 +18,7 @@
 import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getXEyesBuilder(): WidgetBuildingInfo {
+export function getXEyesBuilder(interval: number): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
   function getXEyesWidget(
@@ -120,7 +120,7 @@ export function getXEyesBuilder(): WidgetBuildingInfo {
           },
         ],
       );
-      state.timer = hs.timer.doAfter(1, render);
+      state.timer = hs.timer.doAfter(interval, render);
     }
 
     const state: {
