@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
+import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
 export function getLineGraphBuilder(
@@ -47,6 +47,8 @@ export function getLineGraphBuilder(
       const xScale = width / maxValues;
       const yScale = heightForGraph / max;
 
+      const maxString = `${Math.ceil(max)}`;
+
       canvas.replaceElements([
         {
           type: 'rectangle',
@@ -62,11 +64,10 @@ export function getLineGraphBuilder(
         {
           type: 'text',
           text: title,
-          textAlignment: 'center',
           textColor: BLACK,
           textSize: fontSize,
           frame: {
-            x: 0,
+            x: 2,
             y: titleY,
             w: width,
             h: fontSize * 1.2,
@@ -80,6 +81,30 @@ export function getLineGraphBuilder(
           )),
           fillColor: panelHoverColor,
           strokeColor: {red: 0, green: 1, blue: 1},
+        },
+        {
+          // Max line
+          type: 'segments',
+          coordinates: [
+            { x: 0, y: graphY },
+            { x: width, y: graphY },
+          ],
+          strokeColor: { red: 1, green: 1, blue: 1},
+          strokeWidth: 1,
+        },
+        {
+          // Max label
+          type: 'text',
+          text: maxString,
+          textAlignment: 'right',
+          textColor: WHITE,
+          textSize: fontSize * 0.8,
+          frame: {
+            x: 0,
+            y: graphY - fontSize,
+            w: width - 2,
+            h: fontSize * 1.2
+          },
         },
       ]);
       state.timer = hs.timer.doAfter(interval, render);
