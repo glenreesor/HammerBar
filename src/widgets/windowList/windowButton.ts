@@ -35,6 +35,11 @@ export function getWindowButton(
   function destroy() {
     canvas.hide();
     canvas.delete();
+
+    if (state.hoverCanvas !== undefined) {
+      state.hoverCanvas.hide();
+      state.hoverCanvas.delete();
+    }
   }
 
   const mouseCallback: hs.CanvasMouseCallbackType = function(
@@ -57,6 +62,49 @@ export function getWindowButton(
       render();
       handleClick();
     }
+  }
+
+  function renderHoveredTitle() {
+    const fontSize = 12;
+    const width = state.windowTitle.length * fontSize * 0.75;
+    const height = fontSize * 2;
+
+    if (state.hoverCanvas === undefined) {
+      state.hoverCanvas = hs.canvas.new({
+        x: state.x,
+        y: y - fontSize * 2,
+        w: width,
+        h: height,
+      });
+    }
+    state.hoverCanvas.replaceElements(
+      [
+        {
+          type: 'rectangle',
+          fillColor: { red: 1, green: 1, blue: 1},
+          frame: {
+            x: 0,
+            y: 0,
+            w: width,
+            h: height,
+          },
+          roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+        },
+        {
+          type: 'text',
+          text: state.windowTitle,
+          textColor: BLACK,
+          textSize: fontSize,
+          frame: {
+            x: 10,
+            y: 5,
+            w: width,
+            h: height,
+          },
+        },
+      ],
+    );
+    state.hoverCanvas.show();
   }
 
   function render() {
@@ -134,9 +182,6 @@ export function getWindowButton(
             h: iconWidth,
           },
           image: hs.image.imageFromAppBundle(bundleId),
-          trackMouseDown: true,
-          trackMouseEnterExit: true,
-          trackMouseUp: true,
         },
         {
           type: 'text',
@@ -149,12 +194,18 @@ export function getWindowButton(
             w: maxTextWidth,
             h: buttonHeight,
           },
-          trackMouseDown: true,
-          trackMouseEnterExit: true,
-          trackMouseUp: true,
         },
       ]
     );
+
+    if (state.mouseIsInsideButton) {
+      renderHoveredTitle();
+    } else {
+      if (state.hoverCanvas !== undefined) {
+        state.hoverCanvas.hide();
+        state.hoverCanvas = undefined;
+      }
+    }
   }
 
   function handleClick() {
@@ -191,6 +242,7 @@ export function getWindowButton(
     if (x !== state.x || width !== state.width) {
       canvas.frame({x: x, y: y, w: width, h: buttonHeight});
       state.width = width;
+      state.x = x;
       render();
     }
   }
@@ -200,7 +252,17 @@ export function getWindowButton(
   // hammerspoon if the corresponding app is hung
   const bundleId = windowObject.application().bundleID() || 'unknown';
 
-  const state = {
+  const state: {
+    hoverCanvas: hs.CanvasType | undefined,
+    mouseButtonIsDown: boolean,
+    mouseIsInsideButton: boolean,
+    x: number,
+    width: number,
+    windowObject: hs.WindowType,
+    windowTitle: string,
+    isMinimized: boolean,
+  } = {
+    hoverCanvas: undefined,
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
     x,
