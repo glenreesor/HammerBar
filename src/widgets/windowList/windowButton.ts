@@ -134,9 +134,6 @@ export function getWindowButton(
             h: iconWidth,
           },
           image: hs.image.imageFromAppBundle(bundleId),
-          trackMouseDown: true,
-          trackMouseEnterExit: true,
-          trackMouseUp: true,
         },
         {
           type: 'text',
@@ -149,9 +146,6 @@ export function getWindowButton(
             w: maxTextWidth,
             h: buttonHeight,
           },
-          trackMouseDown: true,
-          trackMouseEnterExit: true,
-          trackMouseUp: true,
         },
       ]
     );
