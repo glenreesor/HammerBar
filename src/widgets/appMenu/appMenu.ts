@@ -69,8 +69,12 @@ export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]
             bundleId: app.bundleId,
             label: app.label,
             onClick: () => {
-              // Just enough of a delay to allow the click animation complete
-              hs.timer.doAfter(0, toggleMenu);
+              const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();
+
+              if (!keyboardModifiers.cmd && !keyboardModifiers.ctrl) {
+                // Just enough of a delay to allow the click animation complete
+                hs.timer.doAfter(0, toggleMenu);
+              }
               hs.application.launchOrFocusByBundleID(app.bundleId);
             },
           })
