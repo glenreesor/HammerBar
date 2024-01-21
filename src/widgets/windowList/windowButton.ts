@@ -101,7 +101,7 @@ export function getWindowButton(
     const textY = 2;
 
     const maxTextWidth = (
-      buttonWidth -
+      state.width -
       paddingLeft -
       iconWidth -
       paddingRight
@@ -117,7 +117,7 @@ export function getWindowButton(
           frame: {
             x: 0,
             y: 0,
-            w: buttonWidth,
+            w: state.width,
             h: buttonHeight,
           },
           roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
@@ -187,9 +187,11 @@ export function getWindowButton(
     }
   }
 
-  function updatePosition(x: number) {
-    if (x !== state.x) {
-      canvas.topLeft({x, y});
+  function updatePositionAndWidth(x: number, width: number) {
+    if (x !== state.x || width !== state.width) {
+      canvas.frame({x: x, y: y, w: width, h: buttonHeight});
+      state.width = width;
+      render();
     }
   }
 
@@ -202,6 +204,7 @@ export function getWindowButton(
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
     x,
+    width: buttonWidth,
     windowObject,
     windowTitle: windowObject.title(),
     isMinimized: windowObject.isMinimized(),
@@ -219,6 +222,6 @@ export function getWindowButton(
     hide: () => canvas.hide(),
     show: () => canvas.show(),
     update,
-    updatePosition,
+    updatePositionAndWidth,
   };
 }

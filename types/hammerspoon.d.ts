@@ -57,6 +57,7 @@ declare namespace hs {
   interface CanvasType {
     appendElements: (element: CanvasElementType | Array<CanvasElementType>) => void;
     delete: () => void;
+    frame: (newFrame: {x: number, y: number, w: number, h: number}) => void;
     hide: () => void;
     mouseCallback: (callback: CanvasMouseCallbackType) => void;
     replaceElements: (element?: CanvasElementType | Array<CanvasElementType>) => void;
