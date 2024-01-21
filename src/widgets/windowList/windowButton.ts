@@ -185,6 +185,7 @@ export function getWindowButton(
     if (x !== state.x || width !== state.width) {
       canvas.frame({x: x, y: y, w: width, h: buttonHeight});
       state.width = width;
+      state.x = x;
       render();
     }
   }
