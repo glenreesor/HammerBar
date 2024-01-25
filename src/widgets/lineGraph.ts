@@ -22,6 +22,7 @@ export function getLineGraphBuilder(
   title: string,
   interval: number,
   maxValues: number,
+  maxGraphValue: number | undefined,
   cmd: () => number
 ): WidgetBuildingInfo {
   const buildErrors: string[] = [];
@@ -42,7 +43,7 @@ export function getLineGraphBuilder(
       state.values.push(cmd());
 
       state.values = state.values.slice(-1 * maxValues);
-      const max = state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
+      const max = maxGraphValue ?? state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
 
       const xScale = width / maxValues;
       const yScale = heightForGraph / max;

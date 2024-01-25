@@ -590,19 +590,31 @@ export function startV2() {
 
   const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
     getClockBuilder(),
-    getTextBuilder('CPU', 5, () => {
+    getTextBuilder('CPU', 1, () => {
       const handle = io.popen('~/bin/printCpuUsage.sh', 'r');
       const output = handle.read('*a') as string;
       handle.close();
       return output;
     }),
-    getDotGraphBuilder('CPU', 5, 100, () => {
+    getDotGraphBuilder('CPU', 1, 100, undefined, () => {
       const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
       const output = parseInt(handle.read('*a'));
       handle.close();
       return output;
     }),
-    getLineGraphBuilder('CPU', 5, 100, () => {
+    getDotGraphBuilder('CPU', 1, 100, 400, () => {
+      const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
+      const output = parseInt(handle.read('*a'));
+      handle.close();
+      return output;
+    }),
+    getLineGraphBuilder('CPU', 1, 100, 400, () => {
+      const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
+      const output = parseInt(handle.read('*a'));
+      handle.close();
+      return output;
+    }),
+    getLineGraphBuilder('CPU', 1, 100, undefined, () => {
       const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
       const output = parseInt(handle.read('*a'));
       handle.close();
