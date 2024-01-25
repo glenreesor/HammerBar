@@ -31,7 +31,76 @@ export function getLineGraphBuilder(
     { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
     function destroy() {
+      canvas.hide();
       canvas.delete();
+
+      if (state.hoverCanvas !== undefined) {
+        state.hoverCanvas.hide();
+        state.hoverCanvas.delete();
+      }
+    }
+
+    const mouseCallback: hs.CanvasMouseCallbackType = function(
+      this: void,
+      _canvas: hs.CanvasType,
+      msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
+    ) {
+      if (msg === 'mouseEnter') {
+        state.mouseIsInside = true;
+        render();
+      } else if (msg === 'mouseExit') {
+        state.mouseIsInside = false;
+        render();
+      }
+    }
+
+
+    function renderHoveredValue() {
+      const fontSize = 10;
+      const value = state.values[state.values.length - 1];
+      const canvasX = state.values.length < maxValues / 2
+        ? x + width / 2
+        : x + 5;
+      const hoverWidth = fontSize * (value.toString().length + 1);
+      const hoverHeight= fontSize * 2;
+
+      if (state.hoverCanvas === undefined) {
+        state.hoverCanvas = hs.canvas.new({
+          x: canvasX,
+          y: y + height / 2 - hoverHeight / 2,
+          w: hoverWidth,
+          h: hoverHeight,
+        });
+      }
+
+      state.hoverCanvas.replaceElements(
+        [
+          {
+            type: 'rectangle',
+            fillColor: WHITE,
+            frame: {
+              x: 0,
+              y: 0,
+              w: hoverWidth,
+              h: hoverHeight,
+            },
+          },
+          {
+            type: 'text',
+            text: `${value}`,
+            textColor: BLACK,
+            textSize: fontSize,
+            textAlignment: 'center',
+            frame: {
+              x: 0,
+              y: 5,
+              w: hoverWidth,
+              h: hoverHeight,
+            },
+          },
+        ],
+      );
+      state.hoverCanvas.show();
     }
 
     function render() {
@@ -61,6 +130,7 @@ export function getLineGraphBuilder(
             w: width,
             h: height,
           },
+          trackMouseEnterExit: true,
         },
         {
           type: 'text',
@@ -109,12 +179,25 @@ export function getLineGraphBuilder(
         },
       ]);
       state.timer = hs.timer.doAfter(interval, render);
+
+      if (state.mouseIsInside) {
+        renderHoveredValue();
+      } else {
+        if (state.hoverCanvas !== undefined) {
+          state.hoverCanvas.hide();
+          state.hoverCanvas = undefined;
+        }
+      }
     }
 
     const state: {
+      hoverCanvas: hs.CanvasType | undefined,
+      mouseIsInside: boolean,
       timer?: hs.TimerType
       values: number[]
     } = {
+      hoverCanvas: undefined,
+      mouseIsInside: false,
       values: [],
     };
 
@@ -122,6 +205,7 @@ export function getLineGraphBuilder(
     const canvas = hs.canvas.new({ x, y, w: width, h: height });
 
     render();
+    canvas.mouseCallback(mouseCallback);
     canvas.show();
 
     return {
