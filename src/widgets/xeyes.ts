@@ -32,15 +32,15 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
       const mouseCoords = hs.mouse.absolutePosition();
       const dx = state.previousMouseCoords.x - mouseCoords.x;
       const dy = state.previousMouseCoords.y - mouseCoords.y;
-      const d = Math.sqrt(dx * dx + dy * dy);
+      // const d = Math.sqrt(dx * dx + dy * dy);
 
-      if (d < 5) {
-        state.interval = Math.min(state.interval * 2, maxInterval);
-        state.timer = hs.timer.doAfter(state.interval, render);
-        return;
-      }
+      // if (d < 5) {
+      //   state.interval = Math.min(state.interval * 2, maxInterval);
+      //   state.timer = hs.timer.doAfter(state.interval, render);
+      //   return;
+      // }
       state.previousMouseCoords = mouseCoords;
-      state.interval = Math.max(state.interval / 3, 0.1);
+      // state.interval = 0.1; // Math.max(state.interval / 3, 0.1);
 
       const eyeRadius = width / 5;
       const pupilRadius = eyeRadius / 2;
@@ -67,10 +67,6 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
           leftEyeAngleToMouse -= Math.PI;
         }
       }
-      const leftPupilCenter = {
-        x: leftEyeCenter.x + pupilRadius * Math.cos(leftEyeAngleToMouse),
-        y: leftEyeCenter.y - pupilRadius * Math.sin(leftEyeAngleToMouse)
-      };
 
       const rightdy = rightEyeCenterAbsolute.y - mouseCoords.y;
       const rightdx = mouseCoords.x - rightEyeCenterAbsolute.x;
@@ -83,9 +79,59 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
           rightEyeAngleToMouse -= Math.PI;
         }
       }
+
+      const dThetaX = (leftEyeAngleToMouse - state.lastPupilAngle.left) * 180 / Math.PI;
+      const dThetaY = (rightEyeAngleToMouse - state.lastPupilAngle.right) * 180 / Math.PI;
+
+      if (Math.abs(dThetaX) < 10 && Math.abs(dThetaY) < 10) {
+        state.interval = Math.min(state.interval * 2, maxInterval);
+        state.timer = hs.timer.doAfter(state.interval, render);
+        return;
+      }
+
+      state.interval = 0.1;
+
+      const leftEyeDeltaIsBig = Math.abs(dThetaX) > 40;
+      const leftEyeDeltaIsMedium = Math.abs(dThetaX) > 10;
+      const randomGoofyExtraRotation = Math.random() < 0.01 ? 2 * Math.PI : 0;
+
+      const leftEyeAngleToUse = (
+        state.lastPupilAngle.left +
+        randomGoofyExtraRotation + (
+          leftEyeDeltaIsBig
+            ? Math.sign(dThetaX) / 1.2
+            : leftEyeDeltaIsMedium
+              ? Math.sign(dThetaX) / 4
+              : 0
+        )
+      );
+
+      const leftPupilCenter = {
+        x: leftEyeCenter.x + pupilRadius * Math.cos(leftEyeAngleToUse),
+        y: leftEyeCenter.y - pupilRadius * Math.sin(leftEyeAngleToUse)
+      };
+
+      const rightEyeDeltaIsBig = Math.abs(dThetaY) > 30;
+      const rightEyeDeltaIsMedium = Math.abs(dThetaY) > 10;
+
+      const rightEyeAngleToUse = (
+        state.lastPupilAngle.right + (
+          rightEyeDeltaIsBig
+            ? Math.sign(dThetaY) / 2
+            : rightEyeDeltaIsMedium
+              ? Math.sign(dThetaY) / 4
+              : 0
+        )
+      );
+
       const rightPupilCenter = {
-        x: rightEyeCenter.x + pupilRadius * Math.cos(rightEyeAngleToMouse),
-        y: rightEyeCenter.y - pupilRadius * Math.sin(rightEyeAngleToMouse)
+        x: rightEyeCenter.x + pupilRadius * Math.cos(rightEyeAngleToUse),
+        y: rightEyeCenter.y - pupilRadius * Math.sin(rightEyeAngleToUse)
+      };
+
+      state.lastPupilAngle = {
+        left: leftEyeAngleToUse,
+        right: rightEyeAngleToUse,
       };
 
       canvas.replaceElements(
@@ -138,6 +184,10 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
       timer?: hs.TimerType
       values: number[]
       interval: number,
+      lastPupilAngle: {
+        left: number,
+        right: number,
+      },
       previousMouseCoords: {
         x: number,
         y: number,
@@ -145,6 +195,10 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
     } = {
       values: [],
       interval: maxInterval,
+      lastPupilAngle: {
+        left: 0,
+        right: 0,
+      },
       previousMouseCoords: {
         x: 0,
         y: 0,
