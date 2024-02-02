@@ -564,64 +564,11 @@ export function start() {
 }
 
 const panels: { destroy: () => void }[] = [];
+const widgetsBuildingInfoLeft: WidgetBuildingInfo[] = [];
+const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [];
 
 export function startV2() {
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
-
-  const widgetsBuildingInfoLeft: WidgetBuildingInfo[] = [
-    getAppMenuBuilder([
-      {
-        bundleId: 'org.mozilla.firefox',
-        label: 'Firefox',
-      },
-      {
-        bundleId: 'com.google.Chrome',
-        label: 'Chrome',
-      },
-      {
-        bundleId: 'com.apple.systempreferences',
-        label: 'Settings',
-      },
-    ]),
-    getAppLauncherBuilder('org.mozilla.firefox'),
-    getAppLauncherBuilder('com.google.Chrome'),
-    getAppLauncherBuilder('com.apple.finder'),
-  ];
-
-  const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [
-    getClockBuilder(),
-    getTextBuilder('CPU', 1, () => {
-      const handle = io.popen('~/bin/printCpuUsage.sh', 'r');
-      const output = handle.read('*a') as string;
-      handle.close();
-      return output;
-    }),
-    getDotGraphBuilder('CPU', 1, 100, undefined, () => {
-      const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
-      const output = parseInt(handle.read('*a'));
-      handle.close();
-      return output;
-    }),
-    getDotGraphBuilder('CPU', 1, 100, 400, () => {
-      const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
-      const output = parseInt(handle.read('*a'));
-      handle.close();
-      return output;
-    }),
-    getLineGraphBuilder('CPU', 1, 100, 400, () => {
-      const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
-      const output = parseInt(handle.read('*a'));
-      handle.close();
-      return output;
-    }),
-    getLineGraphBuilder('CPU', 1, 100, undefined, () => {
-      const handle = io.popen('~/bin/printCpuUsageNumeric.sh', 'r');
-      const output = parseInt(handle.read('*a'));
-      handle.close();
-      return output;
-    }),
-    getXEyesBuilder(3),
-  ];
 
   const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];
   const errorFreeWidgetBuildersRight: WidgetBuildingInfo[] = [];
