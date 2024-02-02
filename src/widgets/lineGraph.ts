@@ -59,16 +59,14 @@ export function getLineGraphBuilder(
     function renderHoveredValue() {
       const fontSize = 10;
       const value = state.values[state.values.length - 1];
-      const canvasX = state.values.length < maxValues / 2
-        ? x + width / 2
-        : x + 5;
+      const canvasX = x;
       const hoverWidth = fontSize * (value.toString().length + 1);
-      const hoverHeight= fontSize * 2;
+      const hoverHeight = fontSize * 2;
 
       if (state.hoverCanvas === undefined) {
         state.hoverCanvas = hs.canvas.new({
           x: canvasX,
-          y: y + height / 2 - hoverHeight / 2,
+          y: y - hoverHeight - 2,
           w: hoverWidth,
           h: hoverHeight,
         });
@@ -85,6 +83,7 @@ export function getLineGraphBuilder(
               w: hoverWidth,
               h: hoverHeight,
             },
+            roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
           },
           {
             type: 'text',
