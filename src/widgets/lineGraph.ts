@@ -50,11 +50,12 @@ export function getLineGraphBuilder(
         renderHoveredValue();
       } else if (msg === 'mouseExit') {
         state.mouseIsInside = false;
-        state.hoverCanvas.hide();
-        state.hoverCanvas = undefined;
+        if (state.hoverCanvas !== undefine) {
+          state.hoverCanvas.hide();
+          state.hoverCanvas = undefined;
+        }
       }
     }
-
 
     function renderHoveredValue() {
       const fontSize = 10;
@@ -67,7 +68,7 @@ export function getLineGraphBuilder(
         state.hoverCanvas = hs.canvas.new({
           x: canvasX,
           y: y - hoverHeight - 2,
-          w: hoverWidth,
+          w: width,
           h: hoverHeight,
         });
       }
@@ -106,7 +107,7 @@ export function getLineGraphBuilder(
     function render() {
       const fontSize = 12;
       const titleY = height / 2 - fontSize - fontSize / 2;
-      const graphY = titleY + fontSize * 1.5;
+      const graphY = titleY + fontSize * 1.3;
       const heightForGraph = height - graphY;
 
       const max = maxGraphValue ?? state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
@@ -190,10 +191,10 @@ export function getLineGraphBuilder(
     }
 
     const state: {
-      hoverCanvas: hs.CanvasType | undefined,
-      mouseIsInside: boolean,
-      timer?: hs.TimerType
-      values: number[]
+      hoverCanvas: hs.CanvasType | undefined;
+      mouseIsInside: boolean;
+      timer?: hs.TimerType;
+      values: number[];
     } = {
       hoverCanvas: undefined,
       mouseIsInside: false,
