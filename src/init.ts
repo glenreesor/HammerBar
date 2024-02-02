@@ -41,15 +41,13 @@ const configV2: Config = {
 
 function verticallyMaximizeCurrentWindow() {
   const currentWindow = hs.window.focusedWindow();
-  if (currentWindow) {
-    const screenInfo = getScreenInfo(currentWindow.screen());
-    currentWindow.setFrame({
-      x: currentWindow.frame().x,
-      y: screenInfo.y,
-      w: currentWindow.frame().w,
-      h: screenInfo.height - configV2.panelHeight,
-    });
-  }
+  const screenInfo = getScreenInfo(currentWindow.screen());
+  currentWindow.setFrame({
+    x: currentWindow.frame().x,
+    y: screenInfo.y,
+    w: currentWindow.frame().w,
+    h: screenInfo.height - configV2.panelHeight,
+  });
 }
 
 //------------------------------------------------------------------------------
