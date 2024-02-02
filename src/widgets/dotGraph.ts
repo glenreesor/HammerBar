@@ -47,26 +47,27 @@ export function getDotGraphBuilder(
     ) {
       if (msg === 'mouseEnter') {
         state.mouseIsInside = true;
-        render();
+        renderHoveredValue();
       } else if (msg === 'mouseExit') {
         state.mouseIsInside = false;
-        render();
+        if (state.hoverCanvas !== undefined) {
+          state.hoverCanvas.hide();
+          state.hoverCanvas = undefined;
+        }
       }
     }
 
     function renderHoveredValue() {
       const fontSize = 10;
       const value = state.values[state.values.length - 1];
-      const canvasX = state.values.length < maxValues / 2
-        ? x + width / 2
-        : x + 5;
+      const canvasX = x;
       const hoverWidth = fontSize * (value.toString().length + 1);
-      const hoverHeight= fontSize * 2;
+      const hoverHeight = fontSize * 2;
 
       if (state.hoverCanvas === undefined) {
         state.hoverCanvas = hs.canvas.new({
           x: canvasX,
-          y: y + height / 2 - hoverHeight / 2,
+          y: y - hoverHeight - 2,
           w: hoverWidth,
           h: hoverHeight,
         });
@@ -83,6 +84,7 @@ export function getDotGraphBuilder(
               w: hoverWidth,
               h: hoverHeight,
             },
+            roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
           },
           {
             type: 'text',
@@ -105,12 +107,9 @@ export function getDotGraphBuilder(
     function render() {
       const fontSize = 12;
       const titleY = height / 2 - fontSize - fontSize / 2;
-      const graphY = titleY + fontSize * 1.5;
+      const graphY = titleY + fontSize * 1.3;
       const heightForGraph = height - graphY;
 
-      state.values.push(cmd());
-
-      state.values = state.values.slice(-1 * maxValues);
       const max = maxGraphValue ?? state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
 
       const xScale = width / maxValues;
@@ -176,23 +175,25 @@ export function getDotGraphBuilder(
           },
         },
       ]);
-      state.timer = hs.timer.doAfter(interval, render);
+    }
+
+    function runCmdAndRender() {
+      state.values.push(cmd());
+      state.values = state.values.slice(-1 * maxValues);
+      render();
 
       if (state.mouseIsInside) {
         renderHoveredValue();
-      } else {
-        if (state.hoverCanvas !== undefined) {
-          state.hoverCanvas.hide();
-          state.hoverCanvas = undefined;
-        }
       }
+
+      state.timer = hs.timer.doAfter(interval, runCmdAndRender);
     }
 
     const state: {
-      hoverCanvas: hs.CanvasType | undefined,
+      hoverCanvas: hs.CanvasType | undefined;
       mouseIsInside: boolean;
-      timer?: hs.TimerType
-      values: number[]
+      timer?: hs.TimerType;
+      values: number[];
     } = {
       hoverCanvas: undefined,
       mouseIsInside: false,
@@ -202,7 +203,7 @@ export function getDotGraphBuilder(
     const width = height * 1.5;
     const canvas = hs.canvas.new({ x, y, w: width, h: height });
 
-    render();
+    runCmdAndRender();
     canvas.mouseCallback(mouseCallback);
     canvas.show();
 
