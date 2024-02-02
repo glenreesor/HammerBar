@@ -662,6 +662,24 @@ export function startV2() {
   });
 }
 
+export function addWidgetBuildersLeft(buildingInfo: WidgetBuildingInfo[]) {
+  buildingInfo.forEach((b) => widgetsBuildingInfoLeft.push(b));
+}
+
+export function addWidgetBuildersRight(buildingInfo: WidgetBuildingInfo[]) {
+  buildingInfo.forEach((b) => widgetsBuildingInfoRight.push(b));
+}
+
+export {
+  getAppLauncherBuilder,
+  getAppMenuBuilder,
+  getClockBuilder,
+  getDotGraphBuilder,
+  getLineGraphBuilder,
+  getTextBuilder,
+  getXEyesBuilder,
+}
+
 export function stop() {
   state.windowFilter?.unsubscribeAll();
   state.clockTimer?.stop();
