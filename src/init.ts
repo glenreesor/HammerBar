@@ -15,9 +15,8 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-const VERSION = '0.9';
+const VERSION = '1.9';
 
-import { LauncherConfigType } from './types';
 import { getScreenInfo } from './hammerspoonUtils';
 
 import Panel from './Panel';
@@ -32,33 +31,13 @@ import { getTextBuilder } from './widgets/text';
 import { getWindowListBuilder } from './widgets/windowList';
 import { getXEyesBuilder } from './widgets/xeyes';
 
-type ConfigV2 = {
+type Config = {
   panelHeight: number;
 };
 
-const configV2: ConfigV2 = {
+const configV2: Config = {
   panelHeight: 45,
 };
-
-interface ConfigType {
-  fontSize: number;
-  showClock: boolean;
-  taskbarHeight: number;
-  taskbarColor: hs.ColorType;
-  launchers: LauncherConfigType[];
-  bundleIdsRequiringFocusHack: string[];
-}
-
-const config:ConfigType = {
-  fontSize: 13,
-  showClock: false,
-  taskbarHeight: 45,
-  taskbarColor: { red: 220/255, green: 220/255, blue: 220/255 },
-  launchers: [],
-  bundleIdsRequiringFocusHack: [],
-};
-
-//-----------------------------------------------------------------------------
 
 function verticallyMaximizeCurrentWindow() {
   const currentWindow = hs.window.focusedWindow();
@@ -68,7 +47,7 @@ function verticallyMaximizeCurrentWindow() {
       x: currentWindow.frame().x,
       y: screenInfo.y,
       w: currentWindow.frame().w,
-      h: screenInfo.height - config.taskbarHeight,
+      h: screenInfo.height - configV2.panelHeight,
     });
   }
 }
