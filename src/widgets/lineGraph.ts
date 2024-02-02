@@ -50,7 +50,7 @@ export function getLineGraphBuilder(
         renderHoveredValue();
       } else if (msg === 'mouseExit') {
         state.mouseIsInside = false;
-        if (state.hoverCanvas !== undefine) {
+        if (state.hoverCanvas !== undefined) {
           state.hoverCanvas.hide();
           state.hoverCanvas = undefined;
         }
