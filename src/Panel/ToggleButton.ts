@@ -30,15 +30,11 @@ export default function ToggleButton(
     panelHoverColor: hs.ColorType;
     onClick: () => void;
   }
-): {
-  bringToFront: () => void,
-  destroy: () => void,
-  setPanelVisibility: (visible: boolean) => void,
-} {
-  const state = {
-    mouseIsInsideButton: false,
-    panelIsVisible: true,
-  };
+) {
+  function cleanupPriorToDelete() {
+    state.canvas?.hide();
+    state.canvas = undefined;
+  }
 
   const mouseCallback: hs.CanvasMouseCallbackType = function(
     this: void,
@@ -70,7 +66,7 @@ export default function ToggleButton(
       toggleSymbol = state.panelIsVisible ? '>' : '<';
     }
 
-    canvas.replaceElements([
+    state.canvas?.replaceElements([
       {
         type: 'rectangle',
         fillColor: bgColor,
@@ -106,15 +102,25 @@ export default function ToggleButton(
     render();
   }
 
+  const state: {
+    canvas: hs.CanvasType | undefined;
+    mouseIsInsideButton: boolean;
+    panelIsVisible: boolean;
+  } = {
+    canvas: undefined,
+    mouseIsInsideButton: false,
+    panelIsVisible: true,
+  };
+
   const x = side === 'left' ? panelX : panelX + panelWidth - TOGGLE_BUTTON_WIDTH;
-  const canvas = hs.canvas.new({ x, y: panelY, w: TOGGLE_BUTTON_WIDTH, h: panelHeight });
+  state.canvas = hs.canvas.new({ x, y: panelY, w: TOGGLE_BUTTON_WIDTH, h: panelHeight });
   render();
-  canvas.mouseCallback(mouseCallback);
-  canvas.show();
+  state.canvas.mouseCallback(mouseCallback);
+  state.canvas.show();
 
   return {
-    bringToFront: () => canvas.show(),
-    destroy: () => canvas.delete(),
+    bringToFront: () => state.canvas?.show(),
+    cleanupPriorToDelete,
     setPanelVisibility,
   };
 }

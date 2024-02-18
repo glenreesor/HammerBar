@@ -24,8 +24,9 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
   function getTextWidget(
     { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
-    function destroy() {
-      canvas.delete();
+    function cleanupPriorToDelete() {
+      state.canvas?.hide();
+      state.canvas = undefined;
     }
 
     function render() {
@@ -35,7 +36,7 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
 
       const output = cmd();
 
-      canvas.replaceElements(
+      state.canvas?.replaceElements(
         [
           {
             type: 'rectangle',
@@ -80,19 +81,25 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
       state.timer = hs.timer.doAfter(interval, render);
     }
 
-    const state: { timer?: hs.TimerType } = { };
+    const state: {
+      canvas: hs.CanvasType | undefined;
+      timer: hs.TimerType | undefined;
+    } = {
+      canvas: undefined,
+      timer: undefined,
+    };
 
     const width = height * 1.5;
-    const canvas = hs.canvas.new({ x, y, w: width, h: height });
+    state.canvas = hs.canvas.new({ x, y, w: width, h: height });
 
     render();
-    canvas.show();
+    state.canvas.show();
 
     return {
-      bringToFront: () => canvas.show(),
-      destroy,
-      hide: () => canvas.hide(),
-      show: () => canvas.show(),
+      bringToFront: () => state.canvas?.show(),
+      cleanupPriorToDelete,
+      hide: () => state.canvas?.hide(),
+      show: () => state.canvas?.show(),
     };
   }
 

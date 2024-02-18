@@ -26,8 +26,8 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
   function getAppLauncher(
     { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
-    function destroy() {
-      panelButton.destroy();
+    function cleanupPriorToDelete() {
+      panelButton.cleanupPriorToDelete();
     }
 
     const panelButton = getPanelButton({
@@ -42,7 +42,7 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
 
     return {
       bringToFront: () => panelButton.show(),
-      destroy,
+      cleanupPriorToDelete,
       hide: () => panelButton.hide(),
       show: () => panelButton.show(),
     };

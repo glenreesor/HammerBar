@@ -33,14 +33,11 @@ export function getWindowButton(
     windowObject: hs.WindowType,
   }
 ) {
-  function destroy() {
-    canvas.hide();
-    canvas.delete();
-
-    if (state.hoverCanvas !== undefined) {
-      state.hoverCanvas.hide();
-      state.hoverCanvas.delete();
-    }
+  function cleanupPriorToDelete() {
+    state.mainCanvas?.hide();
+    state.mainCanvas = undefined;
+    state.hoverCanvas?.hide();
+    state.hoverCanvas = undefined;
   }
 
   const mouseCallback: hs.CanvasMouseCallbackType = function(
@@ -156,7 +153,7 @@ export function getWindowButton(
       paddingRight
     );
 
-    canvas.replaceElements(
+    state.mainCanvas?.replaceElements(
       [
         {
           type: 'rectangle',
@@ -248,7 +245,7 @@ export function getWindowButton(
 
   function updatePositionAndWidth(x: number, width: number) {
     if (x !== state.x || width !== state.width) {
-      canvas.frame({x: x, y: y, w: width, h: buttonHeight});
+      state.mainCanvas?.frame({x: x, y: y, w: width, h: buttonHeight});
       state.width = width;
       state.x = x;
       render();
@@ -261,15 +258,17 @@ export function getWindowButton(
   const bundleId = windowObject.application().bundleID() || 'unknown';
 
   const state: {
-    hoverCanvas: hs.CanvasType | undefined,
-    mouseButtonIsDown: boolean,
-    mouseIsInsideButton: boolean,
-    x: number,
-    width: number,
-    windowObject: hs.WindowType,
-    windowTitle: string,
-    isMinimized: boolean,
+    mainCanvas: hs.CanvasType | undefined;
+    hoverCanvas: hs.CanvasType | undefined;
+    mouseButtonIsDown: boolean;
+    mouseIsInsideButton: boolean;
+    x: number;
+    width: number;
+    windowObject: hs.WindowType;
+    windowTitle: string;
+    isMinimized: boolean;
   } = {
+    mainCanvas: undefined,
     hoverCanvas: undefined,
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
@@ -280,17 +279,17 @@ export function getWindowButton(
     isMinimized: windowObject.isMinimized(),
   };
 
-  const canvas = hs.canvas.new({ x, y, w: buttonWidth, h: buttonHeight });
+  state.mainCanvas = hs.canvas.new({ x, y, w: buttonWidth, h: buttonHeight });
 
   render();
-  canvas.mouseCallback(mouseCallback);
-  canvas.show();
+  state.mainCanvas.mouseCallback(mouseCallback);
+  state.mainCanvas.show();
 
   return {
-    bringToFront: () => canvas.show(),
-    destroy,
-    hide: () => canvas.hide(),
-    show: () => canvas.show(),
+    bringToFront: () => state.mainCanvas?.show(),
+    cleanupPriorToDelete,
+    hide: () => state.mainCanvas?.hide(),
+    show: () => state.mainCanvas?.show(),
     update,
     updatePositionAndWidth,
   };

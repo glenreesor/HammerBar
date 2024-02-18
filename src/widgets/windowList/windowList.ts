@@ -24,7 +24,7 @@ type WindowButtonsInfoById = Map<
       w: hs.WindowType,
       actions: {
         bringToFront: () => void,
-        destroy: () => void,
+        cleanupPriorToDelete: () => void,
         hide: () => void,
         show: () => void,
         update: () => void,
@@ -38,31 +38,32 @@ export function getWindowListBuilder(screenId: number) {
     { x, y, height, width }: { x: number, y: number, height: number, width: number }
   ) {
     function bringToFront() {
-      canvas.show();
+      state.canvas?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.bringToFront());
     }
 
-    function destroy() {
-      canvas.delete();
-      state.windowButtonsInfoById.forEach((w) => w.actions.destroy());
-      state.timer?.stop();
-      state.timer2?.stop();
+    function cleanupPriorToDelete() {
+      state.canvas?.hide();
+      state.canvas = undefined;
+
+      state.windowButtonsInfoById.forEach((w) => w.actions.cleanupPriorToDelete());
+      state.titlesAndMinimizedStateTimer?.stop();
     }
 
     function hide() {
-      canvas.hide();
+      state.canvas?.hide();
       state.windowButtonsInfoById.forEach((w) => w.actions.hide());
     }
 
     function show() {
-      canvas.show();
+      state.canvas?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.show());
     }
 
     function render() {
       const color = { red: 150/255, green: 150/255, blue: 150/255 };
 
-      canvas.replaceElements([
+      state.canvas?.replaceElements([
         {
           type: 'rectangle',
           fillColor: color,
@@ -75,7 +76,7 @@ export function getWindowListBuilder(screenId: number) {
           },
         },
       ]);
-      canvas.show();
+      state.canvas?.show();
     }
 
     //--------------------------------------------------------------------------
@@ -122,7 +123,7 @@ export function getWindowListBuilder(screenId: number) {
 
           newWindowsListMap.delete(id);
         } else {
-          windowButtonInfo.actions.destroy();
+          windowButtonInfo.actions.cleanupPriorToDelete();
         }
       });
 
@@ -154,29 +155,31 @@ export function getWindowListBuilder(screenId: number) {
     }
 
     const BUTTON_PADDING = 5;
-    const canvas = hs.canvas.new({ x, y, w: width, h: height });
-    render();
 
     const state: {
-      timer: hs.TimerType | undefined,
-      timer2: hs.TimerType | undefined,
-      previousWindowListIds: string,
-      windowButtonsInfoById: WindowButtonsInfoById,
+      canvas: hs.CanvasType | undefined;
+      titlesAndMinimizedStateTimer: hs.TimerType | undefined;
+      previousWindowListIds: string;
+      windowButtonsInfoById: WindowButtonsInfoById;
     } = {
-      timer: undefined,
-      timer2: undefined,
+      canvas: undefined,
+      titlesAndMinimizedStateTimer: undefined,
       previousWindowListIds: '',
       windowButtonsInfoById: new Map(),
     };
 
+    state.canvas = hs.canvas.new({ x, y, w: width, h: height });
+    render();
+
+
     // Still need to save response so we can unsubscribe later
     subscribeToWindowLists(screenId, updateWindowButtonsList);
 
-    state.timer2 = hs.timer.doEvery(1, updateWindowButtonsTitleAndMinimized);
+    state.titlesAndMinimizedStateTimer = hs.timer.doEvery(1, updateWindowButtonsTitleAndMinimized);
 
     return {
       bringToFront,
-      destroy,
+      cleanupPriorToDelete,
       hide,
       show,
     };

@@ -30,8 +30,9 @@ export function getPanelButton(
     imageInfo,
     onClick, }: WidgetBuilderParams & { imageInfo: ImageInfo, onClick: () => void }
 ) {
-  function destroy() {
-    canvas.delete();
+  function cleanupPriorToDelete() {
+    state.canvas?.hide();
+    state.canvas = undefined;
   }
 
   const mouseCallback: hs.CanvasMouseCallbackType = function(
@@ -76,7 +77,7 @@ export function getPanelButton(
       ? IMAGE_PADDING + 0.1 * normalImageWidth
       : IMAGE_PADDING;
 
-    canvas.replaceElements(
+    state.canvas?.replaceElements(
       [
         {
           type: 'rectangle',
@@ -109,22 +110,27 @@ export function getPanelButton(
     );
   }
 
-  const state = {
+  const state: {
+    canvas: hs.CanvasType | undefined;
+    mouseButtonIsDown: boolean;
+    mouseIsInsideButton: boolean;
+  } = {
+    canvas: undefined,
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
   };
 
   const width = height;
-  const canvas = hs.canvas.new({ x, y, w: width, h: height });
+  state.canvas = hs.canvas.new({ x, y, w: width, h: height });
 
   render();
-  canvas.mouseCallback(mouseCallback);
-  canvas.show();
+  state.canvas.mouseCallback(mouseCallback);
+  state.canvas.show();
 
   return {
-    bringToFront: () => canvas.show(),
-    destroy,
-    hide: () => canvas.hide(),
-    show: () => canvas.show(),
+    bringToFront: () => state.canvas?.show(),
+    cleanupPriorToDelete,
+    hide: () => state.canvas?.hide(),
+    show: () => state.canvas?.show(),
   };
 }

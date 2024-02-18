@@ -29,8 +29,9 @@ export function getAppButton(
     label,
     onClick, }: WidgetBuilderParams & { bundleId: string, label: string, onClick: () => void }
 ) {
-  function destroy() {
-    canvas.delete();
+  function cleanupPriorToDelete() {
+    state.canvas?.hide();
+    state.canvas = undefined;
   }
 
   const mouseCallback: hs.CanvasMouseCallbackType = function(
@@ -98,7 +99,7 @@ export function getAppButton(
       paddingRight
     );
 
-    canvas.replaceElements(
+    state.canvas?.replaceElements(
       [
         {
           type: 'rectangle',
@@ -146,22 +147,27 @@ export function getAppButton(
     );
   }
 
-  const state = {
+  const state: {
+    canvas: hs.CanvasType | undefined;
+    mouseButtonIsDown: boolean;
+    mouseIsInsideButton: boolean;
+  } = {
+    canvas: undefined,
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
   };
 
   const CANVAS_WIDTH = 120;
-  const canvas = hs.canvas.new({ x, y, w: CANVAS_WIDTH, h: height });
+  state.canvas = hs.canvas.new({ x, y, w: CANVAS_WIDTH, h: height });
 
   render();
-  canvas.mouseCallback(mouseCallback);
-  canvas.show();
+  state.canvas.mouseCallback(mouseCallback);
+  state.canvas.show();
 
   return {
-    bringToFront: () => canvas.show(),
-    destroy,
-    hide: () => canvas.hide(),
-    show: () => canvas.show(),
+    bringToFront: () => state.canvas?.show(),
+    cleanupPriorToDelete,
+    hide: () => state.canvas?.hide(),
+    show: () => state.canvas?.show(),
   };
 }

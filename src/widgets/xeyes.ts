@@ -24,23 +24,17 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
   function getXEyesWidget(
     { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
-    function destroy() {
-      canvas.delete();
+    function cleanupPriorToDelete() {
+      state.canvas?.hide();
+      state.canvas = undefined;
+      if (state.timer) {
+        state.timer.stop();
+      }
     }
 
     function render() {
       const mouseCoords = hs.mouse.absolutePosition();
-      const dx = state.previousMouseCoords.x - mouseCoords.x;
-      const dy = state.previousMouseCoords.y - mouseCoords.y;
-      // const d = Math.sqrt(dx * dx + dy * dy);
-
-      // if (d < 5) {
-      //   state.interval = Math.min(state.interval * 2, maxInterval);
-      //   state.timer = hs.timer.doAfter(state.interval, render);
-      //   return;
-      // }
       state.previousMouseCoords = mouseCoords;
-      // state.interval = 0.1; // Math.max(state.interval / 3, 0.1);
 
       const eyeRadius = width / 5;
       const pupilRadius = eyeRadius / 2;
@@ -134,7 +128,7 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
         right: rightEyeAngleToUse,
       };
 
-      canvas.replaceElements(
+      state.canvas?.replaceElements(
         [
           {
             type: 'rectangle',
@@ -181,7 +175,6 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
     }
 
     const state: {
-      timer?: hs.TimerType
       values: number[]
       interval: number,
       lastPupilAngle: {
@@ -192,6 +185,8 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
         x: number,
         y: number,
       },
+      canvas: hs.CanvasType | undefined;
+      timer: hs.TimerType | undefined;
     } = {
       values: [],
       interval: maxInterval,
@@ -203,19 +198,21 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
         x: 0,
         y: 0,
       },
+      canvas: undefined,
+      timer: undefined,
     };
 
     const width = height;
-    const canvas = hs.canvas.new({ x, y, w: width, h: height });
+    state.canvas = hs.canvas.new({ x, y, w: width, h: height });
 
     render();
-    canvas.show();
+    state.canvas.show();
 
     return {
-      bringToFront: () => canvas.show(),
-      destroy,
-      hide: () => canvas.hide(),
-      show: () => canvas.show(),
+      bringToFront: () => state.canvas?.show(),
+      cleanupPriorToDelete,
+      hide: () => state.canvas?.hide(),
+      show: () => state.canvas?.show(),
     };
   }
 

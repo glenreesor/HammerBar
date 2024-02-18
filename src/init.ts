@@ -54,11 +54,11 @@ function verticallyMaximizeCurrentWindow() {
 // Public Interface
 //------------------------------------------------------------------------------
 
-const panels: { destroy: () => void }[] = [];
-const widgetsBuildingInfoLeft: WidgetBuildingInfo[] = [];
-const widgetsBuildingInfoRight: WidgetBuildingInfo[] = [];
+let panels: { cleanupPriorToDelete: () => void }[] = [];
+let widgetsBuildingInfoLeft: WidgetBuildingInfo[] = [];
+let widgetsBuildingInfoRight: WidgetBuildingInfo[] = [];
 
-export function startV2() {
+export function start() {
   printDiagnostic(`Version: ${VERSION}`);
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
 
@@ -120,6 +120,9 @@ export {
 }
 
 export function stop() {
-  // @TODO: Stop everything
+  panels.forEach((p) => p.cleanupPriorToDelete());
+  panels = [];
+  widgetsBuildingInfoLeft = [];
+  widgetsBuildingInfoRight = [];
 }
 

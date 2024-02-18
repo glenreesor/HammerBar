@@ -30,9 +30,9 @@ export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]
       appButtons.forEach((appButton) => appButton.bringToFront());
     }
 
-    function destroy() {
-      panelButton.destroy();
-      appButtons.forEach((appButton) => appButton.destroy());
+    function cleanupPriorToDelete() {
+      panelButton.cleanupPriorToDelete();
+      appButtons.forEach((appButton) => appButton.cleanupPriorToDelete());
     }
 
     function hide() {
@@ -47,7 +47,7 @@ export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]
 
     function toggleMenu() {
       if (state.menuIsVisible) {
-        appButtons.forEach((appButton) => appButton.destroy());
+        appButtons.forEach((appButton) => appButton.cleanupPriorToDelete());
         state.menuIsVisible = false;
       } else {
         showMenu();
@@ -101,7 +101,7 @@ export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]
 
     return {
       bringToFront,
-      destroy,
+      cleanupPriorToDelete,
       hide,
       show,
     };

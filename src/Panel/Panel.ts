@@ -35,24 +35,27 @@ export default function Panel (
       { x: number, y: number, height: number, width: number }
     ) =>  {
       bringToFront: () => void,
-      destroy: () => void,
+      cleanupPriorToDelete: () => void,
       hide: () => void,
       show: () => void,
     },
   }
-): {
-  destroy: () => void,
-} {
-  function destroy() {
-    canvas.delete();
-    toggleButtons.forEach((button) => button.destroy());
-    widgets.forEach((widget) => widget.destroy());
+) {
+  function cleanupPriorToDelete() {
+    state.canvas?.hide();
+    state.canvas = undefined;
+    toggleButtons.forEach((button) => button.cleanupPriorToDelete());
+    widgets.forEach((widget) => widget.cleanupPriorToDelete());
   }
 
   function toggleVisibility() {
+    if (!state.canvas) {
+      return;
+    }
+
     state.isVisible = !state.isVisible;
     if (state.isVisible) {
-      canvas.show();
+      state.canvas.show();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(true);
         button.bringToFront();
@@ -62,7 +65,7 @@ export default function Panel (
         widget.bringToFront();
       });
     } else {
-      canvas.hide();
+      state.canvas.hide();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(false);
         button.bringToFront();
@@ -72,11 +75,20 @@ export default function Panel (
       });
     }
   };
+
+  const state: {
+    canvas: hs.CanvasType | undefined;
+    isVisible: boolean;
+  } = {
+    canvas: undefined,
+    isVisible: true,
+  };
+
   const panelColor = { red: 100/255, green: 100/255, blue: 100/255 };
   const panelHoverColor = { red: 120/255, green: 120/255, blue: 120/255 };
 
-  const canvas = hs.canvas.new({ x, y, w: width, h: height });
-  canvas.replaceElements([
+  state.canvas = hs.canvas.new({ x, y, w: width, h: height });
+  state.canvas.replaceElements([
     {
       type: 'rectangle',
       fillColor: panelColor,
@@ -89,11 +101,7 @@ export default function Panel (
       },
     },
   ]);
-  canvas.show();
-
-  const state = {
-    isVisible: true,
-  };
+  state.canvas.show();
 
   const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
 
@@ -165,6 +173,6 @@ export default function Panel (
   }));
 
   return {
-    destroy,
+    cleanupPriorToDelete,
   };
 }

@@ -26,7 +26,7 @@ export type WidgetBuilder = (
   }
 ) => {
   bringToFront: () => void
-  destroy: () => void,
+  cleanupPriorToDelete: () => void,
   hide: () => void,
   show: () => void,
 };

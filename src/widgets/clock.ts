@@ -22,8 +22,9 @@ export function getClockBuilder(): WidgetBuildingInfo {
   const CLOCK_WIDTH = 100;
 
   function getClock({ x, y, height }: WidgetBuilderParams) {
-    function destroy() {
-      canvas.delete();
+    function cleanupPriorToDelete() {
+      state.canvas?.hide();
+      state.canvas = undefined;
       if (state.timer) {
         state.timer.stop();
       }
@@ -53,7 +54,7 @@ export function getClockBuilder(): WidgetBuildingInfo {
       const timeY = height / 2 - fontSize - fontSize / 2;
       const dateY = timeY + fontSize * 1.6;
 
-      canvas.replaceElements([
+      state.canvas?.replaceElements([
         {
           type: 'rectangle',
           fillColor: bgColor,
@@ -93,12 +94,18 @@ export function getClockBuilder(): WidgetBuildingInfo {
         },
       ]);
     }
-    const state: { timer?: hs.TimerType } = { };
+    const state: {
+      canvas: hs.CanvasType | undefined;
+      timer: hs.TimerType | undefined;
+    } = {
+      canvas: undefined,
+      timer: undefined,
+    };
 
-    const canvas = hs.canvas.new({ x, y, w: CLOCK_WIDTH, h: height });
+    state.canvas = hs.canvas.new({ x, y, w: CLOCK_WIDTH, h: height });
 
     render();
-    canvas.show();
+    state.canvas.show();
 
     // Schedule clock updates every minute starting at 0s of the next minute
     // and every 60s thereafter
@@ -112,10 +119,10 @@ export function getClockBuilder(): WidgetBuildingInfo {
     );
 
     return {
-      bringToFront: () => canvas.show(),
-      destroy,
-      hide: () => canvas.hide(),
-      show: () => canvas.show(),
+      bringToFront: () => state.canvas?.show(),
+      cleanupPriorToDelete,
+      hide: () => state.canvas?.hide(),
+      show: () => state.canvas?.show(),
     };
   }
 

@@ -30,14 +30,11 @@ export function getDotGraphBuilder(
   function getDotGraphWidget(
     { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
   ) {
-    function destroy() {
-      canvas.hide();
-      canvas.delete();
-
-      if (state.hoverCanvas !== undefined) {
-        state.hoverCanvas.hide();
-        state.hoverCanvas.delete();
-      }
+    function cleanupPriorToDelete() {
+      state.graphCanvas?.hide();
+      state.graphCanvas = undefined;
+      state.hoverCanvas?.hide();
+      state.hoverCanvas = undefined;
     }
 
     const mouseCallback: hs.CanvasMouseCallbackType = function(
@@ -117,7 +114,7 @@ export function getDotGraphBuilder(
 
       const maxString = `${Math.ceil(max)}`;
 
-      canvas.replaceElements([
+      state.graphCanvas?.replaceElements([
         {
           type: 'rectangle',
           fillColor: panelHoverColor,
@@ -190,28 +187,30 @@ export function getDotGraphBuilder(
     }
 
     const state: {
+      graphCanvas: hs.CanvasType | undefined;
       hoverCanvas: hs.CanvasType | undefined;
       mouseIsInside: boolean;
       timer?: hs.TimerType;
       values: number[];
     } = {
+      graphCanvas: undefined,
       hoverCanvas: undefined,
       mouseIsInside: false,
       values: [],
     };
 
     const width = height * 1.5;
-    const canvas = hs.canvas.new({ x, y, w: width, h: height });
+    state.graphCanvas = hs.canvas.new({ x, y, w: width, h: height });
 
     runCmdAndRender();
-    canvas.mouseCallback(mouseCallback);
-    canvas.show();
+    state.graphCanvas.mouseCallback(mouseCallback);
+    state.graphCanvas.show();
 
     return {
-      bringToFront: () => canvas.show(),
-      destroy,
-      hide: () => canvas.hide(),
-      show: () => canvas.show(),
+      bringToFront: () => state.graphCanvas?.show(),
+      cleanupPriorToDelete,
+      hide: () => state.graphCanvas?.hide(),
+      show: () => state.graphCanvas?.show(),
     };
   }
 
