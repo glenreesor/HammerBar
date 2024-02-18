@@ -224,7 +224,12 @@ export function getWindowButton(
       // If window is already completely visible minimize it, otherwise bring
       // it to the foreground
       const windowsFrontToBack = hs.window.orderedWindows();
-      if (windowsFrontToBack[0].id() === w.id()) {
+
+      if (windowsFrontToBack.length === 0) {
+        // This is an odd edge case corresponding to the Hammerspoon console
+        // being visible (and no other windows).
+        w.minimize();
+      } else if (windowsFrontToBack[0].id() === w.id()) {
         w.minimize();
       } else {
         w.raise();
