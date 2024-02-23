@@ -93,7 +93,7 @@ declare namespace hs {
     application: () => {
       name: () => string,
       bundleID: () => string | null,
-    };
+    } | null;
     focus: () => void;
     frame: () => FrameType;
     id: () => number;

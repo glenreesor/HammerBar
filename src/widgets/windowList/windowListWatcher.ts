@@ -50,10 +50,17 @@ function unsubscribe(screenId: number) {
 function getWindowList() {
   const allWindows = hs.window.allWindows();
   const regularWindows = allWindows.filter(
-    (w) => (
-      w.role() === 'AXWindow' &&
-      (w.application().name() !== 'Hammerspoon' || w.title() === 'Hammerspoon Console')
-    )
+    (w) => {
+      const application = w.application();
+      if (application === null) {
+        return false;
+      }
+
+      return (
+        w.role() === 'AXWindow' &&
+        (application.name() !== 'Hammerspoon' || w.title() === 'Hammerspoon Console')
+      );
+    }
   );
 
   windowListListeners.forEach((l) =>{

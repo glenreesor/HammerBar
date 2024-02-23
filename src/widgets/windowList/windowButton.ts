@@ -260,7 +260,7 @@ export function getWindowButton(
   // Save bundleId, title, minimized status so we don't have to query a window
   // object for simple updates like changing position. These calls might hang
   // hammerspoon if the corresponding app is hung
-  const bundleId = windowObject.application().bundleID() || 'unknown';
+  const bundleId = windowObject.application()?.bundleID() || '';
 
   const state: {
     mainCanvas: hs.CanvasType | undefined;
