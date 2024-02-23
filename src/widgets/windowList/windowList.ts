@@ -48,6 +48,10 @@ export function getWindowListBuilder(screenId: number) {
 
       state.windowButtonsInfoById.forEach((w) => w.actions.cleanupPriorToDelete());
       state.titlesAndMinimizedStateTimer?.stop();
+
+      if (state.windowListUnsubscriber) {
+        state.windowListUnsubscriber();
+      }
     }
 
     function hide() {
@@ -161,19 +165,20 @@ export function getWindowListBuilder(screenId: number) {
       titlesAndMinimizedStateTimer: hs.TimerType | undefined;
       previousWindowListIds: string;
       windowButtonsInfoById: WindowButtonsInfoById;
+      windowListUnsubscriber: (() => void) | undefined;
     } = {
       canvas: undefined,
       titlesAndMinimizedStateTimer: undefined,
       previousWindowListIds: '',
       windowButtonsInfoById: new Map(),
+      windowListUnsubscriber: undefined,
     };
 
     state.canvas = hs.canvas.new({ x, y, w: width, h: height });
     render();
 
 
-    // Still need to save response so we can unsubscribe later
-    subscribeToWindowLists(screenId, updateWindowButtonsList);
+    state.windowListUnsubscriber = subscribeToWindowLists(screenId, updateWindowButtonsList);
 
     state.titlesAndMinimizedStateTimer = hs.timer.doEvery(1, updateWindowButtonsTitleAndMinimized);
 

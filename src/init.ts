@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-const VERSION = '0.9+';
+const VERSION = '0.9+2024-02-22';
 
 import { getScreenInfo } from './hammerspoonUtils';
 
@@ -35,8 +35,25 @@ type Config = {
   panelHeight: number;
 };
 
-const configV2: Config = {
+const config: Config = {
   panelHeight: 45,
+};
+
+type State = {
+  panels: { cleanupPriorToDelete: () => void }[];
+  widgetsBuildingInfoLeft: WidgetBuildingInfo[]
+  widgetsBuildingInfoRight: WidgetBuildingInfo[]
+  screenWatcher: {
+    start: () => hs.ScreenWatcher;
+    stop: () => hs.ScreenWatcher;
+  } | undefined;
+};
+
+const state: State = {
+  panels: [],
+  widgetsBuildingInfoLeft: [],
+  widgetsBuildingInfoRight: [],
+  screenWatcher: undefined,
 };
 
 function verticallyMaximizeCurrentWindow() {
@@ -46,26 +63,15 @@ function verticallyMaximizeCurrentWindow() {
     x: currentWindow.frame().x,
     y: screenInfo.y,
     w: currentWindow.frame().w,
-    h: screenInfo.height - configV2.panelHeight,
+    h: screenInfo.height - config.panelHeight,
   });
 }
 
-//------------------------------------------------------------------------------
-// Public Interface
-//------------------------------------------------------------------------------
-
-let panels: { cleanupPriorToDelete: () => void }[] = [];
-let widgetsBuildingInfoLeft: WidgetBuildingInfo[] = [];
-let widgetsBuildingInfoRight: WidgetBuildingInfo[] = [];
-
-export function start() {
-  printDiagnostic(`Version: ${VERSION}`);
-  hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
-
+function createPanelsForAllScreens() {
   const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];
   const errorFreeWidgetBuildersRight: WidgetBuildingInfo[] = [];
 
-  widgetsBuildingInfoLeft.forEach((info) => {
+  state.widgetsBuildingInfoLeft.forEach((info) => {
     if (info.buildErrors.length === 0) {
       errorFreeWidgetBuildersLeft.push(info);
     } else {
@@ -74,7 +80,7 @@ export function start() {
     }
   });
 
-  widgetsBuildingInfoRight.forEach((info) => {
+  state.widgetsBuildingInfoRight.forEach((info) => {
     if (info.buildErrors.length === 0) {
       errorFreeWidgetBuildersRight.push(info);
     } else {
@@ -87,11 +93,11 @@ export function start() {
     const screenInfo = getScreenInfo(hammerspoonScreen);
     printDiagnostic(`Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`);
 
-    panels.push(Panel({
+    state.panels.push(Panel({
       x: screenInfo.x,
-      y: screenInfo.y + screenInfo.height - configV2.panelHeight,
+      y: screenInfo.y + screenInfo.height - config.panelHeight,
       width: screenInfo.width,
-      height: configV2.panelHeight,
+      height: config.panelHeight,
       widgetsBuildingInfo: {
         left: errorFreeWidgetBuildersLeft,
         right: errorFreeWidgetBuildersRight,
@@ -101,12 +107,38 @@ export function start() {
   });
 }
 
+function removeAllPanels() {
+  printDiagnostic('Removing panels for all screens');
+  state.panels.forEach((p) => p.cleanupPriorToDelete());
+  state.panels = [];
+}
+
+function watchForScreenChanges() {
+  // When screens get added or removed, resolutions can also change (e.g.
+  // on a macbook when external screens are added or removed)
+  // So just delete all Panels and recreate from scratch
+  removeAllPanels();
+  createPanelsForAllScreens();
+}
+
+//------------------------------------------------------------------------------
+// Public Interface
+//------------------------------------------------------------------------------
+
+export function start() {
+  printDiagnostic(`Version: ${VERSION}`);
+  hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
+  createPanelsForAllScreens();
+  state.screenWatcher = hs.screen.watcher.new(watchForScreenChanges);
+  state.screenWatcher.start();
+}
+
 export function addWidgetBuildersLeft(buildingInfo: WidgetBuildingInfo[]) {
-  buildingInfo.forEach((b) => widgetsBuildingInfoLeft.push(b));
+  buildingInfo.forEach((b) => state.widgetsBuildingInfoLeft.push(b));
 }
 
 export function addWidgetBuildersRight(buildingInfo: WidgetBuildingInfo[]) {
-  buildingInfo.forEach((b) => widgetsBuildingInfoRight.push(b));
+  buildingInfo.forEach((b) => state.widgetsBuildingInfoRight.push(b));
 }
 
 export {
@@ -120,9 +152,7 @@ export {
 }
 
 export function stop() {
-  panels.forEach((p) => p.cleanupPriorToDelete());
-  panels = [];
-  widgetsBuildingInfoLeft = [];
-  widgetsBuildingInfoRight = [];
+  removeAllPanels();
+  state.screenWatcher?.stop();
 }
 

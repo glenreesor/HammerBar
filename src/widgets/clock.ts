@@ -25,9 +25,8 @@ export function getClockBuilder(): WidgetBuildingInfo {
     function cleanupPriorToDelete() {
       state.canvas?.hide();
       state.canvas = undefined;
-      if (state.timer) {
-        state.timer.stop();
-      }
+
+      state.timer?.stop();
     }
 
     function getFormattedDateTime(): { formattedTime: string, formattedDate: string } {

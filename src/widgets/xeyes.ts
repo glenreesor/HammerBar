@@ -27,9 +27,8 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
     function cleanupPriorToDelete() {
       state.canvas?.hide();
       state.canvas = undefined;
-      if (state.timer) {
-        state.timer.stop();
-      }
+
+      state.timer?.stop();
     }
 
     function render() {

@@ -148,6 +148,13 @@ declare namespace hs {
     windowVisible: string;
   }
 
+  interface ScreenWatcher {
+    new: (this: void, watcherFn: () => void) => {
+      start: () => ScreenWatcher;
+      stop: () => ScreenWatcher;
+    }
+  }
+
   namespace application {
     function find(this: void, bundleId: string): Application;
     function launchOrFocusByBundleID(this: void, name: string): boolean;
@@ -187,6 +194,7 @@ declare namespace hs {
 
   namespace screen {
     function allScreens(this: void): Array<ScreenType>;
+    const watcher: ScreenWatcher;
   }
 
   namespace timer {

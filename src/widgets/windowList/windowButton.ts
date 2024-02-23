@@ -36,6 +36,7 @@ export function getWindowButton(
   function cleanupPriorToDelete() {
     state.mainCanvas?.hide();
     state.mainCanvas = undefined;
+
     state.hoverCanvas?.hide();
     state.hoverCanvas = undefined;
   }

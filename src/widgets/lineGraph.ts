@@ -33,8 +33,11 @@ export function getLineGraphBuilder(
     function cleanupPriorToDelete() {
       state.graphCanvas?.hide();
       state.graphCanvas = undefined;
+
       state.hoverCanvas?.hide();
       state.hoverCanvas = undefined;
+
+      state.timer?.stop();
     }
 
     const mouseCallback: hs.CanvasMouseCallbackType = function(

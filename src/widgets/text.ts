@@ -27,6 +27,8 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
     function cleanupPriorToDelete() {
       state.canvas?.hide();
       state.canvas = undefined;
+
+      state.timer?.stop();
     }
 
     function render() {
