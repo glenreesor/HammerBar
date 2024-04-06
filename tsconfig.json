@@ -7,13 +7,11 @@
     "strict": true,
     "baseUrl": "./"
   },
-  "exclude": [
-    "test/*"
-  ],
+  "exclude": ["test/*"],
   "tstl": {
     "luaBundle": "build/init.lua",
     "luaBundleEntry": "src/init.ts",
-    "luaLibImport": "inline",
+    "luaLibImport": "require-minimal",
     "luaTarget": "JIT"
   }
 }

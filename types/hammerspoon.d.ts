@@ -23,19 +23,19 @@ declare namespace hs {
   }
 
   interface CanvasElementType {
-    center?: { x: number, y: number };
-    coordinates?: { x: number, y: number }[];
+    center?: { x: number; y: number };
+    coordinates?: { x: number; y: number }[];
     fillColor?: ColorType;
-    frame?: { x: number, y: number, w: number, h: number };
+    frame?: { x: number; y: number; w: number; h: number };
     id?: number;
     image?: any;
     imageAlpha?: number;
     radius?: number;
-    roundedRectRadii?: {xRadius: number, yRadius: number };
+    roundedRectRadii?: { xRadius: number; yRadius: number };
     strokeColor?: ColorType;
     strokeWidth?: number;
     text?: string;
-    textAlignment?: 'center' | 'justified' | 'left' | 'natural' | 'right',
+    textAlignment?: 'center' | 'justified' | 'left' | 'natural' | 'right';
     textColor?: ColorType;
     textLineBreak?: string;
     textSize?: number;
@@ -50,20 +50,25 @@ declare namespace hs {
       this: void,
       canvas: CanvasType,
       message: 'mouseEnter' | 'mouseExit' | 'mouseUp',
-      id: number | string
+      id: number | string,
     ): void;
   }
 
   interface CanvasType {
-    appendElements: (element: CanvasElementType | Array<CanvasElementType>) => void;
+    appendElements: (
+      element: CanvasElementType | Array<CanvasElementType>,
+    ) => void;
     delete: () => void;
-    frame: (newFrame: {x: number, y: number, w: number, h: number}) => void;
+    frame: (newFrame: { x: number; y: number; w: number; h: number }) => void;
     hide: () => void;
     mouseCallback: (callback: CanvasMouseCallbackType) => void;
-    replaceElements: (element?: CanvasElementType | Array<CanvasElementType>) => void;
+    replaceElements: (
+      element?: CanvasElementType | Array<CanvasElementType>,
+    ) => void;
     show: () => void;
-    topLeft: ((point: {x: number, y: number}) => CanvasType) |
-      (() => {x: number, y: number}[]);
+    topLeft:
+      | ((point: { x: number; y: number }) => CanvasType)
+      | (() => { x: number; y: number }[]);
   }
 
   interface ColorType {
@@ -91,8 +96,8 @@ declare namespace hs {
 
   interface WindowType {
     application: () => {
-      name: () => string,
-      bundleID: () => string | null,
+      name: () => string;
+      bundleID: () => string | null;
     } | null;
     focus: () => void;
     frame: () => FrameType;
@@ -103,7 +108,7 @@ declare namespace hs {
     raise: () => void;
     role: () => string;
     screen: () => ScreenType;
-    setFrame: ({x, y, w, h}: FrameType) => void;
+    setFrame: ({ x, y, w, h }: FrameType) => void;
     title: () => string;
     unminimize: () => void;
   }
@@ -113,7 +118,7 @@ declare namespace hs {
   interface WindowDotCanvas {
     new: (
       this: void,
-      {x, y, w, h}: {x: number, y: number, w: number, h: number}
+      { x, y, w, h }: { x: number; y: number; w: number; h: number },
     ) => CanvasType;
   }
 
@@ -121,7 +126,10 @@ declare namespace hs {
     getWindows: () => Array<WindowType>;
     new: (
       this: void,
-      filterCriteria: null | boolean | ((this:void, hsWindow: WindowType) => boolean),
+      filterCriteria:
+        | null
+        | boolean
+        | ((this: void, hsWindow: WindowType) => boolean),
     ) => WindowFilter;
     subscribe: (events: Array<string>, callback: Function) => void;
     unsubscribeAll: () => void;
@@ -149,10 +157,13 @@ declare namespace hs {
   }
 
   interface ScreenWatcher {
-    new: (this: void, watcherFn: () => void) => {
+    new: (
+      this: void,
+      watcherFn: () => void,
+    ) => {
       start: () => ScreenWatcher;
       stop: () => ScreenWatcher;
-    }
+    };
   }
 
   namespace application {
@@ -164,19 +175,24 @@ declare namespace hs {
 
   namespace eventtap {
     function checkKeyboardModifiers(this: void): {
-      alt?: boolean,
-      capslock?: boolean,
-      cmd?: boolean,
-      ctrl?: boolean,
-      fn?: boolean,
-      shift?: boolean,
+      alt?: boolean;
+      capslock?: boolean;
+      cmd?: boolean;
+      ctrl?: boolean;
+      fn?: boolean;
+      shift?: boolean;
     };
   }
 
   namespace hotkey {
     // There are a bazillion overrides that hammerspoon accepts. Just create
     // the one I need
-    function bind(this: void, mods: string, key: string, pressedFunction: () => void): void;
+    function bind(
+      this: void,
+      mods: string,
+      key: string,
+      pressedFunction: () => void,
+    ): void;
   }
 
   namespace image {
@@ -189,7 +205,7 @@ declare namespace hs {
   }
 
   namespace mouse {
-    function absolutePosition(this: void): {x: number, y: number};
+    function absolutePosition(this: void): { x: number; y: number };
   }
 
   namespace screen {
@@ -219,7 +235,11 @@ declare namespace hs {
       continueOnError?: boolean,
     ): TimerType;
 
-    function doEvery(this: void, seconds: number, callback: Function): TimerType;
+    function doEvery(
+      this: void,
+      seconds: number,
+      callback: Function,
+    ): TimerType;
   }
 
   namespace window {

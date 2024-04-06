@@ -23,13 +23,17 @@ export function getDotGraphBuilder(
   interval: number,
   maxValues: number,
   maxGraphValue: number | undefined,
-  cmd: () => number
+  cmd: () => number,
 ): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
-  function getDotGraphWidget(
-    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
-  ) {
+  function getDotGraphWidget({
+    x,
+    y,
+    height,
+    panelColor,
+    panelHoverColor,
+  }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       state.graphCanvas?.hide();
       state.graphCanvas = undefined;
@@ -40,7 +44,7 @@ export function getDotGraphBuilder(
       state.timer?.stop();
     }
 
-    const mouseCallback: hs.CanvasMouseCallbackType = function(
+    const mouseCallback: hs.CanvasMouseCallbackType = function (
       this: void,
       _canvas: hs.CanvasType,
       msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
@@ -55,7 +59,7 @@ export function getDotGraphBuilder(
           state.hoverCanvas = undefined;
         }
       }
-    }
+    };
 
     function renderHoveredValue() {
       const fontSize = 10;
@@ -73,34 +77,32 @@ export function getDotGraphBuilder(
         });
       }
 
-      state.hoverCanvas.replaceElements(
-        [
-          {
-            type: 'rectangle',
-            fillColor: WHITE,
-            frame: {
-              x: 0,
-              y: 0,
-              w: hoverWidth,
-              h: hoverHeight,
-            },
-            roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+      state.hoverCanvas.replaceElements([
+        {
+          type: 'rectangle',
+          fillColor: WHITE,
+          frame: {
+            x: 0,
+            y: 0,
+            w: hoverWidth,
+            h: hoverHeight,
           },
-          {
-            type: 'text',
-            text: `${value}`,
-            textColor: BLACK,
-            textSize: fontSize,
-            textAlignment: 'center',
-            frame: {
-              x: 0,
-              y: 5,
-              w: hoverWidth,
-              h: hoverHeight,
-            },
+          roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+        },
+        {
+          type: 'text',
+          text: `${value}`,
+          textColor: BLACK,
+          textSize: fontSize,
+          textAlignment: 'center',
+          frame: {
+            x: 0,
+            y: 5,
+            w: hoverWidth,
+            h: hoverHeight,
           },
-        ],
-      );
+        },
+      ]);
       state.hoverCanvas.show();
     }
 
@@ -110,7 +112,9 @@ export function getDotGraphBuilder(
       const graphY = titleY + fontSize * 1.3;
       const heightForGraph = height - graphY;
 
-      const max = maxGraphValue ?? state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
+      const max =
+        maxGraphValue ??
+        state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
 
       const xScale = width / maxValues;
       const yScale = heightForGraph / max;
@@ -145,10 +149,10 @@ export function getDotGraphBuilder(
         {
           type: 'points',
           coordinates: state.values.map((value, i) => ({
-            x: i * xScale, y: graphY + heightForGraph - (value * yScale)
-          }
-          )),
-          strokeColor: {red: 0, green: 1, blue: 1},
+            x: i * xScale,
+            y: graphY + heightForGraph - value * yScale,
+          })),
+          strokeColor: { red: 0, green: 1, blue: 1 },
         },
         {
           // Max line
@@ -157,7 +161,7 @@ export function getDotGraphBuilder(
             { x: 0, y: graphY },
             { x: width, y: graphY },
           ],
-          strokeColor: { red: 1, green: 1, blue: 1},
+          strokeColor: { red: 1, green: 1, blue: 1 },
           strokeWidth: 1,
         },
         {
@@ -171,7 +175,7 @@ export function getDotGraphBuilder(
             x: 0,
             y: graphY - fontSize,
             w: width - 2,
-            h: fontSize * 1.2
+            h: fontSize * 1.2,
           },
         },
       ]);
@@ -222,4 +226,4 @@ export function getDotGraphBuilder(
     getWidth: (widgetHeight) => widgetHeight * 1.5,
     getWidget: getDotGraphWidget,
   };
-};
+}

@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -29,7 +29,6 @@ export interface ScreenInfoType {
 }
 
 export function getScreenInfo(screen: hs.ScreenType): ScreenInfoType {
-
   const id = screen.id();
   let name = screen.name();
 

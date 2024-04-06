@@ -18,23 +18,26 @@
 import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams } from 'src/Panel';
 
-export function getAppButton(
-  {
-    x,
-    y,
-    height,
-    panelColor,
-    panelHoverColor,
-    bundleId,
-    label,
-    onClick, }: WidgetBuilderParams & { bundleId: string, label: string, onClick: () => void }
-) {
+export function getAppButton({
+  x,
+  y,
+  height,
+  panelColor,
+  panelHoverColor,
+  bundleId,
+  label,
+  onClick,
+}: WidgetBuilderParams & {
+  bundleId: string;
+  label: string;
+  onClick: () => void;
+}) {
   function cleanupPriorToDelete() {
     state.canvas?.hide();
     state.canvas = undefined;
   }
 
-  const mouseCallback: hs.CanvasMouseCallbackType = function(
+  const mouseCallback: hs.CanvasMouseCallbackType = function (
     this: void,
     _canvas: hs.CanvasType,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
@@ -54,7 +57,7 @@ export function getAppButton(
       render();
       onClick();
     }
-  }
+  };
 
   function render() {
     let bgColor;
@@ -90,61 +93,54 @@ export function getAppButton(
     const textX = paddingLeft + iconWidth;
 
     // We're only expecting one line of text, so center it on the icon
-    const textY = iconY + iconHeight / 2 - 1.4 * fontSize / 2;
+    const textY = iconY + iconHeight / 2 - (1.4 * fontSize) / 2;
 
-    const maxTextWidth = (
-      CANVAS_WIDTH -
-      paddingLeft -
-      iconWidth -
-      paddingRight
-    );
+    const maxTextWidth = CANVAS_WIDTH - paddingLeft - iconWidth - paddingRight;
 
-    state.canvas?.replaceElements(
-      [
-        {
-          type: 'rectangle',
-          fillColor: bgColor,
-          frame: {
-            x: 0,
-            y: 0,
-            w: CANVAS_WIDTH,
-            h: height,
-          },
-          roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
-          trackMouseDown: true,
-          trackMouseEnterExit: true,
-          trackMouseUp: true,
+    state.canvas?.replaceElements([
+      {
+        type: 'rectangle',
+        fillColor: bgColor,
+        frame: {
+          x: 0,
+          y: 0,
+          w: CANVAS_WIDTH,
+          h: height,
         },
-        {
-          type: 'image',
-          frame: {
-            x: paddingLeft,
-            y: iconY,
-            w: iconWidth,
-            h: iconWidth,
-          },
-          image: hs.image.imageFromAppBundle(bundleId),
-          trackMouseDown: true,
-          trackMouseEnterExit: true,
-          trackMouseUp: true,
+        roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+        trackMouseDown: true,
+        trackMouseEnterExit: true,
+        trackMouseUp: true,
+      },
+      {
+        type: 'image',
+        frame: {
+          x: paddingLeft,
+          y: iconY,
+          w: iconWidth,
+          h: iconWidth,
         },
-        {
-          type: 'text',
-          text: label,
-          textColor: BLACK,
-          textSize: fontSize,
-          frame: {
-            x: textX,
-            y: textY,
-            w: maxTextWidth,
-            h: height,
-          },
-          trackMouseDown: true,
-          trackMouseEnterExit: true,
-          trackMouseUp: true,
+        image: hs.image.imageFromAppBundle(bundleId),
+        trackMouseDown: true,
+        trackMouseEnterExit: true,
+        trackMouseUp: true,
+      },
+      {
+        type: 'text',
+        text: label,
+        textColor: BLACK,
+        textSize: fontSize,
+        frame: {
+          x: textX,
+          y: textY,
+          w: maxTextWidth,
+          h: height,
         },
-      ]
-    );
+        trackMouseDown: true,
+        trackMouseEnterExit: true,
+        trackMouseUp: true,
+      },
+    ]);
   }
 
   const state: {

@@ -16,4 +16,8 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 export { default } from './Panel';
-export type { WidgetBuilder, WidgetBuilderParams, WidgetBuildingInfo } from './types';
+export type {
+  WidgetBuilder,
+  WidgetBuilderParams,
+  WidgetBuildingInfo,
+} from './types';

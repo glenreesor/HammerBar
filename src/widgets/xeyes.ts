@@ -21,9 +21,13 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
-  function getXEyesWidget(
-    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
-  ) {
+  function getXEyesWidget({
+    x,
+    y,
+    height,
+    panelColor,
+    panelHoverColor,
+  }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       state.canvas?.hide();
       state.canvas = undefined;
@@ -38,12 +42,12 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
       const eyeRadius = width / 5;
       const pupilRadius = eyeRadius / 2;
 
-      const leftEyeCenter = {x: 2 + eyeRadius, y: height / 2};
+      const leftEyeCenter = { x: 2 + eyeRadius, y: height / 2 };
       const leftEyeCenterAbsolute = {
         x: x + leftEyeCenter.x,
         y: y + leftEyeCenter.y,
       };
-      const rightEyeCenter = {x: width / 2 + 2 + eyeRadius, y: height / 2};
+      const rightEyeCenter = { x: width / 2 + 2 + eyeRadius, y: height / 2 };
       const rightEyeCenterAbsolute = {
         x: x + rightEyeCenter.x,
         y: y + rightEyeCenter.y,
@@ -73,8 +77,10 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
         }
       }
 
-      const dThetaX = (leftEyeAngleToMouse - state.lastPupilAngle.left) * 180 / Math.PI;
-      const dThetaY = (rightEyeAngleToMouse - state.lastPupilAngle.right) * 180 / Math.PI;
+      const dThetaX =
+        ((leftEyeAngleToMouse - state.lastPupilAngle.left) * 180) / Math.PI;
+      const dThetaY =
+        ((rightEyeAngleToMouse - state.lastPupilAngle.right) * 180) / Math.PI;
 
       if (Math.abs(dThetaX) < 10 && Math.abs(dThetaY) < 10) {
         state.interval = Math.min(state.interval * 2, maxInterval);
@@ -88,38 +94,34 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
       const leftEyeDeltaIsMedium = Math.abs(dThetaX) > 10;
       const randomGoofyExtraRotation = Math.random() < 0.01 ? 2 * Math.PI : 0;
 
-      const leftEyeAngleToUse = (
+      const leftEyeAngleToUse =
         state.lastPupilAngle.left +
-        randomGoofyExtraRotation + (
-          leftEyeDeltaIsBig
-            ? Math.sign(dThetaX) / 1.2
-            : leftEyeDeltaIsMedium
-              ? Math.sign(dThetaX) / 4
-              : 0
-        )
-      );
+        randomGoofyExtraRotation +
+        (leftEyeDeltaIsBig
+          ? Math.sign(dThetaX) / 1.2
+          : leftEyeDeltaIsMedium
+            ? Math.sign(dThetaX) / 4
+            : 0);
 
       const leftPupilCenter = {
         x: leftEyeCenter.x + pupilRadius * Math.cos(leftEyeAngleToUse),
-        y: leftEyeCenter.y - pupilRadius * Math.sin(leftEyeAngleToUse)
+        y: leftEyeCenter.y - pupilRadius * Math.sin(leftEyeAngleToUse),
       };
 
       const rightEyeDeltaIsBig = Math.abs(dThetaY) > 30;
       const rightEyeDeltaIsMedium = Math.abs(dThetaY) > 10;
 
-      const rightEyeAngleToUse = (
-        state.lastPupilAngle.right + (
-          rightEyeDeltaIsBig
-            ? Math.sign(dThetaY) / 2
-            : rightEyeDeltaIsMedium
-              ? Math.sign(dThetaY) / 4
-              : 0
-        )
-      );
+      const rightEyeAngleToUse =
+        state.lastPupilAngle.right +
+        (rightEyeDeltaIsBig
+          ? Math.sign(dThetaY) / 2
+          : rightEyeDeltaIsMedium
+            ? Math.sign(dThetaY) / 4
+            : 0);
 
       const rightPupilCenter = {
         x: rightEyeCenter.x + pupilRadius * Math.cos(rightEyeAngleToUse),
-        y: rightEyeCenter.y - pupilRadius * Math.sin(rightEyeAngleToUse)
+        y: rightEyeCenter.y - pupilRadius * Math.sin(rightEyeAngleToUse),
       };
 
       state.lastPupilAngle = {
@@ -127,63 +129,61 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
         right: rightEyeAngleToUse,
       };
 
-      state.canvas?.replaceElements(
-        [
-          {
-            type: 'rectangle',
-            fillColor: panelHoverColor,
-            strokeColor: panelColor,
-            frame: {
-              x: 0,
-              y: 0,
-              w: width,
-              h: height,
-            },
+      state.canvas?.replaceElements([
+        {
+          type: 'rectangle',
+          fillColor: panelHoverColor,
+          strokeColor: panelColor,
+          frame: {
+            x: 0,
+            y: 0,
+            w: width,
+            h: height,
           },
-          {
-            type: 'circle',
-            radius: eyeRadius,
-            center: leftEyeCenter,
-            strokeColor: BLACK,
-            fillColor: WHITE,
-          },
-          {
-            type: 'circle',
-            radius: pupilRadius,
-            center: leftPupilCenter,
-            strokeColor: BLACK,
-            fillColor: BLACK,
-          },
-          {
-            type: 'circle',
-            radius: eyeRadius,
-            center: rightEyeCenter,
-            strokeColor: BLACK,
-            fillColor: WHITE,
-          },
-          {
-            type: 'circle',
-            radius: pupilRadius,
-            center: rightPupilCenter,
-            strokeColor: BLACK,
-            fillColor: BLACK,
-          },
-        ],
-      );
+        },
+        {
+          type: 'circle',
+          radius: eyeRadius,
+          center: leftEyeCenter,
+          strokeColor: BLACK,
+          fillColor: WHITE,
+        },
+        {
+          type: 'circle',
+          radius: pupilRadius,
+          center: leftPupilCenter,
+          strokeColor: BLACK,
+          fillColor: BLACK,
+        },
+        {
+          type: 'circle',
+          radius: eyeRadius,
+          center: rightEyeCenter,
+          strokeColor: BLACK,
+          fillColor: WHITE,
+        },
+        {
+          type: 'circle',
+          radius: pupilRadius,
+          center: rightPupilCenter,
+          strokeColor: BLACK,
+          fillColor: BLACK,
+        },
+      ]);
       state.timer = hs.timer.doAfter(state.interval, render);
     }
 
     const state: {
-      values: number[]
-      interval: number,
+      values: number[];
+      interval: number;
       lastPupilAngle: {
-        left: number,
-        right: number,
-      },
+        left: number;
+        right: number;
+      };
       previousMouseCoords: {
-        x: number,
-        y: number,
-      },
+        x: number;
+        y: number;
+      };
       canvas: hs.CanvasType | undefined;
       timer: hs.TimerType | undefined;
     } = {
@@ -220,4 +220,4 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getXEyesWidget,
   };
-};
+}

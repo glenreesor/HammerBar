@@ -17,25 +17,25 @@
 
 import type { WidgetBuilderParams } from 'src/Panel';
 
-type ImageInfo = { bundleId: string; imagePath?: undefined } |
-  { bundleId?: undefined; imagePath: string };
+type ImageInfo =
+  | { bundleId: string; imagePath?: undefined }
+  | { bundleId?: undefined; imagePath: string };
 
-export function getPanelButton(
-  {
-    x,
-    y,
-    height,
-    panelColor,
-    panelHoverColor,
-    imageInfo,
-    onClick, }: WidgetBuilderParams & { imageInfo: ImageInfo, onClick: () => void }
-) {
+export function getPanelButton({
+  x,
+  y,
+  height,
+  panelColor,
+  panelHoverColor,
+  imageInfo,
+  onClick,
+}: WidgetBuilderParams & { imageInfo: ImageInfo; onClick: () => void }) {
   function cleanupPriorToDelete() {
     state.canvas?.hide();
     state.canvas = undefined;
   }
 
-  const mouseCallback: hs.CanvasMouseCallbackType = function(
+  const mouseCallback: hs.CanvasMouseCallbackType = function (
     this: void,
     _canvas: hs.CanvasType,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
@@ -55,19 +55,18 @@ export function getPanelButton(
       render();
       onClick();
     }
-  }
+  };
 
   function render() {
     const IMAGE_PADDING = 2;
     const normalImageWidth = width - 2 * IMAGE_PADDING;
 
-    const image = imageInfo.bundleId !== undefined
-      ? hs.image.imageFromAppBundle(imageInfo.bundleId)
-      : hs.image.imageFromPath(imageInfo.imagePath);
+    const image =
+      imageInfo.bundleId !== undefined
+        ? hs.image.imageFromAppBundle(imageInfo.bundleId)
+        : hs.image.imageFromPath(imageInfo.imagePath);
 
-    const bgColor = state.mouseIsInsideButton
-      ? panelHoverColor
-      : panelColor;
+    const bgColor = state.mouseIsInsideButton ? panelHoverColor : panelColor;
 
     const imageWidth = state.mouseButtonIsDown
       ? 0.8 * normalImageWidth
@@ -77,37 +76,35 @@ export function getPanelButton(
       ? IMAGE_PADDING + 0.1 * normalImageWidth
       : IMAGE_PADDING;
 
-    state.canvas?.replaceElements(
-      [
-        {
-          type: 'rectangle',
-          fillColor: bgColor,
-          strokeColor: bgColor,
-          frame: {
-            x: 0,
-            y: 0,
-            w: height,
-            h: height,
-          },
-          trackMouseEnterExit: true,
-          trackMouseDown: true,
-          trackMouseUp: true,
+    state.canvas?.replaceElements([
+      {
+        type: 'rectangle',
+        fillColor: bgColor,
+        strokeColor: bgColor,
+        frame: {
+          x: 0,
+          y: 0,
+          w: height,
+          h: height,
         },
-        {
-          type: 'image',
-          frame: {
-            x: imageX,
-            y: (height - imageWidth) / 2,
-            w: imageWidth,
-            h: imageWidth,
-          },
-          image,
-          trackMouseEnterExit: true,
-          trackMouseDown: true,
-          trackMouseUp: true,
+        trackMouseEnterExit: true,
+        trackMouseDown: true,
+        trackMouseUp: true,
+      },
+      {
+        type: 'image',
+        frame: {
+          x: imageX,
+          y: (height - imageWidth) / 2,
+          w: imageWidth,
+          h: imageWidth,
         },
-      ]
-    );
+        image,
+        trackMouseEnterExit: true,
+        trackMouseDown: true,
+        trackMouseUp: true,
+      },
+    ]);
   }
 
   const state: {

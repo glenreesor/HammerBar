@@ -18,21 +18,19 @@
 import { BLACK } from 'src/constants';
 import { printWindowInfo } from 'src/utils';
 
-export function getWindowButton(
-  {
-    x,
-    y,
-    buttonWidth,
-    buttonHeight,
-    windowObject,
-  }: {
-    x: number,
-    y: number,
-    buttonWidth: number,
-    buttonHeight: number,
-    windowObject: hs.WindowType,
-  }
-) {
+export function getWindowButton({
+  x,
+  y,
+  buttonWidth,
+  buttonHeight,
+  windowObject,
+}: {
+  x: number;
+  y: number;
+  buttonWidth: number;
+  buttonHeight: number;
+  windowObject: hs.WindowType;
+}) {
   function cleanupPriorToDelete() {
     state.mainCanvas?.hide();
     state.mainCanvas = undefined;
@@ -41,7 +39,7 @@ export function getWindowButton(
     state.hoverCanvas = undefined;
   }
 
-  const mouseCallback: hs.CanvasMouseCallbackType = function(
+  const mouseCallback: hs.CanvasMouseCallbackType = function (
     this: void,
     _canvas: hs.CanvasType,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
@@ -61,7 +59,7 @@ export function getWindowButton(
       render();
       handleClick();
     }
-  }
+  };
 
   function renderHoveredTitle() {
     const fontSize = 12;
@@ -76,33 +74,31 @@ export function getWindowButton(
         h: height,
       });
     }
-    state.hoverCanvas.replaceElements(
-      [
-        {
-          type: 'rectangle',
-          fillColor: { red: 1, green: 1, blue: 1},
-          frame: {
-            x: 0,
-            y: 0,
-            w: width,
-            h: height,
-          },
-          roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+    state.hoverCanvas.replaceElements([
+      {
+        type: 'rectangle',
+        fillColor: { red: 1, green: 1, blue: 1 },
+        frame: {
+          x: 0,
+          y: 0,
+          w: width,
+          h: height,
         },
-        {
-          type: 'text',
-          text: state.windowTitle,
-          textColor: BLACK,
-          textSize: fontSize,
-          frame: {
-            x: 10,
-            y: 5,
-            w: width,
-            h: height,
-          },
+        roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+      },
+      {
+        type: 'text',
+        text: state.windowTitle,
+        textColor: BLACK,
+        textSize: fontSize,
+        frame: {
+          x: 10,
+          y: 5,
+          w: width,
+          h: height,
         },
-      ],
-    );
+      },
+    ]);
     state.hoverCanvas.show();
   }
 
@@ -141,61 +137,54 @@ export function getWindowButton(
 
     const bgColor = state.isMinimized
       ? { red: 0.7, green: 0.7, blue: 0.7 }
-      : { red: 1, green: 1, blue: 1 }
+      : { red: 1, green: 1, blue: 1 };
 
     const textX = paddingLeft + iconWidth;
 
     const textY = 2;
 
-    const maxTextWidth = (
-      state.width -
-      paddingLeft -
-      iconWidth -
-      paddingRight
-    );
+    const maxTextWidth = state.width - paddingLeft - iconWidth - paddingRight;
 
-    state.mainCanvas?.replaceElements(
-      [
-        {
-          type: 'rectangle',
-          fillColor: bgColor,
-          strokeColor: borderColor,
-          strokeWidth: borderWidth,
-          frame: {
-            x: 0,
-            y: 0,
-            w: state.width,
-            h: buttonHeight,
-          },
-          roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
-          trackMouseDown: true,
-          trackMouseEnterExit: true,
-          trackMouseUp: true,
+    state.mainCanvas?.replaceElements([
+      {
+        type: 'rectangle',
+        fillColor: bgColor,
+        strokeColor: borderColor,
+        strokeWidth: borderWidth,
+        frame: {
+          x: 0,
+          y: 0,
+          w: state.width,
+          h: buttonHeight,
         },
-        {
-          type: 'image',
-          frame: {
-            x: paddingLeft,
-            y: iconY,
-            w: iconWidth,
-            h: iconWidth,
-          },
-          image: hs.image.imageFromAppBundle(bundleId),
+        roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+        trackMouseDown: true,
+        trackMouseEnterExit: true,
+        trackMouseUp: true,
+      },
+      {
+        type: 'image',
+        frame: {
+          x: paddingLeft,
+          y: iconY,
+          w: iconWidth,
+          h: iconWidth,
         },
-        {
-          type: 'text',
-          text: state.windowTitle,
-          textColor: BLACK,
-          textSize: fontSize,
-          frame: {
-            x: textX,
-            y: textY,
-            w: maxTextWidth,
-            h: buttonHeight,
-          },
+        image: hs.image.imageFromAppBundle(bundleId),
+      },
+      {
+        type: 'text',
+        text: state.windowTitle,
+        textColor: BLACK,
+        textSize: fontSize,
+        frame: {
+          x: textX,
+          y: textY,
+          w: maxTextWidth,
+          h: buttonHeight,
         },
-      ]
-    );
+      },
+    ]);
 
     if (state.mouseIsInsideButton) {
       renderHoveredTitle();
@@ -242,7 +231,10 @@ export function getWindowButton(
   function update() {
     const newWindowTitle = state.windowObject.title();
     const newIsMinimized = state.windowObject.isMinimized();
-    if (newWindowTitle !== state.windowTitle || newIsMinimized !== state.isMinimized) {
+    if (
+      newWindowTitle !== state.windowTitle ||
+      newIsMinimized !== state.isMinimized
+    ) {
       state.windowTitle = newWindowTitle;
       state.isMinimized = newIsMinimized;
       render();
@@ -251,7 +243,7 @@ export function getWindowButton(
 
   function updatePositionAndWidth(x: number, width: number) {
     if (x !== state.x || width !== state.width) {
-      state.mainCanvas?.frame({x: x, y: y, w: width, h: buttonHeight});
+      state.mainCanvas?.frame({ x: x, y: y, w: width, h: buttonHeight });
       state.width = width;
       state.x = x;
       render();

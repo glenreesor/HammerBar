@@ -41,12 +41,14 @@ const config: Config = {
 
 type State = {
   panels: { cleanupPriorToDelete: () => void }[];
-  widgetsBuildingInfoLeft: WidgetBuildingInfo[]
-  widgetsBuildingInfoRight: WidgetBuildingInfo[]
-  screenWatcher: {
-    start: () => hs.ScreenWatcher;
-    stop: () => hs.ScreenWatcher;
-  } | undefined;
+  widgetsBuildingInfoLeft: WidgetBuildingInfo[];
+  widgetsBuildingInfoRight: WidgetBuildingInfo[];
+  screenWatcher:
+    | {
+        start: () => hs.ScreenWatcher;
+        stop: () => hs.ScreenWatcher;
+      }
+    | undefined;
 };
 
 const state: State = {
@@ -91,19 +93,23 @@ function createPanelsForAllScreens() {
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
-    printDiagnostic(`Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`);
+    printDiagnostic(
+      `Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`,
+    );
 
-    state.panels.push(Panel({
-      x: screenInfo.x,
-      y: screenInfo.y + screenInfo.height - config.panelHeight,
-      width: screenInfo.width,
-      height: config.panelHeight,
-      widgetsBuildingInfo: {
-        left: errorFreeWidgetBuildersLeft,
-        right: errorFreeWidgetBuildersRight,
-      },
-      windowListBuilder: getWindowListBuilder(screenInfo.id),
-    }));
+    state.panels.push(
+      Panel({
+        x: screenInfo.x,
+        y: screenInfo.y + screenInfo.height - config.panelHeight,
+        width: screenInfo.width,
+        height: config.panelHeight,
+        widgetsBuildingInfo: {
+          left: errorFreeWidgetBuildersLeft,
+          right: errorFreeWidgetBuildersRight,
+        },
+        windowListBuilder: getWindowListBuilder(screenInfo.id),
+      }),
+    );
   });
 }
 
@@ -149,10 +155,9 @@ export {
   getLineGraphBuilder,
   getTextBuilder,
   getXEyesBuilder,
-}
+};
 
 export function stop() {
   removeAllPanels();
   state.screenWatcher?.stop();
 }
-

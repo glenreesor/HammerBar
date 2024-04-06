@@ -29,7 +29,10 @@ export function getClockBuilder(): WidgetBuildingInfo {
       state.timer?.stop();
     }
 
-    function getFormattedDateTime(): { formattedTime: string, formattedDate: string } {
+    function getFormattedDateTime(): {
+      formattedTime: string;
+      formattedDate: string;
+    } {
       const now = os.date('*t') as os.DateTable;
 
       const hour = now.hour < 13 ? now.hour : now.hour - 12;
@@ -109,13 +112,10 @@ export function getClockBuilder(): WidgetBuildingInfo {
     // Schedule clock updates every minute starting at 0s of the next minute
     // and every 60s thereafter
     const now = os.date('*t') as os.DateTable;
-    state.timer = hs.timer.doAfter(
-      60 - now.sec,
-      () => {
-        render()
-        state.timer = hs.timer.doEvery(60, render);
-      }
-    );
+    state.timer = hs.timer.doAfter(60 - now.sec, () => {
+      render();
+      state.timer = hs.timer.doEvery(60, render);
+    });
 
     return {
       bringToFront: () => state.canvas?.show(),
@@ -130,4 +130,4 @@ export function getClockBuilder(): WidgetBuildingInfo {
     getWidth: () => CLOCK_WIDTH,
     getWidget: getClock,
   };
-};
+}

@@ -18,12 +18,20 @@
 import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getTextBuilder(title: string, interval: number, cmd: () => string): WidgetBuildingInfo {
+export function getTextBuilder(
+  title: string,
+  interval: number,
+  cmd: () => string,
+): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
-  function getTextWidget(
-    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
-  ) {
+  function getTextWidget({
+    x,
+    y,
+    height,
+    panelColor,
+    panelHoverColor,
+  }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       state.canvas?.hide();
       state.canvas = undefined;
@@ -38,47 +46,45 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
 
       const output = cmd();
 
-      state.canvas?.replaceElements(
-        [
-          {
-            type: 'rectangle',
-            fillColor: panelHoverColor,
-            strokeColor: panelColor,
-            frame: {
-              x: 0,
-              y: 0,
-              w: width,
-              h: height,
-            },
+      state.canvas?.replaceElements([
+        {
+          type: 'rectangle',
+          fillColor: panelHoverColor,
+          strokeColor: panelColor,
+          frame: {
+            x: 0,
+            y: 0,
+            w: width,
+            h: height,
           },
-          {
-            type: 'text',
-            text: title,
-            textAlignment: 'center',
-            textColor: BLACK,
-            textSize: fontSize,
-            frame: {
-              x: 0,
-              y: titleY,
-              w: width,
-              h: fontSize * 1.2,
-            },
+        },
+        {
+          type: 'text',
+          text: title,
+          textAlignment: 'center',
+          textColor: BLACK,
+          textSize: fontSize,
+          frame: {
+            x: 0,
+            y: titleY,
+            w: width,
+            h: fontSize * 1.2,
           },
-          {
-            type: 'text',
-            text: output,
-            textAlignment: 'center',
-            textColor: BLACK,
-            textSize: fontSize,
-            frame: {
-              x: 0,
-              y: outputY,
-              w: width,
-              h: fontSize * 1.2,
-            },
+        },
+        {
+          type: 'text',
+          text: output,
+          textAlignment: 'center',
+          textColor: BLACK,
+          textSize: fontSize,
+          frame: {
+            x: 0,
+            y: outputY,
+            w: width,
+            h: fontSize * 1.2,
           },
-        ],
-      );
+        },
+      ]);
 
       state.timer = hs.timer.doAfter(interval, render);
     }
@@ -110,4 +116,4 @@ export function getTextBuilder(title: string, interval: number, cmd: () => strin
     getWidth: (widgetHeight) => widgetHeight * 1.5,
     getWidget: getTextWidget,
   };
-};
+}

@@ -19,13 +19,16 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 import { getPanelButton } from './helpers/panelButton';
 
 export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
-  const buildErrors = bundleId === ''
-    ? ['AppLauncher: bundleId must not be empty']
-    : [];
+  const buildErrors =
+    bundleId === '' ? ['AppLauncher: bundleId must not be empty'] : [];
 
-  function getAppLauncher(
-    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
-  ) {
+  function getAppLauncher({
+    x,
+    y,
+    height,
+    panelColor,
+    panelHoverColor,
+  }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       panelButton.cleanupPriorToDelete();
     }
@@ -53,4 +56,4 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getAppLauncher,
   };
-};
+}

@@ -19,10 +19,16 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 import { getPanelButton } from '../helpers/panelButton';
 import { getAppButton } from './appButton';
 
-export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]): WidgetBuildingInfo {
-  function getAppMenu(
-    { x, y, height, panelColor, panelHoverColor }: WidgetBuilderParams
-  ) {
+export function getAppMenuBuilder(
+  appList: { bundleId: string; label: string }[],
+): WidgetBuildingInfo {
+  function getAppMenu({
+    x,
+    y,
+    height,
+    panelColor,
+    panelHoverColor,
+  }: WidgetBuilderParams) {
     const appButtons: ReturnType<typeof getAppButton>[] = [];
 
     function bringToFront() {
@@ -77,7 +83,7 @@ export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]
               }
               hs.application.launchOrFocusByBundleID(app.bundleId);
             },
-          })
+          }),
         );
         widgetY += 30;
       });
@@ -90,7 +96,7 @@ export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]
       panelColor,
       panelHoverColor,
       imageInfo: {
-        imagePath: `${os.getenv('HOME')}/.hammerspoon/Spoons/HammerBar.spoon/appMenuButton.png`
+        imagePath: `${os.getenv('HOME')}/.hammerspoon/Spoons/HammerBar.spoon/appMenuButton.png`,
       },
       onClick: toggleMenu,
     });
@@ -112,4 +118,4 @@ export function getAppMenuBuilder(appList: { bundleId: string, label: string }[]
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getAppMenu,
   };
-};
+}

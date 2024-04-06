@@ -15,10 +15,16 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-let windowListListeners: { screenId: number, callback: (windows: hs.WindowType[]) => void}[] = [];
+let windowListListeners: {
+  screenId: number;
+  callback: (windows: hs.WindowType[]) => void;
+}[] = [];
 let timer: hs.TimerType | undefined;
 
-export function subscribeToWindowLists(screenId: number, callback: (windows: hs.WindowType[]) => void) {
+export function subscribeToWindowLists(
+  screenId: number,
+  callback: (windows: hs.WindowType[]) => void,
+) {
   windowListListeners.push({ screenId, callback });
   if (windowListListeners.length === 1) {
     start();
@@ -29,7 +35,7 @@ export function subscribeToWindowLists(screenId: number, callback: (windows: hs.
 
 function start() {
   if (!timer) {
-    getWindowList()
+    getWindowList();
   }
 }
 
@@ -41,7 +47,9 @@ function stop() {
 }
 
 function unsubscribe(screenId: number) {
-  windowListListeners = windowListListeners.filter((l) => l.screenId !== screenId);
+  windowListListeners = windowListListeners.filter(
+    (l) => l.screenId !== screenId,
+  );
   if (windowListListeners.length === 0) {
     stop();
   }
@@ -49,23 +57,23 @@ function unsubscribe(screenId: number) {
 
 function getWindowList() {
   const allWindows = hs.window.allWindows();
-  const regularWindows = allWindows.filter(
-    (w) => {
-      const application = w.application();
-      if (application === null) {
-        return false;
-      }
-
-      return (
-        w.role() === 'AXWindow' &&
-        (application.name() !== 'Hammerspoon' || w.title() === 'Hammerspoon Console')
-      );
+  const regularWindows = allWindows.filter((w) => {
+    const application = w.application();
+    if (application === null) {
+      return false;
     }
-  );
 
-  windowListListeners.forEach((l) =>{
+    return (
+      w.role() === 'AXWindow' &&
+      (application.name() !== 'Hammerspoon' ||
+        w.title() === 'Hammerspoon Console')
+    );
+  });
+
+  windowListListeners.forEach((l) => {
     const windowsThisScreen = regularWindows.filter(
-      (w) => w.screen().id() === l.screenId);
+      (w) => w.screen().id() === l.screenId,
+    );
     l.callback(windowsThisScreen);
   });
 

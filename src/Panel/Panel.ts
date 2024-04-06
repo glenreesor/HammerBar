@@ -19,28 +19,39 @@ import ToggleButton from './ToggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 import type { WidgetBuilder, WidgetBuildingInfo } from './types';
 
-export default function Panel (
-  { x, y, width, height, widgetsBuildingInfo, windowListBuilder }:
-  {
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    widgetsBuildingInfo: {
-      left: WidgetBuildingInfo[],
-      right: WidgetBuildingInfo[],
-    },
-    windowListBuilder: (
-      {x, y, height, width}:
-      { x: number, y: number, height: number, width: number }
-    ) =>  {
-      bringToFront: () => void,
-      cleanupPriorToDelete: () => void,
-      hide: () => void,
-      show: () => void,
-    },
-  }
-) {
+export default function Panel({
+  x,
+  y,
+  width,
+  height,
+  widgetsBuildingInfo,
+  windowListBuilder,
+}: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  widgetsBuildingInfo: {
+    left: WidgetBuildingInfo[];
+    right: WidgetBuildingInfo[];
+  };
+  windowListBuilder: ({
+    x,
+    y,
+    height,
+    width,
+  }: {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  }) => {
+    bringToFront: () => void;
+    cleanupPriorToDelete: () => void;
+    hide: () => void;
+    show: () => void;
+  };
+}) {
   function cleanupPriorToDelete() {
     state.canvas?.hide();
     state.canvas = undefined;
@@ -74,7 +85,7 @@ export default function Panel (
         widget.hide();
       });
     }
-  };
+  }
 
   const state: {
     canvas: hs.CanvasType | undefined;
@@ -84,8 +95,8 @@ export default function Panel (
     isVisible: true,
   };
 
-  const panelColor = { red: 100/255, green: 100/255, blue: 100/255 };
-  const panelHoverColor = { red: 120/255, green: 120/255, blue: 120/255 };
+  const panelColor = { red: 100 / 255, green: 100 / 255, blue: 100 / 255 };
+  const panelHoverColor = { red: 120 / 255, green: 120 / 255, blue: 120 / 255 };
 
   state.canvas = hs.canvas.new({ x, y, w: width, h: height });
   state.canvas.replaceElements([
@@ -106,41 +117,47 @@ export default function Panel (
   const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
 
   // Left Toggle Button
-  toggleButtons.push(ToggleButton({
-    panelX: x,
-    panelY: y,
-    panelWidth: width,
-    panelHeight: height,
-    side: 'left',
-    panelColor,
-    panelHoverColor,
-    onClick: toggleVisibility
-  }));
+  toggleButtons.push(
+    ToggleButton({
+      panelX: x,
+      panelY: y,
+      panelWidth: width,
+      panelHeight: height,
+      side: 'left',
+      panelColor,
+      panelHoverColor,
+      onClick: toggleVisibility,
+    }),
+  );
 
   // Right Toggle Button
-  toggleButtons.push(ToggleButton({
-    panelX: x,
-    panelY: y,
-    panelWidth: width,
-    panelHeight: height,
-    side: 'right',
-    panelColor,
-    panelHoverColor,
-    onClick: toggleVisibility
-  }));
+  toggleButtons.push(
+    ToggleButton({
+      panelX: x,
+      panelY: y,
+      panelWidth: width,
+      panelHeight: height,
+      side: 'right',
+      panelColor,
+      panelHoverColor,
+      onClick: toggleVisibility,
+    }),
+  );
 
   const widgets: ReturnType<WidgetBuilder>[] = [];
 
   // Left Widgets
   let widgetX = x + TOGGLE_BUTTON_WIDTH;
   widgetsBuildingInfo.left.forEach((builderInfo) => {
-    widgets.push(builderInfo.getWidget({
-      x: widgetX,
-      y,
-      height,
-      panelColor,
-      panelHoverColor,
-    }));
+    widgets.push(
+      builderInfo.getWidget({
+        x: widgetX,
+        y,
+        height,
+        panelColor,
+        panelHoverColor,
+      }),
+    );
     widgetX += builderInfo.getWidth(height);
   });
 
@@ -150,27 +167,36 @@ export default function Panel (
   widgetX = x + width - TOGGLE_BUTTON_WIDTH;
   widgetsBuildingInfo.right.forEach((builderInfo) => {
     widgetX -= builderInfo.getWidth(height);
-    widgets.push(builderInfo.getWidget({
-      x: widgetX,
-      y,
-      height,
-      panelColor,
-      panelHoverColor,
-    }));
+    widgets.push(
+      builderInfo.getWidget({
+        x: widgetX,
+        y,
+        height,
+        panelColor,
+        panelHoverColor,
+      }),
+    );
   });
 
-  const totalWidgetWidth = (
+  const totalWidgetWidth =
     2 * TOGGLE_BUTTON_WIDTH +
-    widgetsBuildingInfo.right.reduce((acc, info) => acc + info.getWidth(height), 0) +
-    widgetsBuildingInfo.left.reduce((acc, info) => acc + info.getWidth(height), 0)
-  );
+    widgetsBuildingInfo.right.reduce(
+      (acc, info) => acc + info.getWidth(height),
+      0,
+    ) +
+    widgetsBuildingInfo.left.reduce(
+      (acc, info) => acc + info.getWidth(height),
+      0,
+    );
 
-  widgets.push(windowListBuilder({
+  widgets.push(
+    windowListBuilder({
       x: endOfLeftWidgets,
       y,
       height,
       width: width - totalWidgetWidth,
-  }));
+    }),
+  );
 
   return {
     cleanupPriorToDelete,

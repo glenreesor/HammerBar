@@ -18,25 +18,31 @@
 import { BLACK } from 'src/constants';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 
-export default function ToggleButton(
-  { panelX, panelY, panelWidth, panelHeight, side, panelColor, panelHoverColor, onClick }:
-  {
-    panelX: number;
-    panelY: number;
-    panelWidth: number;
-    panelHeight: number;
-    side: 'left' | 'right';
-    panelColor: hs.ColorType;
-    panelHoverColor: hs.ColorType;
-    onClick: () => void;
-  }
-) {
+export default function ToggleButton({
+  panelX,
+  panelY,
+  panelWidth,
+  panelHeight,
+  side,
+  panelColor,
+  panelHoverColor,
+  onClick,
+}: {
+  panelX: number;
+  panelY: number;
+  panelWidth: number;
+  panelHeight: number;
+  side: 'left' | 'right';
+  panelColor: hs.ColorType;
+  panelHoverColor: hs.ColorType;
+  onClick: () => void;
+}) {
   function cleanupPriorToDelete() {
     state.canvas?.hide();
     state.canvas = undefined;
   }
 
-  const mouseCallback: hs.CanvasMouseCallbackType = function(
+  const mouseCallback: hs.CanvasMouseCallbackType = function (
     this: void,
     _canvas: hs.CanvasType,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseUp',
@@ -50,12 +56,10 @@ export default function ToggleButton(
     } else if (msg === 'mouseUp') {
       onClick();
     }
-  }
+  };
 
   function render() {
-    const bgColor = state.mouseIsInsideButton
-      ? panelHoverColor
-      : panelColor
+    const bgColor = state.mouseIsInsideButton ? panelHoverColor : panelColor;
 
     const fontSize = 14;
     let toggleSymbol;
@@ -112,8 +116,14 @@ export default function ToggleButton(
     panelIsVisible: true,
   };
 
-  const x = side === 'left' ? panelX : panelX + panelWidth - TOGGLE_BUTTON_WIDTH;
-  state.canvas = hs.canvas.new({ x, y: panelY, w: TOGGLE_BUTTON_WIDTH, h: panelHeight });
+  const x =
+    side === 'left' ? panelX : panelX + panelWidth - TOGGLE_BUTTON_WIDTH;
+  state.canvas = hs.canvas.new({
+    x,
+    y: panelY,
+    w: TOGGLE_BUTTON_WIDTH,
+    h: panelHeight,
+  });
   render();
   state.canvas.mouseCallback(mouseCallback);
   state.canvas.show();
