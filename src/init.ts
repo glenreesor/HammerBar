@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-const VERSION = '0.9+2024-02-22';
+const VERSION = '0.9+2024-04-18';
 
 import { getScreenInfo } from './hammerspoonUtils';
 
