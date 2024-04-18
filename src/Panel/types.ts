@@ -38,6 +38,7 @@ export type WidgetBuilderParams = Parameters<WidgetBuilder>[0];
 
 export type WidgetBuildingInfo = {
   buildErrors: string[];
+  name: string;
   getWidth: (widgetHeight: number) => number;
   getWidget: WidgetBuilder;
 };

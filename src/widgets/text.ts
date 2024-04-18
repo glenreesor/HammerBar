@@ -113,6 +113,7 @@ export function getTextBuilder(
 
   return {
     buildErrors,
+    name: 'Text',
     getWidth: (widgetHeight) => widgetHeight * 1.5,
     getWidget: getTextWidget,
   };

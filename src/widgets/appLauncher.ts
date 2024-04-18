@@ -53,6 +53,7 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
 
   return {
     buildErrors,
+    name: 'AppLauncher',
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getAppLauncher,
   };

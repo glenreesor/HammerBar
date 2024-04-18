@@ -223,6 +223,7 @@ export function getDotGraphBuilder(
 
   return {
     buildErrors,
+    name: 'DotGraph',
     getWidth: (widgetHeight) => widgetHeight * 1.5,
     getWidget: getDotGraphWidget,
   };

@@ -127,6 +127,7 @@ export function getClockBuilder(): WidgetBuildingInfo {
 
   return {
     buildErrors: [],
+    name: 'Clock',
     getWidth: () => CLOCK_WIDTH,
     getWidget: getClock,
   };

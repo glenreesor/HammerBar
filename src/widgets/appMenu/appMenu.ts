@@ -115,6 +115,7 @@ export function getAppMenuBuilder(
 
   return {
     buildErrors: [],
+    name: 'AppMenu',
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getAppMenu,
   };

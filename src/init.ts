@@ -41,8 +41,14 @@ const config: Config = {
 
 type State = {
   panels: { cleanupPriorToDelete: () => void }[];
-  widgetsBuildingInfoLeft: WidgetBuildingInfo[];
-  widgetsBuildingInfoRight: WidgetBuildingInfo[];
+  primaryScreenWidgets: {
+    left: WidgetBuildingInfo[];
+    right: WidgetBuildingInfo[];
+  };
+  secondaryScreenWidgets: {
+    left: WidgetBuildingInfo[];
+    right: WidgetBuildingInfo[];
+  };
   screenWatcher:
     | {
         start: () => hs.ScreenWatcher;
@@ -53,8 +59,14 @@ type State = {
 
 const state: State = {
   panels: [],
-  widgetsBuildingInfoLeft: [],
-  widgetsBuildingInfoRight: [],
+  primaryScreenWidgets: {
+    left: [],
+    right: [],
+  },
+  secondaryScreenWidgets: {
+    left: [],
+    right: [],
+  },
   screenWatcher: undefined,
 };
 
@@ -69,33 +81,44 @@ function verticallyMaximizeCurrentWindow() {
   });
 }
 
+function validateWidgetConfig(buildingInfo: WidgetBuildingInfo): boolean {
+  if (buildingInfo.buildErrors.length === 0) {
+    return true;
+  }
+  print(`Error building widget ${buildingInfo.name}:`);
+  buildingInfo.buildErrors.forEach((txt) => print(`    ${txt}`));
+
+  return false;
+}
+
 function createPanelsForAllScreens() {
-  const errorFreeWidgetBuildersLeft: WidgetBuildingInfo[] = [];
-  const errorFreeWidgetBuildersRight: WidgetBuildingInfo[] = [];
+  const primaryScreenId = hs.screen.primaryScreen().id();
 
-  state.widgetsBuildingInfoLeft.forEach((info) => {
-    if (info.buildErrors.length === 0) {
-      errorFreeWidgetBuildersLeft.push(info);
-    } else {
-      print('Error building widget:');
-      info.buildErrors.forEach((txt) => print(`    ${txt}`));
-    }
-  });
+  const errorFreeWidgetBuildersPrimaryLeft =
+    state.primaryScreenWidgets.left.filter((w) => validateWidgetConfig(w));
+  const errorFreeWidgetBuildersPrimaryRight =
+    state.primaryScreenWidgets.right.filter((w) => validateWidgetConfig(w));
 
-  state.widgetsBuildingInfoRight.forEach((info) => {
-    if (info.buildErrors.length === 0) {
-      errorFreeWidgetBuildersRight.push(info);
-    } else {
-      print('Error building widget:');
-      info.buildErrors.forEach((txt) => print(`    ${txt}`));
-    }
-  });
+  const errorFreeWidgetBuildersSecondaryLeft =
+    state.secondaryScreenWidgets.left.filter((w) => validateWidgetConfig(w));
+  const errorFreeWidgetBuildersSecondaryRight =
+    state.secondaryScreenWidgets.right.filter((w) => validateWidgetConfig(w));
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
     printDiagnostic(
       `Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`,
     );
+
+    const leftWidgets =
+      screenInfo.id === primaryScreenId
+        ? errorFreeWidgetBuildersPrimaryLeft
+        : errorFreeWidgetBuildersSecondaryLeft;
+
+    const rightWidgets =
+      screenInfo.id === primaryScreenId
+        ? errorFreeWidgetBuildersPrimaryRight
+        : errorFreeWidgetBuildersSecondaryRight;
 
     state.panels.push(
       Panel({
@@ -104,8 +127,8 @@ function createPanelsForAllScreens() {
         width: screenInfo.width,
         height: config.panelHeight,
         widgetsBuildingInfo: {
-          left: errorFreeWidgetBuildersLeft,
-          right: errorFreeWidgetBuildersRight,
+          left: leftWidgets,
+          right: rightWidgets,
         },
         windowListBuilder: getWindowListBuilder(screenInfo.id),
       }),
@@ -139,22 +162,40 @@ export function start() {
   state.screenWatcher.start();
 }
 
-export function addWidgetBuildersLeft(buildingInfo: WidgetBuildingInfo[]) {
-  buildingInfo.forEach((b) => state.widgetsBuildingInfoLeft.push(b));
+export function addWidgetsPrimaryScreenLeft(
+  buildingInfo: WidgetBuildingInfo[],
+) {
+  buildingInfo.forEach((b) => state.primaryScreenWidgets.left.push(b));
 }
 
-export function addWidgetBuildersRight(buildingInfo: WidgetBuildingInfo[]) {
-  buildingInfo.forEach((b) => state.widgetsBuildingInfoRight.push(b));
+export function addWidgetsPrimaryScreenRight(
+  buildingInfo: WidgetBuildingInfo[],
+) {
+  buildingInfo.forEach((b) => state.primaryScreenWidgets.right.push(b));
 }
 
-export {
-  getAppLauncherBuilder,
-  getAppMenuBuilder,
-  getClockBuilder,
-  getDotGraphBuilder,
-  getLineGraphBuilder,
-  getTextBuilder,
-  getXEyesBuilder,
+export function addWidgetsSecondaryScreenLeft(
+  buildingInfo: WidgetBuildingInfo[],
+) {
+  buildingInfo.forEach((b) => state.secondaryScreenWidgets.left.push(b));
+}
+
+export function addWidgetsSecondaryScreenRight(
+  buildingInfo: WidgetBuildingInfo[],
+) {
+  buildingInfo.forEach((b) => state.secondaryScreenWidgets.right.push(b));
+}
+
+// Users don't need to be burdened with understanding that they're getting a
+// builder, so rename on export
+export const widgets = {
+  appLauncher: getAppLauncherBuilder,
+  appMenu: getAppMenuBuilder,
+  clock: getClockBuilder,
+  dotGraph: getDotGraphBuilder,
+  lineGraph: getLineGraphBuilder,
+  text: getTextBuilder,
+  xeyes: getXEyesBuilder,
 };
 
 export function stop() {

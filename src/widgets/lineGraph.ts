@@ -224,6 +224,7 @@ export function getLineGraphBuilder(
 
   return {
     buildErrors,
+    name: 'LineGraph',
     getWidth: (widgetHeight) => widgetHeight * 1.5,
     getWidget: getLineGraphWidget,
   };

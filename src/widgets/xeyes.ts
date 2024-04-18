@@ -217,6 +217,7 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
 
   return {
     buildErrors,
+    name: 'Xeyes',
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getXEyesWidget,
   };

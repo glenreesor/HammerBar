@@ -210,6 +210,7 @@ declare namespace hs {
 
   namespace screen {
     function allScreens(this: void): Array<ScreenType>;
+    function primaryScreen(this: void): ScreenType;
     const watcher: ScreenWatcher;
   }
 
