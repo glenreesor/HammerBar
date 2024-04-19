@@ -25,7 +25,6 @@ import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
 import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
-import { getDotGraphBuilder } from './widgets/dotGraph';
 import { getLineGraphBuilder } from './widgets/lineGraph';
 import { getTextBuilder } from './widgets/text';
 import { getWindowListBuilder } from './widgets/windowList';
@@ -192,7 +191,6 @@ export const widgets = {
   appLauncher: getAppLauncherBuilder,
   appMenu: getAppMenuBuilder,
   clock: getClockBuilder,
-  dotGraph: getDotGraphBuilder,
   lineGraph: getLineGraphBuilder,
   text: getTextBuilder,
   xeyes: getXEyesBuilder,
