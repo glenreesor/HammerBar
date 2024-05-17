@@ -19,9 +19,16 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 import { getPanelButton } from '../helpers/panelButton';
 import { getAppButton } from './appButton';
 
-export function getAppMenuBuilder(
-  appList: { bundleId: string; label: string }[],
-): WidgetBuildingInfo {
+type IconInfo =
+  | { bundleId: string; imagePath: undefined }
+  | { bundleId: undefined; imagePath: string };
+
+export function getAppMenuBuilder(args: {
+  appList: { bundleId: string; label: string }[];
+  icon?: IconInfo;
+}): WidgetBuildingInfo {
+  const { appList, icon } = args;
+
   function getAppMenu({
     x,
     y,
@@ -89,15 +96,20 @@ export function getAppMenuBuilder(
       });
     }
 
+    const iconInfo =
+      icon === undefined
+        ? {
+            imagePath: `${os.getenv('HOME')}/.hammerspoon/Spoons/HammerBar.spoon/appMenuButton.png`,
+          }
+        : icon;
+
     const panelButton = getPanelButton({
       x,
       y,
       height,
       panelColor,
       panelHoverColor,
-      imageInfo: {
-        imagePath: `${os.getenv('HOME')}/.hammerspoon/Spoons/HammerBar.spoon/appMenuButton.png`,
-      },
+      imageInfo: iconInfo,
       onClick: toggleMenu,
     });
 
