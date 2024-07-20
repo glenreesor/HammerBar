@@ -19,7 +19,7 @@ const VERSION = '0.9+2024-05-19';
 
 import { getScreenInfo } from './hammerspoonUtils';
 
-import Panel from './panel';
+import panel from './panel';
 import type { WidgetBuildingInfo } from './panel';
 import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
@@ -125,7 +125,7 @@ function createPanelsForAllScreens() {
         : errorFreeWidgetBuildersSecondaryRight;
 
     state.panels.push(
-      Panel({
+      panel({
         coords: {
           x: screenInfo.x,
           y: screenInfo.y + screenInfo.height - config.panelHeight,

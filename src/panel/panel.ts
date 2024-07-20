@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import ToggleButton from './ToggleButton';
+import ToggleButton from './toggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 import type {
   WidgetBuilder,
@@ -23,7 +23,7 @@ import type {
   WidgetBuildingInfo,
 } from './types';
 
-export default function Panel(params: {
+export default function panel(params: {
   coords: { x: number; y: number };
   dimensions: { w: number; h: number };
   widgetsBuildingInfo: {
