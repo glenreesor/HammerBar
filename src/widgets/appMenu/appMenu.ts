@@ -30,8 +30,7 @@ export function getAppMenuBuilder(args: {
   const { appList, icon } = args;
 
   function getAppMenu({
-    x,
-    y,
+    coords,
     height,
     panelColor,
     panelHoverColor,
@@ -69,13 +68,12 @@ export function getAppMenuBuilder(args: {
     }
 
     function showMenu() {
-      let widgetY = y - 30 * appList.length;
+      let widgetY = coords.y - 30 * appList.length;
 
       appList.forEach((app) => {
         appButtons.push(
           getAppButton({
-            x,
-            y: widgetY,
+            coords: { x: coords.x, y: widgetY },
             height: 30,
             panelColor,
             panelHoverColor,
@@ -104,8 +102,7 @@ export function getAppMenuBuilder(args: {
         : icon;
 
     const panelButton = getPanelButton({
-      x,
-      y,
+      coords,
       height,
       panelColor,
       panelHoverColor,

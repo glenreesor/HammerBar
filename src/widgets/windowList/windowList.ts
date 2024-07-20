@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import type { WidgetBuilderReturnType } from 'src/Panel';
 import { getWindowButton } from './windowButton';
 import { subscribeToWindowLists } from './windowListWatcher';
 
@@ -34,17 +35,10 @@ type WindowButtonsInfoById = Map<
 >;
 
 export function getWindowListBuilder(screenId: number) {
-  return function getWindowList({
-    x,
-    y,
-    height,
-    width,
-  }: {
-    x: number;
-    y: number;
-    height: number;
-    width: number;
-  }) {
+  return function getWindowList(args: {
+    coords: { x: number; y: number };
+    dimensions: { height: number; width: number };
+  }): WidgetBuilderReturnType {
     function bringToFront() {
       state.canvas?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.bringToFront());
@@ -85,8 +79,8 @@ export function getWindowListBuilder(screenId: number) {
           frame: {
             x: 0,
             y: 0,
-            w: width,
-            h: height,
+            w: args.dimensions.width,
+            h: args.dimensions.height,
           },
         },
       ]);
@@ -124,9 +118,12 @@ export function getWindowListBuilder(screenId: number) {
       const newWindowsListMap = new Map(newWindowsList.map((w) => [w.id(), w]));
       const newWindowButtonsInfoById: WindowButtonsInfoById = new Map();
 
-      const buttonWidth = getButtonWidth(width, newWindowsList.length);
+      const buttonWidth = getButtonWidth(
+        args.dimensions.width,
+        newWindowsList.length,
+      );
 
-      let windowButtonX = x + BUTTON_PADDING;
+      let windowButtonX = args.coords.x + BUTTON_PADDING;
       state.windowButtonsInfoById.forEach((windowButtonInfo, id) => {
         if (newWindowsListMap.has(id)) {
           // Window for this button still exists so add it to our new list
@@ -152,7 +149,7 @@ export function getWindowListBuilder(screenId: number) {
           w,
           actions: getWindowButton({
             x: windowButtonX,
-            y: y + 4,
+            y: args.coords.y + 4,
             buttonWidth,
             buttonHeight: 35,
             windowObject: w,
@@ -186,7 +183,12 @@ export function getWindowListBuilder(screenId: number) {
       windowListUnsubscriber: undefined,
     };
 
-    state.canvas = hs.canvas.new({ x, y, w: width, h: height });
+    state.canvas = hs.canvas.new({
+      x: args.coords.x,
+      y: args.coords.y,
+      w: args.dimensions.width,
+      h: args.dimensions.height,
+    });
     render();
 
     state.windowListUnsubscriber = subscribeToWindowLists(

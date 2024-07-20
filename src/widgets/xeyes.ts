@@ -25,8 +25,7 @@ export function getXEyesBuilder(args: {
   const buildErrors: string[] = [];
 
   function getXEyesWidget({
-    x,
-    y,
+    coords,
     height,
     panelColor,
     panelHoverColor,
@@ -47,13 +46,13 @@ export function getXEyesBuilder(args: {
 
       const leftEyeCenter = { x: 2 + eyeRadius, y: height / 2 };
       const leftEyeCenterAbsolute = {
-        x: x + leftEyeCenter.x,
-        y: y + leftEyeCenter.y,
+        x: coords.x + leftEyeCenter.x,
+        y: coords.y + leftEyeCenter.y,
       };
       const rightEyeCenter = { x: width / 2 + 2 + eyeRadius, y: height / 2 };
       const rightEyeCenterAbsolute = {
-        x: x + rightEyeCenter.x,
-        y: y + rightEyeCenter.y,
+        x: coords.x + rightEyeCenter.x,
+        y: coords.y + rightEyeCenter.y,
       };
 
       const leftdy = leftEyeCenterAbsolute.y - mouseCoords.y;
@@ -205,7 +204,12 @@ export function getXEyesBuilder(args: {
     };
 
     const width = height;
-    state.canvas = hs.canvas.new({ x, y, w: width, h: height });
+    state.canvas = hs.canvas.new({
+      x: coords.x,
+      y: coords.y,
+      w: width,
+      h: height,
+    });
 
     render();
     state.canvas.show();

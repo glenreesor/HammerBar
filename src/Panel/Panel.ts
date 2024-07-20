@@ -17,40 +17,23 @@
 
 import ToggleButton from './ToggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
-import type { WidgetBuilder, WidgetBuildingInfo } from './types';
+import type {
+  WidgetBuilder,
+  WidgetBuilderReturnType,
+  WidgetBuildingInfo,
+} from './types';
 
-export default function Panel({
-  x,
-  y,
-  width,
-  height,
-  widgetsBuildingInfo,
-  windowListBuilder,
-}: {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+export default function Panel(panelArgs: {
+  coords: { x: number; y: number };
+  dimensions: { w: number; h: number };
   widgetsBuildingInfo: {
     left: WidgetBuildingInfo[];
     right: WidgetBuildingInfo[];
   };
-  windowListBuilder: ({
-    x,
-    y,
-    height,
-    width,
-  }: {
-    x: number;
-    y: number;
-    height: number;
-    width: number;
-  }) => {
-    bringToFront: () => void;
-    cleanupPriorToDelete: () => void;
-    hide: () => void;
-    show: () => void;
-  };
+  windowListBuilder: (args: {
+    coords: { x: number; y: number };
+    dimensions: { height: number; width: number };
+  }) => WidgetBuilderReturnType;
 }) {
   function cleanupPriorToDelete() {
     state.canvas?.hide();
@@ -98,7 +81,12 @@ export default function Panel({
   const panelColor = { red: 100 / 255, green: 100 / 255, blue: 100 / 255 };
   const panelHoverColor = { red: 120 / 255, green: 120 / 255, blue: 120 / 255 };
 
-  state.canvas = hs.canvas.new({ x, y, w: width, h: height });
+  state.canvas = hs.canvas.new({
+    x: panelArgs.coords.x,
+    y: panelArgs.coords.y,
+    w: panelArgs.dimensions.w,
+    h: panelArgs.dimensions.h,
+  });
   state.canvas.replaceElements([
     {
       type: 'rectangle',
@@ -107,8 +95,8 @@ export default function Panel({
       frame: {
         x: 0,
         y: 0,
-        w: width,
-        h: height,
+        w: panelArgs.dimensions.w,
+        h: panelArgs.dimensions.h,
       },
     },
   ]);
@@ -119,10 +107,10 @@ export default function Panel({
   // Left Toggle Button
   toggleButtons.push(
     ToggleButton({
-      panelX: x,
-      panelY: y,
-      panelWidth: width,
-      panelHeight: height,
+      panelX: panelArgs.coords.x,
+      panelY: panelArgs.coords.y,
+      panelWidth: panelArgs.dimensions.w,
+      panelHeight: panelArgs.dimensions.h,
       side: 'left',
       panelColor,
       panelHoverColor,
@@ -133,10 +121,10 @@ export default function Panel({
   // Right Toggle Button
   toggleButtons.push(
     ToggleButton({
-      panelX: x,
-      panelY: y,
-      panelWidth: width,
-      panelHeight: height,
+      panelX: panelArgs.coords.x,
+      panelY: panelArgs.coords.y,
+      panelWidth: panelArgs.dimensions.w,
+      panelHeight: panelArgs.dimensions.h,
       side: 'right',
       panelColor,
       panelHoverColor,
@@ -147,31 +135,29 @@ export default function Panel({
   const widgets: ReturnType<WidgetBuilder>[] = [];
 
   // Left Widgets
-  let widgetX = x + TOGGLE_BUTTON_WIDTH;
-  widgetsBuildingInfo.left.forEach((builderInfo) => {
+  let widgetX = panelArgs.coords.x + TOGGLE_BUTTON_WIDTH;
+  panelArgs.widgetsBuildingInfo.left.forEach((builderInfo) => {
     widgets.push(
       builderInfo.getWidget({
-        x: widgetX,
-        y,
-        height,
+        coords: { x: widgetX, y: panelArgs.coords.y },
+        height: panelArgs.dimensions.h,
         panelColor,
         panelHoverColor,
       }),
     );
-    widgetX += builderInfo.getWidth(height);
+    widgetX += builderInfo.getWidth(panelArgs.dimensions.h);
   });
 
   const endOfLeftWidgets = widgetX;
 
   // Right Widgets
-  widgetX = x + width - TOGGLE_BUTTON_WIDTH;
-  widgetsBuildingInfo.right.forEach((builderInfo) => {
-    widgetX -= builderInfo.getWidth(height);
+  widgetX = panelArgs.coords.x + panelArgs.dimensions.w - TOGGLE_BUTTON_WIDTH;
+  panelArgs.widgetsBuildingInfo.right.forEach((builderInfo) => {
+    widgetX -= builderInfo.getWidth(panelArgs.dimensions.h);
     widgets.push(
       builderInfo.getWidget({
-        x: widgetX,
-        y,
-        height,
+        coords: { x: widgetX, y: panelArgs.coords.y },
+        height: panelArgs.dimensions.h,
         panelColor,
         panelHoverColor,
       }),
@@ -180,21 +166,25 @@ export default function Panel({
 
   const totalWidgetWidth =
     2 * TOGGLE_BUTTON_WIDTH +
-    widgetsBuildingInfo.right.reduce(
-      (acc, info) => acc + info.getWidth(height),
+    panelArgs.widgetsBuildingInfo.right.reduce(
+      (acc, info) => acc + info.getWidth(panelArgs.dimensions.h),
       0,
     ) +
-    widgetsBuildingInfo.left.reduce(
-      (acc, info) => acc + info.getWidth(height),
+    panelArgs.widgetsBuildingInfo.left.reduce(
+      (acc, info) => acc + info.getWidth(panelArgs.dimensions.h),
       0,
     );
 
   widgets.push(
-    windowListBuilder({
-      x: endOfLeftWidgets,
-      y,
-      height,
-      width: width - totalWidgetWidth,
+    panelArgs.windowListBuilder({
+      coords: {
+        x: endOfLeftWidgets,
+        y: panelArgs.coords.y,
+      },
+      dimensions: {
+        height: panelArgs.dimensions.h,
+        width: panelArgs.dimensions.w - totalWidgetWidth,
+      },
     }),
   );
 

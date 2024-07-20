@@ -19,5 +19,6 @@ export { default } from './Panel';
 export type {
   WidgetBuilder,
   WidgetBuilderParams,
+  WidgetBuilderReturnType,
   WidgetBuildingInfo,
 } from './types';

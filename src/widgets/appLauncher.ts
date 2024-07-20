@@ -23,8 +23,7 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
     bundleId === '' ? ['AppLauncher: bundleId must not be empty'] : [];
 
   function getAppLauncher({
-    x,
-    y,
+    coords,
     height,
     panelColor,
     panelHoverColor,
@@ -34,8 +33,7 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
     }
 
     const panelButton = getPanelButton({
-      x,
-      y,
+      coords,
       height,
       panelColor,
       panelHoverColor,

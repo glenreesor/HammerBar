@@ -121,10 +121,14 @@ function createPanelsForAllScreens() {
 
     state.panels.push(
       Panel({
-        x: screenInfo.x,
-        y: screenInfo.y + screenInfo.height - config.panelHeight,
-        width: screenInfo.width,
-        height: config.panelHeight,
+        coords: {
+          x: screenInfo.x,
+          y: screenInfo.y + screenInfo.height - config.panelHeight,
+        },
+        dimensions: {
+          w: screenInfo.width,
+          h: config.panelHeight,
+        },
         widgetsBuildingInfo: {
           left: leftWidgets,
           right: rightWidgets,

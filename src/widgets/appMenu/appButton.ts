@@ -19,8 +19,7 @@ import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams } from 'src/Panel';
 
 export function getAppButton({
-  x,
-  y,
+  coords,
   height,
   panelColor,
   panelHoverColor,
@@ -154,7 +153,12 @@ export function getAppButton({
   };
 
   const CANVAS_WIDTH = 120;
-  state.canvas = hs.canvas.new({ x, y, w: CANVAS_WIDTH, h: height });
+  state.canvas = hs.canvas.new({
+    x: coords.x,
+    y: coords.y,
+    w: CANVAS_WIDTH,
+    h: height,
+  });
 
   render();
   state.canvas.mouseCallback(mouseCallback);

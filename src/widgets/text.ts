@@ -26,8 +26,7 @@ export function getTextBuilder(args: {
   const buildErrors: string[] = [];
 
   function getTextWidget({
-    x,
-    y,
+    coords,
     height,
     panelColor,
     panelHoverColor,
@@ -98,7 +97,12 @@ export function getTextBuilder(args: {
     };
 
     const width = height * 1.5;
-    state.canvas = hs.canvas.new({ x, y, w: width, h: height });
+    state.canvas = hs.canvas.new({
+      x: coords.x,
+      y: coords.y,
+      w: width,
+      h: height,
+    });
 
     render();
     state.canvas.show();

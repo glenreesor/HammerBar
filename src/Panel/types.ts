@@ -15,26 +15,23 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type WidgetBuilder = ({
-  x,
-  y,
-  height,
-  panelColor,
-  panelHoverColor,
-}: {
-  x: number;
-  y: number;
+export type WidgetBuilderParams = {
+  coords: { x: number; y: number };
   height: number;
   panelColor: hs.ColorType;
   panelHoverColor: hs.ColorType;
-}) => {
+};
+
+export type WidgetBuilderReturnType = {
   bringToFront: () => void;
   cleanupPriorToDelete: () => void;
   hide: () => void;
   show: () => void;
 };
 
-export type WidgetBuilderParams = Parameters<WidgetBuilder>[0];
+export type WidgetBuilder = (
+  params: WidgetBuilderParams,
+) => WidgetBuilderReturnType;
 
 export type WidgetBuildingInfo = {
   buildErrors: string[];

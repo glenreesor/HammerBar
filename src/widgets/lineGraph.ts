@@ -28,8 +28,7 @@ export function getLineGraphBuilder(args: {
   const buildErrors: string[] = [];
 
   function getLineGraphWidget({
-    x,
-    y,
+    coords,
     height,
     panelColor,
     panelHoverColor,
@@ -303,8 +302,8 @@ export function getLineGraphBuilder(args: {
 
       if (state.expandedViewCanvas === undefined) {
         state.expandedViewCanvas = hs.canvas.new({
-          x: x - expandedViewWidth + width,
-          y: y - expandedViewHeight,
+          x: coords.x - expandedViewWidth + width,
+          y: coords.y - expandedViewHeight,
           w: expandedViewWidth,
           h: expandedViewHeight,
         });
@@ -430,14 +429,14 @@ export function getLineGraphBuilder(args: {
     function renderHoverValue() {
       const fontSize = 10;
       const value = state.values[state.values.length - 1];
-      const canvasX = x;
+      const canvasX = coords.x;
       const hoverWidth = fontSize * (value.toString().length + 1);
       const hoverHeight = fontSize * 2;
 
       if (state.hoverCanvas === undefined) {
         state.hoverCanvas = hs.canvas.new({
           x: canvasX,
-          y: y - hoverHeight - 2,
+          y: coords.y - hoverHeight - 2,
           w: width,
           h: hoverHeight,
         });
@@ -510,7 +509,12 @@ export function getLineGraphBuilder(args: {
     };
 
     const width = height * 1.5;
-    state.graphCanvas = hs.canvas.new({ x, y, w: width, h: height });
+    state.graphCanvas = hs.canvas.new({
+      x: coords.x,
+      y: coords.y,
+      w: width,
+      h: height,
+    });
 
     runCmdAndRender();
     state.graphCanvas.mouseCallback(mouseCallback);

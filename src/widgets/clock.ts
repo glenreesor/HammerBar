@@ -21,7 +21,7 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 export function getClockBuilder(): WidgetBuildingInfo {
   const CLOCK_WIDTH = 100;
 
-  function getClock({ x, y, height }: WidgetBuilderParams) {
+  function getClock({ coords, height }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       state.canvas?.hide();
       state.canvas = undefined;
@@ -104,7 +104,12 @@ export function getClockBuilder(): WidgetBuildingInfo {
       timer: undefined,
     };
 
-    state.canvas = hs.canvas.new({ x, y, w: CLOCK_WIDTH, h: height });
+    state.canvas = hs.canvas.new({
+      x: coords.x,
+      y: coords.y,
+      w: CLOCK_WIDTH,
+      h: height,
+    });
 
     render();
     state.canvas.show();

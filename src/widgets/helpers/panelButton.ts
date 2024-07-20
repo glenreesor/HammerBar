@@ -22,8 +22,7 @@ type ImageInfo =
   | { bundleId?: undefined; imagePath: string };
 
 export function getPanelButton({
-  x,
-  y,
+  coords,
   height,
   panelColor,
   panelHoverColor,
@@ -118,7 +117,12 @@ export function getPanelButton({
   };
 
   const width = height;
-  state.canvas = hs.canvas.new({ x, y, w: width, h: height });
+  state.canvas = hs.canvas.new({
+    x: coords.x,
+    y: coords.y,
+    w: width,
+    h: height,
+  });
 
   render();
   state.canvas.mouseCallback(mouseCallback);
