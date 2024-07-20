@@ -17,6 +17,11 @@
 
 import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
+import {
+  deleteCanvasesAndStopTimers,
+  hideCanvases,
+  showCanvases,
+} from './helpers/util';
 
 export function getLineGraphBuilder(args: {
   title: string;
@@ -34,28 +39,18 @@ export function getLineGraphBuilder(args: {
     panelHoverColor,
   }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
-      state.expandedViewCanvas?.hide();
-      state.expandedViewCanvas = undefined;
-
-      state.graphCanvas?.hide();
-      state.graphCanvas = undefined;
-
-      state.hoverCanvas?.hide();
-      state.hoverCanvas = undefined;
-
-      state.timer?.stop();
+      deleteCanvasesAndStopTimers(
+        Object.values(state.canvases),
+        Object.values(state.timers),
+      );
     }
 
     function hide() {
-      state.graphCanvas?.hide();
-      state.hoverCanvas?.hide();
-      state.expandedViewCanvas?.hide();
+      hideCanvases(Object.values(state.canvases));
     }
 
     function show() {
-      state.graphCanvas?.show();
-      state.hoverCanvas?.show();
-      state.expandedViewCanvas?.show();
+      showCanvases(Object.values(state.canvases));
     }
 
     const mouseCallback: hs.CanvasMouseCallbackType = function (
@@ -80,10 +75,10 @@ export function getLineGraphBuilder(args: {
 
         if (
           !state.renderExpandedView &&
-          state.expandedViewCanvas !== undefined
+          state.canvases.expandedViewCanvas !== undefined
         ) {
-          state.expandedViewCanvas.hide();
-          state.expandedViewCanvas = undefined;
+          state.canvases.expandedViewCanvas.hide();
+          state.canvases.expandedViewCanvas = undefined;
         }
 
         if (state.renderExpandedView) {
@@ -100,9 +95,9 @@ export function getLineGraphBuilder(args: {
       if (state.renderHoverValue) {
         renderHoverValue();
       }
-      if (!state.renderHoverValue && state.hoverCanvas !== undefined) {
-        state.hoverCanvas.hide();
-        state.hoverCanvas = undefined;
+      if (!state.renderHoverValue && state.canvases.hoverCanvas !== undefined) {
+        state.canvases.hoverCanvas.hide();
+        state.canvases.hoverCanvas = undefined;
       }
     }
 
@@ -290,7 +285,7 @@ export function getLineGraphBuilder(args: {
         strokeColor: { red: 0, green: 1, blue: 1 },
       });
 
-      state.graphCanvas?.replaceElements([
+      state.canvases.graphCanvas?.replaceElements([
         ...mainCanvasElements,
         ...graphLineSegments,
       ]);
@@ -300,14 +295,14 @@ export function getLineGraphBuilder(args: {
       const expandedViewHeight = 150;
       const expandedViewWidth = 150;
 
-      if (state.expandedViewCanvas === undefined) {
-        state.expandedViewCanvas = hs.canvas.new({
+      if (state.canvases.expandedViewCanvas === undefined) {
+        state.canvases.expandedViewCanvas = hs.canvas.new({
           x: coords.x - expandedViewWidth + width,
           y: coords.y - expandedViewHeight,
           w: expandedViewWidth,
           h: expandedViewHeight,
         });
-        state.expandedViewCanvas.show();
+        state.canvases.expandedViewCanvas.show();
       }
 
       const fontSize = 12;
@@ -419,7 +414,7 @@ export function getLineGraphBuilder(args: {
         },
       );
 
-      state.expandedViewCanvas.replaceElements([
+      state.canvases.expandedViewCanvas.replaceElements([
         ...mainCanvasElements,
         ...graphLineSegments,
         ...horizontalScaleLinesWithLabels,
@@ -433,8 +428,8 @@ export function getLineGraphBuilder(args: {
       const hoverWidth = fontSize * (value.toString().length + 1);
       const hoverHeight = fontSize * 2;
 
-      if (state.hoverCanvas === undefined) {
-        state.hoverCanvas = hs.canvas.new({
+      if (state.canvases.hoverCanvas === undefined) {
+        state.canvases.hoverCanvas = hs.canvas.new({
           x: canvasX,
           y: coords.y - hoverHeight - 2,
           w: width,
@@ -442,7 +437,7 @@ export function getLineGraphBuilder(args: {
         });
       }
 
-      state.hoverCanvas.replaceElements([
+      state.canvases.hoverCanvas.replaceElements([
         {
           type: 'rectangle',
           fillColor: WHITE,
@@ -468,7 +463,7 @@ export function getLineGraphBuilder(args: {
           },
         },
       ]);
-      state.hoverCanvas.show();
+      state.canvases.hoverCanvas.show();
     }
 
     function runCmdAndRender() {
@@ -484,23 +479,32 @@ export function getLineGraphBuilder(args: {
         renderExpandedView();
       }
 
-      state.timer = hs.timer.doAfter(args.interval, runCmdAndRender);
+      state.timers.timer = hs.timer.doAfter(args.interval, runCmdAndRender);
     }
 
     const state: {
-      expandedViewCanvas: hs.CanvasType | undefined;
-      graphCanvas: hs.CanvasType | undefined;
-      hoverCanvas: hs.CanvasType | undefined;
+      canvases: {
+        expandedViewCanvas: hs.CanvasType | undefined;
+        graphCanvas: hs.CanvasType | undefined;
+        hoverCanvas: hs.CanvasType | undefined;
+      };
+      timers: {
+        timer: hs.TimerType | undefined;
+      };
       mouseButtonIsDown: boolean;
       mouseIsInside: boolean;
       renderExpandedView: boolean;
       renderHoverValue: boolean;
-      timer?: hs.TimerType;
       values: number[];
     } = {
-      expandedViewCanvas: undefined,
-      graphCanvas: undefined,
-      hoverCanvas: undefined,
+      canvases: {
+        expandedViewCanvas: undefined,
+        graphCanvas: undefined,
+        hoverCanvas: undefined,
+      },
+      timers: {
+        timer: undefined,
+      },
       mouseButtonIsDown: false,
       mouseIsInside: false,
       renderExpandedView: false,
@@ -509,7 +513,7 @@ export function getLineGraphBuilder(args: {
     };
 
     const width = height * 1.5;
-    state.graphCanvas = hs.canvas.new({
+    state.canvases.graphCanvas = hs.canvas.new({
       x: coords.x,
       y: coords.y,
       w: width,
@@ -517,11 +521,11 @@ export function getLineGraphBuilder(args: {
     });
 
     runCmdAndRender();
-    state.graphCanvas.mouseCallback(mouseCallback);
-    state.graphCanvas.show();
+    state.canvases.graphCanvas.mouseCallback(mouseCallback);
+    state.canvases.graphCanvas.show();
 
     return {
-      bringToFront: () => state.graphCanvas?.show(),
+      bringToFront: () => state.canvases.graphCanvas?.show(),
       cleanupPriorToDelete,
       hide: hide,
       show: show,

@@ -17,6 +17,11 @@
 
 import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
+import {
+  deleteCanvasesAndStopTimers,
+  hideCanvases,
+  showCanvases,
+} from './helpers/util';
 
 export function getXEyesBuilder(args: {
   minInterval: number;
@@ -31,10 +36,15 @@ export function getXEyesBuilder(args: {
     panelHoverColor,
   }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
-      state.canvas?.hide();
-      state.canvas = undefined;
+      deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
+    }
 
-      state.timer?.stop();
+    function hide() {
+      hideCanvases([state.canvas]);
+    }
+
+    function show() {
+      showCanvases([state.canvas]);
     }
 
     function render() {
@@ -217,8 +227,8 @@ export function getXEyesBuilder(args: {
     return {
       bringToFront: () => state.canvas?.show(),
       cleanupPriorToDelete,
-      hide: () => state.canvas?.hide(),
-      show: () => state.canvas?.show(),
+      hide,
+      show,
     };
   }
 
