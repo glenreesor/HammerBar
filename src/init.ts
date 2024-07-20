@@ -27,15 +27,20 @@ import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
 import { getLineGraphBuilder } from './widgets/lineGraph';
 import { getTextBuilder } from './widgets/text';
-import { getWindowListBuilder } from './widgets/windowList';
+import {
+  getWindowListBuilder,
+  setWindowListWatcherUpdateInterval,
+} from './widgets/windowList';
 import { getXEyesBuilder } from './widgets/xeyes';
 
 type Config = {
   panelHeight: number;
+  windowStatusUpdateInterval: number;
 };
 
 const config: Config = {
   panelHeight: 45,
+  windowStatusUpdateInterval: 1,
 };
 
 type State = {
@@ -133,7 +138,10 @@ function createPanelsForAllScreens() {
           left: leftWidgets,
           right: rightWidgets,
         },
-        windowListBuilder: getWindowListBuilder(screenInfo.id),
+        windowListBuilder: getWindowListBuilder(
+          screenInfo.id,
+          config.windowStatusUpdateInterval,
+        ),
       }),
     );
   });
@@ -187,6 +195,14 @@ export function addWidgetsSecondaryScreenRight(
   buildingInfo: WidgetBuildingInfo[],
 ) {
   buildingInfo.forEach((b) => state.secondaryScreenWidgets.right.push(b));
+}
+
+export function setWindowListUpdateInterval(newInterval: number) {
+  setWindowListWatcherUpdateInterval(newInterval);
+}
+
+export function setWindowStatusUpdateInterval(newInterval: number) {
+  config.windowStatusUpdateInterval = newInterval;
 }
 
 // Users don't need to be burdened with understanding that they're getting a

@@ -15,13 +15,21 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+const DEFAULT_UPDATE_INTERVAL = 3;
+let updateInterval = DEFAULT_UPDATE_INTERVAL;
+
 let windowListListeners: {
   screenId: number;
   callback: (windows: hs.WindowType[]) => void;
 }[] = [];
+
 let timer: hs.TimerType | undefined;
 
-export function subscribeToWindowLists(
+export function setUpdateInterval(newInterval: number) {
+  updateInterval = newInterval;
+}
+
+export function subscribeToWindowListUpdates(
   screenId: number,
   callback: (windows: hs.WindowType[]) => void,
 ) {
@@ -35,7 +43,7 @@ export function subscribeToWindowLists(
 
 function start() {
   if (!timer) {
-    getWindowList();
+    getWindowListAndNotifyListeners();
   }
 }
 
@@ -55,7 +63,7 @@ function unsubscribe(screenId: number) {
   }
 }
 
-function getWindowList() {
+function getWindowListAndNotifyListeners() {
   const allWindows = hs.window.allWindows();
   const regularWindows = allWindows.filter((w) => {
     const application = w.application();
@@ -77,5 +85,5 @@ function getWindowList() {
     l.callback(windowsThisScreen);
   });
 
-  timer = hs.timer.doAfter(3, getWindowList);
+  timer = hs.timer.doAfter(updateInterval, getWindowListAndNotifyListeners);
 }

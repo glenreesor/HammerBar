@@ -17,7 +17,7 @@
 
 import type { WidgetBuilderReturnType } from 'src/Panel';
 import { getWindowButton } from './windowButton';
-import { subscribeToWindowLists } from './windowListWatcher';
+import { subscribeToWindowListUpdates } from './windowListWatcher';
 
 type WindowButtonsInfoById = Map<
   number,
@@ -34,7 +34,10 @@ type WindowButtonsInfoById = Map<
   }
 >;
 
-export function getWindowListBuilder(screenId: number) {
+export function getWindowListBuilder(
+  screenId: number,
+  windowStatusUpdateInterval: number,
+) {
   return function getWindowList(args: {
     coords: { x: number; y: number };
     dimensions: { height: number; width: number };
@@ -191,13 +194,13 @@ export function getWindowListBuilder(screenId: number) {
     });
     render();
 
-    state.windowListUnsubscriber = subscribeToWindowLists(
+    state.windowListUnsubscriber = subscribeToWindowListUpdates(
       screenId,
       updateWindowButtonsList,
     );
 
     state.titlesAndMinimizedStateTimer = hs.timer.doEvery(
-      1,
+      windowStatusUpdateInterval,
       updateWindowButtonsTitleAndMinimized,
     );
 
