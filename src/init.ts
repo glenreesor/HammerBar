@@ -19,8 +19,8 @@ const VERSION = '0.9+2024-05-19';
 
 import { getScreenInfo } from './hammerspoonUtils';
 
-import Panel from './Panel';
-import type { WidgetBuildingInfo } from './Panel';
+import Panel from './panel';
+import type { WidgetBuildingInfo } from './panel';
 import { printDiagnostic } from './utils';
 import { getAppLauncherBuilder } from './widgets/appLauncher';
 import { getAppMenuBuilder } from './widgets/appMenu';

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
+import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
 import { getPanelButton } from './helpers/panelButton';
 
 export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {

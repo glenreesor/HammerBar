@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK, WHITE } from 'src/constants';
-import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
+import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,

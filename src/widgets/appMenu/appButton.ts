@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
-import type { WidgetBuilderParams } from 'src/Panel';
+import type { WidgetBuilderParams } from 'src/panel';
 
 export function getAppButton({
   coords,
