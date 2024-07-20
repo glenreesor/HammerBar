@@ -23,14 +23,14 @@ import type {
   WidgetBuildingInfo,
 } from './types';
 
-export default function Panel(panelArgs: {
+export default function Panel(params: {
   coords: { x: number; y: number };
   dimensions: { w: number; h: number };
   widgetsBuildingInfo: {
     left: WidgetBuildingInfo[];
     right: WidgetBuildingInfo[];
   };
-  windowListBuilder: (args: {
+  windowListBuilder: (panelParams: {
     coords: { x: number; y: number };
     dimensions: { height: number; width: number };
   }) => WidgetBuilderReturnType;
@@ -82,10 +82,10 @@ export default function Panel(panelArgs: {
   const panelHoverColor = { red: 120 / 255, green: 120 / 255, blue: 120 / 255 };
 
   state.canvas = hs.canvas.new({
-    x: panelArgs.coords.x,
-    y: panelArgs.coords.y,
-    w: panelArgs.dimensions.w,
-    h: panelArgs.dimensions.h,
+    x: params.coords.x,
+    y: params.coords.y,
+    w: params.dimensions.w,
+    h: params.dimensions.h,
   });
   state.canvas.replaceElements([
     {
@@ -95,8 +95,8 @@ export default function Panel(panelArgs: {
       frame: {
         x: 0,
         y: 0,
-        w: panelArgs.dimensions.w,
-        h: panelArgs.dimensions.h,
+        w: params.dimensions.w,
+        h: params.dimensions.h,
       },
     },
   ]);
@@ -107,10 +107,10 @@ export default function Panel(panelArgs: {
   // Left Toggle Button
   toggleButtons.push(
     ToggleButton({
-      panelX: panelArgs.coords.x,
-      panelY: panelArgs.coords.y,
-      panelWidth: panelArgs.dimensions.w,
-      panelHeight: panelArgs.dimensions.h,
+      panelX: params.coords.x,
+      panelY: params.coords.y,
+      panelWidth: params.dimensions.w,
+      panelHeight: params.dimensions.h,
       side: 'left',
       panelColor,
       panelHoverColor,
@@ -121,10 +121,10 @@ export default function Panel(panelArgs: {
   // Right Toggle Button
   toggleButtons.push(
     ToggleButton({
-      panelX: panelArgs.coords.x,
-      panelY: panelArgs.coords.y,
-      panelWidth: panelArgs.dimensions.w,
-      panelHeight: panelArgs.dimensions.h,
+      panelX: params.coords.x,
+      panelY: params.coords.y,
+      panelWidth: params.dimensions.w,
+      panelHeight: params.dimensions.h,
       side: 'right',
       panelColor,
       panelHoverColor,
@@ -135,29 +135,29 @@ export default function Panel(panelArgs: {
   const widgets: ReturnType<WidgetBuilder>[] = [];
 
   // Left Widgets
-  let widgetX = panelArgs.coords.x + TOGGLE_BUTTON_WIDTH;
-  panelArgs.widgetsBuildingInfo.left.forEach((builderInfo) => {
+  let widgetX = params.coords.x + TOGGLE_BUTTON_WIDTH;
+  params.widgetsBuildingInfo.left.forEach((builderInfo) => {
     widgets.push(
       builderInfo.getWidget({
-        coords: { x: widgetX, y: panelArgs.coords.y },
-        height: panelArgs.dimensions.h,
+        coords: { x: widgetX, y: params.coords.y },
+        height: params.dimensions.h,
         panelColor,
         panelHoverColor,
       }),
     );
-    widgetX += builderInfo.getWidth(panelArgs.dimensions.h);
+    widgetX += builderInfo.getWidth(params.dimensions.h);
   });
 
   const endOfLeftWidgets = widgetX;
 
   // Right Widgets
-  widgetX = panelArgs.coords.x + panelArgs.dimensions.w - TOGGLE_BUTTON_WIDTH;
-  panelArgs.widgetsBuildingInfo.right.forEach((builderInfo) => {
-    widgetX -= builderInfo.getWidth(panelArgs.dimensions.h);
+  widgetX = params.coords.x + params.dimensions.w - TOGGLE_BUTTON_WIDTH;
+  params.widgetsBuildingInfo.right.forEach((builderInfo) => {
+    widgetX -= builderInfo.getWidth(params.dimensions.h);
     widgets.push(
       builderInfo.getWidget({
-        coords: { x: widgetX, y: panelArgs.coords.y },
-        height: panelArgs.dimensions.h,
+        coords: { x: widgetX, y: params.coords.y },
+        height: params.dimensions.h,
         panelColor,
         panelHoverColor,
       }),
@@ -166,24 +166,24 @@ export default function Panel(panelArgs: {
 
   const totalWidgetWidth =
     2 * TOGGLE_BUTTON_WIDTH +
-    panelArgs.widgetsBuildingInfo.right.reduce(
-      (acc, info) => acc + info.getWidth(panelArgs.dimensions.h),
+    params.widgetsBuildingInfo.right.reduce(
+      (acc, info) => acc + info.getWidth(params.dimensions.h),
       0,
     ) +
-    panelArgs.widgetsBuildingInfo.left.reduce(
-      (acc, info) => acc + info.getWidth(panelArgs.dimensions.h),
+    params.widgetsBuildingInfo.left.reduce(
+      (acc, info) => acc + info.getWidth(params.dimensions.h),
       0,
     );
 
   widgets.push(
-    panelArgs.windowListBuilder({
+    params.windowListBuilder({
       coords: {
         x: endOfLeftWidgets,
-        y: panelArgs.coords.y,
+        y: params.coords.y,
       },
       dimensions: {
-        height: panelArgs.dimensions.h,
-        width: panelArgs.dimensions.w - totalWidgetWidth,
+        height: params.dimensions.h,
+        width: params.dimensions.w - totalWidgetWidth,
       },
     }),
   );

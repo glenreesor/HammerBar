@@ -18,16 +18,7 @@
 import { BLACK } from 'src/constants';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 
-export default function ToggleButton({
-  panelX,
-  panelY,
-  panelWidth,
-  panelHeight,
-  side,
-  panelColor,
-  panelHoverColor,
-  onClick,
-}: {
+export default function ToggleButton(args: {
   panelX: number;
   panelY: number;
   panelWidth: number;
@@ -37,6 +28,17 @@ export default function ToggleButton({
   panelHoverColor: hs.ColorType;
   onClick: () => void;
 }) {
+  const {
+    panelX,
+    panelY,
+    panelWidth,
+    panelHeight,
+    side,
+    panelColor,
+    panelHoverColor,
+    onClick,
+  } = args;
+
   function cleanupPriorToDelete() {
     state.canvas?.hide();
     state.canvas = undefined;

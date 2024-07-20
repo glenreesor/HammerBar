@@ -23,7 +23,7 @@ import {
   showCanvases,
 } from './helpers/util';
 
-export function getXEyesBuilder(args: {
+export function getXEyesBuilder(configParams: {
   minInterval: number;
   maxInterval: number;
 }): WidgetBuildingInfo {
@@ -95,12 +95,12 @@ export function getXEyesBuilder(args: {
         ((rightEyeAngleToMouse - state.lastPupilAngle.right) * 180) / Math.PI;
 
       if (Math.abs(dThetaX) < 10 && Math.abs(dThetaY) < 10) {
-        state.interval = Math.min(state.interval * 2, args.maxInterval);
+        state.interval = Math.min(state.interval * 2, configParams.maxInterval);
         state.timer = hs.timer.doAfter(state.interval, render);
         return;
       }
 
-      state.interval = args.minInterval;
+      state.interval = configParams.minInterval;
 
       const leftEyeDeltaIsBig = Math.abs(dThetaX) > 40;
       const leftEyeDeltaIsMedium = Math.abs(dThetaX) > 10;
@@ -200,7 +200,7 @@ export function getXEyesBuilder(args: {
       timer: hs.TimerType | undefined;
     } = {
       values: [],
-      interval: args.maxInterval,
+      interval: configParams.maxInterval,
       lastPupilAngle: {
         left: 0,
         right: 0,

@@ -23,7 +23,7 @@ import {
   showCanvases,
 } from './helpers/util';
 
-export function getLineGraphBuilder(args: {
+export function getLineGraphBuilder(configParams: {
   title: string;
   interval: number;
   maxValues: number;
@@ -205,7 +205,7 @@ export function getLineGraphBuilder(args: {
         : panelHoverColor;
 
       const max =
-        args.maxGraphValue ??
+        configParams.maxGraphValue ??
         state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
 
       const graphTopLeft = {
@@ -221,7 +221,7 @@ export function getLineGraphBuilder(args: {
       const scale = getGraphScaleFactors({
         graphDimensions,
         maxYValue: max,
-        numValues: args.maxValues,
+        numValues: configParams.maxValues,
         shrinkIfMouseButtonDown: true,
       });
 
@@ -244,7 +244,7 @@ export function getLineGraphBuilder(args: {
         },
         {
           type: 'text',
-          text: args.title,
+          text: configParams.title,
           textColor: BLACK,
           textSize: fontSize,
           frame: {
@@ -309,7 +309,7 @@ export function getLineGraphBuilder(args: {
       const titleY = fontSize;
 
       const max =
-        args.maxGraphValue ??
+        configParams.maxGraphValue ??
         state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
 
       const currentValue = state.values[state.values.length - 1];
@@ -334,7 +334,7 @@ export function getLineGraphBuilder(args: {
       const scale = getGraphScaleFactors({
         graphDimensions,
         maxYValue: max,
-        numValues: args.maxValues,
+        numValues: configParams.maxValues,
         shrinkIfMouseButtonDown: false,
       });
 
@@ -369,7 +369,7 @@ export function getLineGraphBuilder(args: {
         {
           // Title
           type: 'text',
-          text: args.title,
+          text: configParams.title,
           textColor: BLACK,
           textSize: fontSize,
           frame: {
@@ -467,8 +467,8 @@ export function getLineGraphBuilder(args: {
     }
 
     function runCmdAndRender() {
-      state.values.push(args.cmd());
-      state.values = state.values.slice(-1 * args.maxValues);
+      state.values.push(configParams.cmd());
+      state.values = state.values.slice(-1 * configParams.maxValues);
       render();
 
       if (state.renderHoverValue) {
@@ -479,7 +479,10 @@ export function getLineGraphBuilder(args: {
         renderExpandedView();
       }
 
-      state.timers.timer = hs.timer.doAfter(args.interval, runCmdAndRender);
+      state.timers.timer = hs.timer.doAfter(
+        configParams.interval,
+        runCmdAndRender,
+      );
     }
 
     const state: {

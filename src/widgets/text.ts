@@ -23,7 +23,7 @@ import {
   showCanvases,
 } from './helpers/util';
 
-export function getTextBuilder(args: {
+export function getTextBuilder(configParams: {
   title: string;
   interval: number;
   cmd: () => string;
@@ -53,7 +53,7 @@ export function getTextBuilder(args: {
       const titleY = height / 2 - fontSize - fontSize / 2;
       const outputY = titleY + fontSize * 1.6;
 
-      const output = args.cmd();
+      const output = configParams.cmd();
 
       state.canvas?.replaceElements([
         {
@@ -69,7 +69,7 @@ export function getTextBuilder(args: {
         },
         {
           type: 'text',
-          text: args.title,
+          text: configParams.title,
           textAlignment: 'center',
           textColor: BLACK,
           textSize: fontSize,
@@ -95,7 +95,7 @@ export function getTextBuilder(args: {
         },
       ]);
 
-      state.timer = hs.timer.doAfter(args.interval, render);
+      state.timer = hs.timer.doAfter(configParams.interval, render);
     }
 
     const state: {

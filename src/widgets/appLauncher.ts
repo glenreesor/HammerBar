@@ -22,7 +22,7 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
   const buildErrors =
     bundleId === '' ? ['AppLauncher: bundleId must not be empty'] : [];
 
-  function getAppLauncher({
+  function getAppLauncherWidget({
     coords,
     height,
     panelColor,
@@ -53,6 +53,6 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
     buildErrors,
     name: 'AppLauncher',
     getWidth: (widgetHeight) => widgetHeight,
-    getWidget: getAppLauncher,
+    getWidget: getAppLauncherWidget,
   };
 }

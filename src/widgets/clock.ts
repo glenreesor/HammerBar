@@ -26,7 +26,7 @@ import {
 export function getClockBuilder(): WidgetBuildingInfo {
   const CLOCK_WIDTH = 100;
 
-  function getClock({ coords, height }: WidgetBuilderParams) {
+  function getClockWidget({ coords, height }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
     }
@@ -144,6 +144,6 @@ export function getClockBuilder(): WidgetBuildingInfo {
     buildErrors: [],
     name: 'Clock',
     getWidth: () => CLOCK_WIDTH,
-    getWidget: getClock,
+    getWidget: getClockWidget,
   };
 }

@@ -23,13 +23,13 @@ type IconInfo =
   | { bundleId: string; imagePath: undefined }
   | { bundleId: undefined; imagePath: string };
 
-export function getAppMenuBuilder(args: {
+export function getAppMenuBuilder(configParams: {
   appList: { bundleId: string; label: string }[];
   icon?: IconInfo;
 }): WidgetBuildingInfo {
-  const { appList, icon } = args;
+  const { appList, icon } = configParams;
 
-  function getAppMenu({
+  function getAppMenuWidget({
     coords,
     height,
     panelColor,
@@ -126,6 +126,6 @@ export function getAppMenuBuilder(args: {
     buildErrors: [],
     name: 'AppMenu',
     getWidth: (widgetHeight) => widgetHeight,
-    getWidget: getAppMenu,
+    getWidget: getAppMenuWidget,
   };
 }
