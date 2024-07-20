@@ -19,14 +19,14 @@
  * Return an object with all the relevant info that Hammerspoon provides about
  * the specified screen (monitor)
  */
-export interface ScreenInfoType {
+export type ScreenInfoType = {
   id: number;
   name: string;
   x: number;
   y: number;
   width: number;
   height: number;
-}
+};
 
 export function getScreenInfo(screen: hs.ScreenType): ScreenInfoType {
   const id = screen.id();

@@ -16,19 +16,19 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 declare namespace hs {
-  interface Application {
+  type Application = {
     allWindows: () => WindowType[];
     hide: () => boolean;
     unhide: () => boolean;
-  }
+  };
 
-  interface CanvasElementType {
+  type CanvasElementType = {
     center?: { x: number; y: number };
     coordinates?: { x: number; y: number }[];
     fillColor?: ColorType;
     frame?: { x: number; y: number; w: number; h: number };
     id?: number;
-    image?: any;
+    image?: ImageType;
     imageAlpha?: number;
     radius?: number;
     roundedRectRadii?: { xRadius: number; yRadius: number };
@@ -43,87 +43,69 @@ declare namespace hs {
     trackMouseEnterExit?: boolean;
     trackMouseUp?: boolean;
     type: string;
-  }
+  };
 
-  interface CanvasMouseCallbackType {
+  type CanvasMouseCallbackType = {
     (
       this: void,
       canvas: CanvasType,
       message: 'mouseEnter' | 'mouseExit' | 'mouseUp',
       id: number | string,
     ): void;
-  }
+  };
 
-  interface CanvasType {
-    appendElements: (
-      element: CanvasElementType | Array<CanvasElementType>,
-    ) => void;
+  type CanvasType = {
+    appendElements: (element: CanvasElementType | CanvasElementType[]) => void;
     delete: () => void;
     frame: (newFrame: { x: number; y: number; w: number; h: number }) => void;
     hide: () => void;
     mouseCallback: (callback: CanvasMouseCallbackType) => void;
     replaceElements: (
-      element?: CanvasElementType | Array<CanvasElementType>,
+      element?: CanvasElementType | CanvasElementType[],
     ) => void;
     show: () => void;
     topLeft:
       | ((point: { x: number; y: number }) => CanvasType)
       | (() => { x: number; y: number }[]);
-  }
+  };
 
-  interface ColorType {
+  type ColorType = {
     red: number;
     green: number;
     blue: number;
-  }
+  };
 
-  interface FrameType {
+  type FrameType = {
     x: number;
     y: number;
     w: number;
     h: number;
-  }
+  };
 
-  interface ScreenType {
+  type ImageType = Object;
+
+  type ScreenType = {
     frame: () => FrameType;
     id: () => number;
     name: () => string;
-  }
+  };
 
-  interface TimerType {
-    stop: () => void;
-  }
-
-  interface WindowType {
-    application: () => {
-      name: () => string;
-      bundleID: () => string | null;
-    } | null;
-    focus: () => void;
-    frame: () => FrameType;
-    id: () => number;
-    isMinimized: () => boolean;
-    isStandard: () => boolean;
-    minimize: () => void;
-    raise: () => void;
-    role: () => string;
-    screen: () => ScreenType;
-    setFrame: ({ x, y, w, h }: FrameType) => void;
-    title: () => string;
-    unminimize: () => void;
-  }
-
-  // We need to use this interface approach (instead of just namespacing like
-  // below) due to `new` being a TS reserved word
-  interface WindowDotCanvas {
+  type ScreenWatcher = {
     new: (
       this: void,
-      { x, y, w, h }: { x: number; y: number; w: number; h: number },
-    ) => CanvasType;
-  }
+      watcherFn: () => void,
+    ) => {
+      start: () => ScreenWatcher;
+      stop: () => ScreenWatcher;
+    };
+  };
 
-  interface WindowFilter {
-    getWindows: () => Array<WindowType>;
+  type TimerType = {
+    stop: () => void;
+  };
+
+  type WindowFilter = {
+    getWindows: () => WindowType[];
     new: (
       this: void,
       filterCriteria:
@@ -131,7 +113,7 @@ declare namespace hs {
         | boolean
         | ((this: void, hsWindow: WindowType) => boolean),
     ) => WindowFilter;
-    subscribe: (events: Array<string>, callback: Function) => void;
+    subscribe: (events: string[], callback: Function) => void;
     unsubscribeAll: () => void;
     windowAllowed: string;
     windowCreated: string;
@@ -154,100 +136,121 @@ declare namespace hs {
     windowUnhidden: string;
     windowUnminimized: string;
     windowVisible: string;
-  }
+  };
 
-  interface ScreenWatcher {
+  type WindowType = {
+    application: () => {
+      name: () => string;
+      bundleID: () => string | null;
+    } | null;
+    focus: () => void;
+    frame: () => FrameType;
+    id: () => number;
+    isMinimized: () => boolean;
+    isStandard: () => boolean;
+    minimize: () => void;
+    raise: () => void;
+    role: () => string;
+    screen: () => ScreenType;
+    setFrame: ({ x, y, w, h }: FrameType) => void;
+    title: () => string;
+    unminimize: () => void;
+  };
+
+  // This should be declared using a namespace:
+  //     declare namespace hs.canvas {
+  //       new: (
+  //         this: void,
+  //         { x, y, w, h }: { x: number; y: number; w: number; h: number },
+  //       ) => CanvasType;
+  //     }
+  //
+  // But that won't work since `new` is a typescript keyword, hence the following
+  // interface hack
+  interface HsDotCanvas {
     new: (
       this: void,
-      watcherFn: () => void,
-    ) => {
-      start: () => ScreenWatcher;
-      stop: () => ScreenWatcher;
-    };
+      { x, y, w, h }: { x: number; y: number; w: number; h: number },
+    ) => CanvasType;
   }
+  const canvas: HsDotCanvas;
+}
 
-  namespace application {
-    function find(this: void, bundleId: string): Application;
-    function launchOrFocusByBundleID(this: void, name: string): boolean;
-  }
+declare namespace hs.application {
+  function find(this: void, bundleId: string): Application;
+  function launchOrFocusByBundleID(this: void, name: string): boolean;
+}
 
-  export const canvas: WindowDotCanvas;
+declare namespace hs.eventtap {
+  function checkKeyboardModifiers(this: void): {
+    alt?: boolean;
+    capslock?: boolean;
+    cmd?: boolean;
+    ctrl?: boolean;
+    fn?: boolean;
+    shift?: boolean;
+  };
+}
 
-  namespace eventtap {
-    function checkKeyboardModifiers(this: void): {
-      alt?: boolean;
-      capslock?: boolean;
-      cmd?: boolean;
-      ctrl?: boolean;
-      fn?: boolean;
-      shift?: boolean;
-    };
-  }
+declare namespace hs.hotkey {
+  // There are a bazillion overrides that hammerspoon accepts. Just create
+  // the one I need
+  function bind(
+    this: void,
+    mods: string,
+    key: string,
+    pressedFunction: () => void,
+  ): void;
+}
 
-  namespace hotkey {
-    // There are a bazillion overrides that hammerspoon accepts. Just create
-    // the one I need
-    function bind(
-      this: void,
-      mods: string,
-      key: string,
-      pressedFunction: () => void,
-    ): void;
-  }
+declare namespace hs.image {
+  function imageFromAppBundle(this: void, bundleID: string): ImageType;
+  function imageFromPath(this: void, path: string): ImageType;
+}
 
-  namespace image {
-    function imageFromAppBundle(this: void, bundleID: string): Object;
-    function imageFromPath(this: void, path: string): Object;
-  }
+declare namespace hs.inspect {
+  function inspect(this: void, thing: any): string;
+}
 
-  namespace inspect {
-    function inspect(this: void, thing: any): string;
-  }
+declare namespace hs.mouse {
+  function absolutePosition(this: void): { x: number; y: number };
+}
 
-  namespace mouse {
-    function absolutePosition(this: void): { x: number; y: number };
-  }
+declare namespace hs.screen {
+  function allScreens(this: void): ScreenType[];
+  function primaryScreen(this: void): ScreenType;
+  const watcher: ScreenWatcher;
+}
 
-  namespace screen {
-    function allScreens(this: void): Array<ScreenType>;
-    function primaryScreen(this: void): ScreenType;
-    const watcher: ScreenWatcher;
-  }
+declare namespace hs.timer {
+  function doAfter(
+    this: void,
+    afterSeconds: number,
+    callback: Function,
+  ): TimerType;
 
-  namespace timer {
-    function doAfter(
-      this: void,
-      afterSeconds: number,
-      callback: Function,
-    ): TimerType;
+  function doAt(
+    this: void,
+    time: number | string,
+    callback: Function,
+    continueOnError?: boolean,
+  ): TimerType;
 
-    function doAt(
-      this: void,
-      time: number | string,
-      callback: Function,
-      continueOnError?: boolean,
-    ): TimerType;
+  function doAt(
+    this: void,
+    time: number | string,
+    repeatInterval: number | string,
+    callback: Function,
+    continueOnError?: boolean,
+  ): TimerType;
 
-    function doAt(
-      this: void,
-      time: number | string,
-      repeatInterval: number | string,
-      callback: Function,
-      continueOnError?: boolean,
-    ): TimerType;
+  function doEvery(this: void, seconds: number, callback: Function): TimerType;
+}
 
-    function doEvery(
-      this: void,
-      seconds: number,
-      callback: Function,
-    ): TimerType;
-  }
-
-  namespace window {
-    function allWindows(this: void): Array<WindowType>;
-    function focusedWindow(this: void): WindowType;
-    function get(this: void, windowId: number): WindowType | undefined;
-    function orderedWindows(this: void): WindowType[];
-    const filter: WindowFilter;
-  }
+declare namespace hs.window {
+  function allWindows(this: void): WindowType[];
+  function focusedWindow(this: void): WindowType;
+  function get(this: void, windowId: number): WindowType | undefined;
+  function orderedWindows(this: void): WindowType[];
+  const filter: WindowFilter;
 }
