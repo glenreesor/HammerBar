@@ -18,7 +18,10 @@
 import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
+export function getXEyesBuilder(args: {
+  minInterval: number;
+  maxInterval: number;
+}): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
   function getXEyesWidget({
@@ -83,12 +86,12 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
         ((rightEyeAngleToMouse - state.lastPupilAngle.right) * 180) / Math.PI;
 
       if (Math.abs(dThetaX) < 10 && Math.abs(dThetaY) < 10) {
-        state.interval = Math.min(state.interval * 2, maxInterval);
+        state.interval = Math.min(state.interval * 2, args.maxInterval);
         state.timer = hs.timer.doAfter(state.interval, render);
         return;
       }
 
-      state.interval = 0.1;
+      state.interval = args.minInterval;
 
       const leftEyeDeltaIsBig = Math.abs(dThetaX) > 40;
       const leftEyeDeltaIsMedium = Math.abs(dThetaX) > 10;
@@ -188,7 +191,7 @@ export function getXEyesBuilder(maxInterval: number): WidgetBuildingInfo {
       timer: hs.TimerType | undefined;
     } = {
       values: [],
-      interval: maxInterval,
+      interval: args.maxInterval,
       lastPupilAngle: {
         left: 0,
         right: 0,

@@ -18,13 +18,13 @@
 import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getLineGraphBuilder(
-  title: string,
-  interval: number,
-  maxValues: number,
-  maxGraphValue: number | undefined,
-  cmd: () => number,
-): WidgetBuildingInfo {
+export function getLineGraphBuilder(args: {
+  title: string;
+  interval: number;
+  maxValues: number;
+  maxGraphValue: number | undefined;
+  cmd: () => number;
+}): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
   function getLineGraphWidget({
@@ -211,7 +211,7 @@ export function getLineGraphBuilder(
         : panelHoverColor;
 
       const max =
-        maxGraphValue ??
+        args.maxGraphValue ??
         state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
 
       const graphTopLeft = {
@@ -227,7 +227,7 @@ export function getLineGraphBuilder(
       const scale = getGraphScaleFactors({
         graphDimensions,
         maxYValue: max,
-        numValues: maxValues,
+        numValues: args.maxValues,
         shrinkIfMouseButtonDown: true,
       });
 
@@ -250,7 +250,7 @@ export function getLineGraphBuilder(
         },
         {
           type: 'text',
-          text: title,
+          text: args.title,
           textColor: BLACK,
           textSize: fontSize,
           frame: {
@@ -315,7 +315,7 @@ export function getLineGraphBuilder(
       const titleY = fontSize;
 
       const max =
-        maxGraphValue ??
+        args.maxGraphValue ??
         state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
 
       const currentValue = state.values[state.values.length - 1];
@@ -340,7 +340,7 @@ export function getLineGraphBuilder(
       const scale = getGraphScaleFactors({
         graphDimensions,
         maxYValue: max,
-        numValues: maxValues,
+        numValues: args.maxValues,
         shrinkIfMouseButtonDown: false,
       });
 
@@ -375,7 +375,7 @@ export function getLineGraphBuilder(
         {
           // Title
           type: 'text',
-          text: title,
+          text: args.title,
           textColor: BLACK,
           textSize: fontSize,
           frame: {
@@ -473,8 +473,8 @@ export function getLineGraphBuilder(
     }
 
     function runCmdAndRender() {
-      state.values.push(cmd());
-      state.values = state.values.slice(-1 * maxValues);
+      state.values.push(args.cmd());
+      state.values = state.values.slice(-1 * args.maxValues);
       render();
 
       if (state.renderHoverValue) {
@@ -485,7 +485,7 @@ export function getLineGraphBuilder(
         renderExpandedView();
       }
 
-      state.timer = hs.timer.doAfter(interval, runCmdAndRender);
+      state.timer = hs.timer.doAfter(args.interval, runCmdAndRender);
     }
 
     const state: {

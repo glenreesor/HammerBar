@@ -18,11 +18,11 @@
 import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/Panel';
 
-export function getTextBuilder(
-  title: string,
-  interval: number,
-  cmd: () => string,
-): WidgetBuildingInfo {
+export function getTextBuilder(args: {
+  title: string;
+  interval: number;
+  cmd: () => string;
+}): WidgetBuildingInfo {
   const buildErrors: string[] = [];
 
   function getTextWidget({
@@ -44,7 +44,7 @@ export function getTextBuilder(
       const titleY = height / 2 - fontSize - fontSize / 2;
       const outputY = titleY + fontSize * 1.6;
 
-      const output = cmd();
+      const output = args.cmd();
 
       state.canvas?.replaceElements([
         {
@@ -60,7 +60,7 @@ export function getTextBuilder(
         },
         {
           type: 'text',
-          text: title,
+          text: args.title,
           textAlignment: 'center',
           textColor: BLACK,
           textSize: fontSize,
@@ -86,7 +86,7 @@ export function getTextBuilder(
         },
       ]);
 
-      state.timer = hs.timer.doAfter(interval, render);
+      state.timer = hs.timer.doAfter(args.interval, render);
     }
 
     const state: {
