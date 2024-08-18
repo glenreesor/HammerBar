@@ -16,11 +16,28 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
+import { getNoopWidgetBuildingInfo } from 'src/utils';
 import { getPanelButton } from './helpers/panelButton';
 
-export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
-  const buildErrors =
-    bundleId === '' ? ['AppLauncher: bundleId must not be empty'] : [];
+function isNonEmptyString(obj: unknown): obj is string {
+  return typeof obj === 'string' && obj !== '';
+}
+
+export function getAppLauncherBuilder(
+  unvalidatedBundleId: unknown,
+): WidgetBuildingInfo {
+  if (!isNonEmptyString(unvalidatedBundleId)) {
+    return getNoopWidgetBuildingInfo('AppLauncher', [
+      'bundleId must be a non-empty string',
+    ]);
+  }
+
+  // This looks goofy because the type checking should suffice since it
+  // correctly narrows the type of unvalidatedBundleId.
+  //
+  // However it appears that typescript doesn't maintain that knowledge
+  // within the function below.
+  const bundleId = unvalidatedBundleId;
 
   function getAppLauncherWidget({
     coords,
@@ -50,7 +67,7 @@ export function getAppLauncherBuilder(bundleId: string): WidgetBuildingInfo {
   }
 
   return {
-    buildErrors,
+    buildErrors: [],
     name: 'AppLauncher',
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getAppLauncherWidget,

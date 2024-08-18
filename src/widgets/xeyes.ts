@@ -17,17 +17,49 @@
 
 import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
+import { getNoopWidgetBuildingInfo } from 'src/utils';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
 } from './helpers/util';
 
-export function getXEyesBuilder(configParams: {
+type ConfigParams = {
   minInterval: number;
   maxInterval: number;
-}): WidgetBuildingInfo {
-  const buildErrors: string[] = [];
+};
+
+function isConfigParams(obj: unknown): obj is ConfigParams {
+  return (
+    typeof (obj as ConfigParams).minInterval === 'number' &&
+    typeof (obj as ConfigParams).maxInterval === 'number'
+  );
+}
+
+export function getXEyesBuilder(
+  unvalidatedConfigParams: unknown,
+): WidgetBuildingInfo {
+  if (!isConfigParams(unvalidatedConfigParams)) {
+    return getNoopWidgetBuildingInfo('XEyes', [
+      'Unexpected argument. Expecting an argument like this:',
+      '',
+      '  {',
+      '    minInterval = <a number>,',
+      '    maxInterval: <a number>,',
+      '  }',
+      '',
+      'But instead this was received:',
+      '',
+      hs.inspect(unvalidatedConfigParams),
+    ]);
+  }
+
+  // This looks goofy because the type checking should suffice since it
+  // correctly narrows the type of unvalidatedBundleId.
+  //
+  // However it appears that typescript doesn't maintain that knowledge
+  // within the function below.
+  const configParams = unvalidatedConfigParams;
 
   function getXEyesWidget({
     coords,
@@ -233,7 +265,7 @@ export function getXEyesBuilder(configParams: {
   }
 
   return {
-    buildErrors,
+    buildErrors: [],
     name: 'Xeyes',
     getWidth: (widgetHeight) => widgetHeight,
     getWidget: getXEyesWidget,

@@ -16,6 +16,25 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { getWindowInfo } from 'src/hammerspoonUtils';
+import { WidgetBuildingInfo } from 'src/panel';
+
+export function getNoopWidgetBuildingInfo(
+  widgetName: string,
+  buildErrors: string[],
+): WidgetBuildingInfo {
+  return {
+    buildErrors,
+    name: widgetName,
+    getWidth: (_widgetHeight: number) => 0,
+    getWidget: () => ({
+      bringToFront: () => undefined,
+      cleanupPriorToDelete: () => undefined,
+      hide: () => undefined,
+      show: () => undefined,
+    }),
+  };
+}
+
 /**
  * Print the specifed text to the Hammerspoon console (one or multiple lines).
  *

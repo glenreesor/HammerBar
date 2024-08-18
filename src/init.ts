@@ -15,194 +15,146 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-const VERSION = '0.9+2024-05-19';
-
-import { getScreenInfo } from './hammerspoonUtils';
-
-import panel from './panel';
 import type { WidgetBuildingInfo } from './panel';
+import { setWindowListWatcherUpdateInterval as applyWindowListWatcherUpdateInterval } from './widgets/windowList';
+
+import {
+  addWidgetsPrimaryScreenLeft,
+  addWidgetsPrimaryScreenRight,
+  addWidgetsSecondaryScreenLeft,
+  addWidgetsSecondaryScreenRight,
+  setWindowStatusUpdateInterval,
+  start,
+  stop,
+} from './main';
+
 import { printDiagnostic } from './utils';
+
 import { getAppLauncherBuilder } from './widgets/appLauncher';
 import { getAppMenuBuilder } from './widgets/appMenu';
 import { getClockBuilder } from './widgets/clock';
 import { getLineGraphBuilder } from './widgets/lineGraph';
 import { getTextBuilder } from './widgets/text';
-import {
-  getWindowListBuilder,
-  setWindowListWatcherUpdateInterval,
-} from './widgets/windowList';
 import { getXEyesBuilder } from './widgets/xeyes';
 
-type Config = {
-  panelHeight: number;
-  windowStatusUpdateInterval: number;
-};
-
-const config: Config = {
-  panelHeight: 45,
-  windowStatusUpdateInterval: 1,
-};
-
-type State = {
-  panels: { cleanupPriorToDelete: () => void }[];
-  primaryScreenWidgets: {
-    left: WidgetBuildingInfo[];
-    right: WidgetBuildingInfo[];
-  };
-  secondaryScreenWidgets: {
-    left: WidgetBuildingInfo[];
-    right: WidgetBuildingInfo[];
-  };
-  screenWatcher:
-    | {
-        start: () => hs.ScreenWatcher;
-        stop: () => hs.ScreenWatcher;
-      }
-    | undefined;
-};
-
-const state: State = {
-  panels: [],
-  primaryScreenWidgets: {
-    left: [],
-    right: [],
-  },
-  secondaryScreenWidgets: {
-    left: [],
-    right: [],
-  },
-  screenWatcher: undefined,
-};
-
-function verticallyMaximizeCurrentWindow() {
-  const currentWindow = hs.window.focusedWindow();
-  const screenInfo = getScreenInfo(currentWindow.screen());
-  currentWindow.setFrame({
-    x: currentWindow.frame().x,
-    y: screenInfo.y,
-    w: currentWindow.frame().w,
-    h: screenInfo.height - config.panelHeight,
-  });
+function isStringArray(obj: unknown): obj is string[] {
+  return (
+    Array.isArray(obj) &&
+    obj.reduce((accum, curr) => accum && typeof curr === 'string', true)
+  );
 }
 
-function validateWidgetConfig(buildingInfo: WidgetBuildingInfo): boolean {
-  if (buildingInfo.buildErrors.length === 0) {
-    return true;
+function isWidgetBuildingInfoArray(obj: unknown): obj is WidgetBuildingInfo[] {
+  return (
+    Array.isArray(obj) &&
+    obj.reduce(
+      (accum, curr) =>
+        accum &&
+        isStringArray(curr.buildErrors) &&
+        typeof curr.name === 'string' &&
+        typeof curr.getWidth === 'function' &&
+        typeof curr.getWidget === 'function',
+      true,
+    )
+  );
+}
+
+function printValidationError(functionName: string, buildingInfo: unknown) {
+  const sampleAddWidgetsArgsUsingWidgets = [
+    '  {',
+    '    spoon.HammerBar.widgets:appMenu({',
+    '        appList = {',
+    '          { bundleId = "org.mozilla.firefox", label = "Firefox" },',
+    '          { bundleId = "com.google.Chrome", label = "Chrome" },',
+    '        },',
+    '    }),',
+    '    spoon.HammerBar.widgets:appLauncher("com.apple.finder"),',
+    '  }',
+  ];
+
+  const sampleAddWidgetsArgsExact = [
+    '  {',
+    '    {',
+    '      buildErrors = {},',
+    '      getWidget = <function>',
+    '      getWidth = <function>',
+    '      name = "Widget Name",',
+    '    }',
+    '  }',
+  ];
+
+  printDiagnostic([
+    `Unexpected argument to ${functionName}`,
+    'Expecting an argument like this:',
+    ...sampleAddWidgetsArgsExact,
+    '',
+    `This would be the result of calling ${functionName} with widget generators like this:`,
+    ...sampleAddWidgetsArgsUsingWidgets,
+    '',
+    'But instead this was received:',
+    '',
+    hs.inspect(buildingInfo),
+  ]);
+}
+
+function validateAndAddWidgetsPrimaryScreenLeft(buildingInfo: unknown) {
+  if (!isWidgetBuildingInfoArray(buildingInfo)) {
+    printValidationError('addWidgetsPrimaryScreenLeft', buildingInfo);
+    return;
   }
-  print(`Error building widget ${buildingInfo.name}:`);
-  buildingInfo.buildErrors.forEach((txt) => print(`    ${txt}`));
 
-  return false;
+  addWidgetsPrimaryScreenLeft(buildingInfo);
 }
 
-function createPanelsForAllScreens() {
-  const primaryScreenId = hs.screen.primaryScreen().id();
+function validateAndAddWidgetsPrimaryScreenRight(buildingInfo: unknown) {
+  if (!isWidgetBuildingInfoArray(buildingInfo)) {
+    printValidationError('addWidgetsPrimaryScreenRight', buildingInfo);
+    return;
+  }
 
-  const errorFreeWidgetBuildersPrimaryLeft =
-    state.primaryScreenWidgets.left.filter((w) => validateWidgetConfig(w));
-  const errorFreeWidgetBuildersPrimaryRight =
-    state.primaryScreenWidgets.right.filter((w) => validateWidgetConfig(w));
-
-  const errorFreeWidgetBuildersSecondaryLeft =
-    state.secondaryScreenWidgets.left.filter((w) => validateWidgetConfig(w));
-  const errorFreeWidgetBuildersSecondaryRight =
-    state.secondaryScreenWidgets.right.filter((w) => validateWidgetConfig(w));
-
-  hs.screen.allScreens().forEach((hammerspoonScreen) => {
-    const screenInfo = getScreenInfo(hammerspoonScreen);
-    printDiagnostic(
-      `Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`,
-    );
-
-    const leftWidgets =
-      screenInfo.id === primaryScreenId
-        ? errorFreeWidgetBuildersPrimaryLeft
-        : errorFreeWidgetBuildersSecondaryLeft;
-
-    const rightWidgets =
-      screenInfo.id === primaryScreenId
-        ? errorFreeWidgetBuildersPrimaryRight
-        : errorFreeWidgetBuildersSecondaryRight;
-
-    state.panels.push(
-      panel({
-        coords: {
-          x: screenInfo.x,
-          y: screenInfo.y + screenInfo.height - config.panelHeight,
-        },
-        dimensions: {
-          w: screenInfo.width,
-          h: config.panelHeight,
-        },
-        widgetsBuildingInfo: {
-          left: leftWidgets,
-          right: rightWidgets,
-        },
-        windowListBuilder: getWindowListBuilder(
-          screenInfo.id,
-          config.windowStatusUpdateInterval,
-        ),
-      }),
-    );
-  });
+  addWidgetsPrimaryScreenRight(buildingInfo);
 }
 
-function removeAllPanels() {
-  printDiagnostic('Removing panels for all screens');
-  state.panels.forEach((p) => p.cleanupPriorToDelete());
-  state.panels = [];
+function validateAndAddWidgetsSecondaryScreenLeft(buildingInfo: unknown) {
+  if (!isWidgetBuildingInfoArray(buildingInfo)) {
+    printValidationError('addWidgetsSecondaryScreenLeft', buildingInfo);
+    return;
+  }
+
+  addWidgetsSecondaryScreenLeft(buildingInfo);
 }
 
-function watchForScreenChanges() {
-  // When screens get added or removed, resolutions can also change (e.g.
-  // on a macbook when external screens are added or removed)
-  // So just delete all Panels and recreate from scratch
-  removeAllPanels();
-  createPanelsForAllScreens();
+function validateAndAddWidgetsSecondaryScreenRight(buildingInfo: unknown) {
+  if (!isWidgetBuildingInfoArray(buildingInfo)) {
+    printValidationError('addWidgetsSecondaryScreenRight', buildingInfo);
+    return;
+  }
+
+  addWidgetsSecondaryScreenRight(buildingInfo);
 }
 
-//------------------------------------------------------------------------------
-// Public Interface
-//------------------------------------------------------------------------------
-
-export function start() {
-  printDiagnostic(`Version: ${VERSION}`);
-  hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
-  createPanelsForAllScreens();
-  state.screenWatcher = hs.screen.watcher.new(watchForScreenChanges);
-  state.screenWatcher.start();
+function validateAndSetWindowListUpdateInterval(newInterval: unknown) {
+  if (typeof newInterval !== 'number') {
+    printDiagnostic([
+      'Unexpected argument to setWindowListUpdateInterval',
+      'Expected a number, but instead received this:',
+      hs.inspect(newInterval),
+    ]);
+    return;
+  }
+  applyWindowListWatcherUpdateInterval(newInterval);
 }
 
-export function addWidgetsPrimaryScreenLeft(
-  buildingInfo: WidgetBuildingInfo[],
-) {
-  buildingInfo.forEach((b) => state.primaryScreenWidgets.left.push(b));
-}
-
-export function addWidgetsPrimaryScreenRight(
-  buildingInfo: WidgetBuildingInfo[],
-) {
-  buildingInfo.forEach((b) => state.primaryScreenWidgets.right.push(b));
-}
-
-export function addWidgetsSecondaryScreenLeft(
-  buildingInfo: WidgetBuildingInfo[],
-) {
-  buildingInfo.forEach((b) => state.secondaryScreenWidgets.left.push(b));
-}
-
-export function addWidgetsSecondaryScreenRight(
-  buildingInfo: WidgetBuildingInfo[],
-) {
-  buildingInfo.forEach((b) => state.secondaryScreenWidgets.right.push(b));
-}
-
-export function setWindowListUpdateInterval(newInterval: number) {
-  setWindowListWatcherUpdateInterval(newInterval);
-}
-
-export function setWindowStatusUpdateInterval(newInterval: number) {
-  config.windowStatusUpdateInterval = newInterval;
+function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
+  if (typeof newInterval !== 'number') {
+    printDiagnostic([
+      'Unexpected argument to setWindowStatusUpdateInterval',
+      'Expected a number, but instead received this:',
+      hs.inspect(newInterval),
+    ]);
+    return;
+  }
+  setWindowStatusUpdateInterval(newInterval);
 }
 
 // Users don't need to be burdened with understanding that they're getting a
@@ -216,7 +168,16 @@ export const widgets = {
   xeyes: getXEyesBuilder,
 };
 
-export function stop() {
-  removeAllPanels();
-  state.screenWatcher?.stop();
-}
+export {
+  start,
+  stop,
+  //
+  validateAndAddWidgetsPrimaryScreenLeft as addWidgetsPrimaryScreenLeft,
+  validateAndAddWidgetsPrimaryScreenRight as addWidgetsPrimaryScreenRight,
+  //
+  validateAndAddWidgetsSecondaryScreenLeft as addWidgetsSecondaryScreenLeft,
+  validateAndAddWidgetsSecondaryScreenRight as addWidgetsSecondaryScreenRight,
+  //
+  validateAndSetWindowListUpdateInterval as setWindowListUpdateInterval,
+  validateAndSetWindowStatusUpdateInterval as setWindowStatusUpdateInterval,
+};

@@ -82,6 +82,8 @@ declare namespace hs {
     h: number;
   };
 
+  function inspect(this: void, thingToInspect: any): string;
+
   type ImageType = Object;
 
   type ScreenType = {

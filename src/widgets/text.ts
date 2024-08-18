@@ -17,18 +17,53 @@
 
 import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
+import { getNoopWidgetBuildingInfo } from 'src/utils';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
 } from './helpers/util';
 
-export function getTextBuilder(configParams: {
+type ConfigParams = {
   title: string;
   interval: number;
   cmd: () => string;
-}): WidgetBuildingInfo {
-  const buildErrors: string[] = [];
+};
+
+function isConfigParams(obj: unknown): obj is ConfigParams {
+  return (
+    typeof obj === 'object' &&
+    typeof (obj as ConfigParams).title === 'string' &&
+    typeof (obj as ConfigParams).interval === 'number' &&
+    typeof (obj as ConfigParams).cmd === 'function'
+  );
+}
+
+export function getTextBuilder(
+  unvalidatedConfigParams: unknown,
+): WidgetBuildingInfo {
+  if (!isConfigParams(unvalidatedConfigParams)) {
+    return getNoopWidgetBuildingInfo('Text', [
+      'Unexpected argument. Expecting an argument like this:',
+      '',
+      '  {',
+      '    title = "The title",',
+      '    interval = <a number>,',
+      '    cmd = <a function that returns a string>,',
+      '  }',
+      '',
+      'But instead this was received:',
+      '',
+      hs.inspect(unvalidatedConfigParams),
+    ]);
+  }
+
+  // This looks goofy because the type checking should suffice since it
+  // correctly narrows the type of unvalidatedBundleId.
+  //
+  // However it appears that typescript doesn't maintain that knowledge
+  // within the function below.
+  const configParams = unvalidatedConfigParams;
 
   function getTextWidget({
     coords,
@@ -126,7 +161,7 @@ export function getTextBuilder(configParams: {
   }
 
   return {
-    buildErrors,
+    buildErrors: [],
     name: 'Text',
     getWidth: (widgetHeight) => widgetHeight * 1.5,
     getWidget: getTextWidget,
