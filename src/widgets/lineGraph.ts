@@ -34,6 +34,7 @@ type ConfigParams = {
 
 function isConfigParams(obj: unknown): obj is ConfigParams {
   return (
+    typeof obj === 'object' &&
     typeof (obj as ConfigParams).title === 'string' &&
     typeof (obj as ConfigParams).interval === 'number' &&
     typeof (obj as ConfigParams).maxValues === 'number' &&

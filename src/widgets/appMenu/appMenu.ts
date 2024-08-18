@@ -53,6 +53,7 @@ function isIconInfo(obj: unknown): boolean {
 
 function isConfigParams(obj: unknown): obj is ConfigParams {
   return (
+    typeof obj === 'object' &&
     isAppListArray((obj as ConfigParams).appList) &&
     (typeof (obj as ConfigParams).icon === 'undefined' ||
       isIconInfo((obj as ConfigParams).icon))
