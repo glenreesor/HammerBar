@@ -46,7 +46,7 @@ export function getXEyesBuilder(
       '',
       '  {',
       '    minInterval = <a number>,',
-      '    maxInterval: <a number>,',
+      '    maxInterval = <a number>,',
       '  }',
       '',
       'But instead this was received:',
