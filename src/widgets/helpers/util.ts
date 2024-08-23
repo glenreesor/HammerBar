@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,8 +15,24 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export interface MenuAppType {
-  bundleId: any;
-  displayName: string;
+export function deleteCanvasesAndStopTimers(
+  canvases: (hs.CanvasType | undefined)[],
+  timers: (hs.TimerType | undefined)[],
+) {
+  // Hide canvases then unset them so they'll be garbage collected
+  // This approach (garbage collection) is suggested by HammerSpoon docs
+  canvases.forEach((c) => {
+    c?.hide();
+    c = undefined;
+  });
+
+  timers.forEach((t) => t?.stop());
 }
 
+export function hideCanvases(canvases: (hs.CanvasType | undefined)[]) {
+  canvases.forEach((c) => c?.hide());
+}
+
+export function showCanvases(canvases: (hs.CanvasType | undefined)[]) {
+  canvases.forEach((c) => c?.show());
+}

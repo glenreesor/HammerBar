@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,4 +15,27 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export { default } from './AppMenu';
+export type WidgetBuilderParams = {
+  coords: { x: number; y: number };
+  height: number;
+  panelColor: hs.ColorType;
+  panelHoverColor: hs.ColorType;
+};
+
+export type WidgetBuilderReturnType = {
+  bringToFront: () => void;
+  cleanupPriorToDelete: () => void;
+  hide: () => void;
+  show: () => void;
+};
+
+export type WidgetBuilder = (
+  params: WidgetBuilderParams,
+) => WidgetBuilderReturnType;
+
+export type WidgetBuildingInfo = {
+  buildErrors: string[];
+  name: string;
+  getWidth: (widgetHeight: number) => number;
+  getWidget: WidgetBuilder;
+};

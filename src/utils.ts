@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -14,6 +14,26 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
+
+import { getWindowInfo } from 'src/hammerspoonUtils';
+import { WidgetBuildingInfo } from 'src/panel';
+
+export function getNoopWidgetBuildingInfo(
+  widgetName: string,
+  buildErrors: string[],
+): WidgetBuildingInfo {
+  return {
+    buildErrors,
+    name: widgetName,
+    getWidth: (_widgetHeight: number) => 0,
+    getWidget: () => ({
+      bringToFront: () => undefined,
+      cleanupPriorToDelete: () => undefined,
+      hide: () => undefined,
+      show: () => undefined,
+    }),
+  };
+}
 
 /**
  * Print the specifed text to the Hammerspoon console (one or multiple lines).
@@ -35,4 +55,18 @@ export function printDiagnostic(text: string | string[]) {
     print('HammerBar diagnostic end');
     print();
   }
+}
+
+export function printWindowInfo(hsWindow: hs.WindowType) {
+  const window = getWindowInfo(hsWindow);
+  printDiagnostic([
+    `appName    : ${window.appName}`,
+    `bundleId   : ${window.bundleId}`,
+    `id         : ${window.id}`,
+    `isMinimized: ${window.isMinimized}`,
+    `isStandard : ${window.isStandard}`,
+    `role       : ${window.role}`,
+    `screenId   : ${window.screenId}`,
+    `windowTitle: ${window.windowTitle}`,
+  ]);
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export interface WindowInfoType {
+export type WindowInfoType = {
   appName: string;
   bundleId: string;
   id: number;
@@ -24,7 +24,7 @@ export interface WindowInfoType {
   role: string;
   screenId: number;
   windowTitle: string;
-}
+};
 
 /**
  * Return an object with all the relevant info that Hammerspoon provides about

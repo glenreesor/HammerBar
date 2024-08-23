@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,13 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-type BundleIdType = string;
+import { setUpdateInterval as setWindowListWatcherUpdateInterval } from './windowListWatcher';
+import { getWindowListBuilder } from './windowList';
 
-export interface AppMenuEntryConfigType {
-  bundleId: BundleIdType;
-  displayName: string;
-}
-
-export type LauncherConfigType =
-  { type: 'app', bundleId: BundleIdType } |
-  { type: 'appMenu', apps: AppMenuEntryConfigType[] };
+export { getWindowListBuilder, setWindowListWatcherUpdateInterval };

@@ -1,4 +1,4 @@
-// Copyright 2022 Glen Reesor
+// Copyright 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,460 +15,169 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-const VERSION = '0.9';
+import type { WidgetBuildingInfo } from './panel';
+import { setWindowListWatcherUpdateInterval as applyWindowListWatcherUpdateInterval } from './widgets/windowList';
 
-import { AppMenuEntryConfigType, LauncherConfigType } from './types';
 import {
-  ScreenInfoType,
-  WindowInfoType,
-  getScreenInfo,
-  getWindowInfo,
-} from './hammerspoonUtils';
+  addWidgetsPrimaryScreenLeft,
+  addWidgetsPrimaryScreenRight,
+  addWidgetsSecondaryScreenLeft,
+  addWidgetsSecondaryScreenRight,
+  setWindowStatusUpdateInterval,
+  start,
+  stop,
+} from './main';
 
-import Taskbar from './Taskbar';
 import { printDiagnostic } from './utils';
 
-interface ConfigType {
-  fontSize: number;
-  showClock: boolean;
-  taskbarHeight: number;
-  taskbarColor: hs.ColorType;
-  launchers: LauncherConfigType[];
-}
+import { getAppLauncherBuilder } from './widgets/appLauncher';
+import { getAppMenuBuilder } from './widgets/appMenu';
+import { getClockBuilder } from './widgets/clock';
+import { getLineGraphBuilder } from './widgets/lineGraph';
+import { getTextBuilder } from './widgets/text';
+import { getXEyesBuilder } from './widgets/xeyes';
 
-const config:ConfigType = {
-  fontSize: 13,
-  showClock: false,
-  taskbarHeight: 45,
-  taskbarColor: { red: 220/255, green: 220/255, blue: 220/255 },
-  launchers: [],
-};
-
-interface StateType {
-  allowAllWindows: boolean;
-  clockTimer?: hs.TimerType;
-  taskbarsByScreenId: Map<number, Taskbar>;
-  taskbarsAreVisible: boolean;
-  windowFilter: hs.WindowFilter | undefined;
-}
-
-const state:StateType = {
-  allowAllWindows: false,
-  clockTimer: undefined,
-  taskbarsByScreenId: new Map<number, Taskbar>(),
-  taskbarsAreVisible: true,
-  windowFilter: undefined,
-};
-
-//-----------------------------------------------------------------------------
-
-function verticallyMaximizeCurrentWindow() {
-  const currentWindow = hs.window.focusedWindow();
-  if (currentWindow) {
-    const screenInfo = getScreenInfo(currentWindow.screen());
-    currentWindow.setFrame({
-      x: currentWindow.frame().x,
-      y: screenInfo.y,
-      w: currentWindow.frame().w,
-      h: screenInfo.height - config.taskbarHeight,
-    });
-  }
-}
-
-/**
- * Handle clicking on an app button in a taskbar.
- *
- * If no keyboard modifiers are pressed, this function will toggle visibility of
- * the corresponding app.
- *
- * If Shift is also pressed:
- *  - print window info to the Hammerspoon console (this includes the bundleId,
- *    which users will need if they want to add the clicked app to a menu)
- *
- * If Command or Control is pressed:
- *  - Just focus the window (for example if it's not minimized, but obscured
- *    by another window, this will bring it to the foreground)
- *
- * @param this     Must be `void` so it plays nicely with lua
- * @param _canvas  Unused
- * @param _message Unused
- * @param id       The ID of the clicked canvas element. We're expecting this
- *                 to be the window's ID
- */
-function onTaskbarWindowButtonClick(
-  this: void,
-  _canvas: hs.CanvasType,
-  _message: string,
-  id: string | number
-) {
-  const idAsNumber = (typeof id === 'number') ? id : parseInt(id);
-
-  // We can't use hs.window.get() because it causes a gigantic delay if other
-  // tools like RectangleWM are running
-  const allWindows = state.windowFilter?.getWindows() || [];
-  const hsWindow = allWindows.filter((window) => window.id() === idAsNumber)[0];
-
-  // We have to check for null because it may have been closed after the most
-  // recent taskbar update
-  if (!hsWindow) {
-    return;
-  }
-
-  const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();
-
-  if (keyboardModifiers.shift) {
-    // User just wants to dump the window info without toggling window visibility
-    printWindowInfo(hsWindow);
-    return;
-  }
-
-  if (hsWindow.isMinimized()) {
-    // Most apps require just focus(), but some like LibreOffice also require raise()
-    hsWindow.raise();
-    hsWindow.focus();
-  } else {
-    if (keyboardModifiers.cmd || keyboardModifiers.ctrl) {
-      // Just focus() the window because user just wants to make it visible
-      // instead of minimizing it
-      hsWindow.focus();
-    } else {
-      hsWindow.minimize();
-    }
-  }
-}
-
-function onToggleButtonClick(this: void) {
-  toggleTaskbarVisibility();
-  updateAllTaskbars();
-}
-
-/**
- * Print a bunch of information to the Hammerspoon console for the specified window.
- *
- * This is useful for debugging or getting the app's bundle ID so users can add
- * the app to a menu
- */
-function printWindowInfo(hsWindow: hs.WindowType) {
-  const window = getWindowInfo(hsWindow);
-  printDiagnostic([
-    `appName    : ${window.appName}`,
-    `bundleId   : ${window.bundleId}`,
-    `id         : ${window.id}`,
-    `isMinimized: ${window.isMinimized}`,
-    `isStandard : ${window.isStandard}`,
-    `role       : ${window.role}`,
-    `screenId   : ${window.screenId}`,
-    `windowTitle: ${window.windowTitle}`,
-  ]);
-}
-
-/**
- * Tell the Hammerspoon window filter which window events we're interested in
- * and what callback to use when any of those events are triggered
- */
-function subscribeWindowFilterToEvents() {
-  state.windowFilter?.subscribe(
-    [
-      hs.window.filter.windowCreated,
-      hs.window.filter.windowDestroyed,
-
-      // This is the Mac "hide" functionality
-      hs.window.filter.windowHidden,
-      hs.window.filter.windowMinimized,
-
-      // Need this to handle when window moved to another screen
-      hs.window.filter.windowMoved,
-
-      // For keeping text in taskbar up to date
-      hs.window.filter.windowTitleChanged,
-
-      hs.window.filter.windowUnhidden,
-
-      // This only fires if window was *Hidden* then unminimized
-      hs.window.filter.windowUnminimized,
-
-      // This is the only way to trigger when a window is unminimized (but
-      // wasn't "hidden" prior to that)
-      hs.window.filter.windowVisible,
-    ],
-    updateAllTaskbars,
-  );
-}
-
-function toggleTaskbarVisibility() {
-  state.taskbarsAreVisible = !state.taskbarsAreVisible;
-}
-
-/**
- * Update the contents of all taskbars (there will be multiple taskbars if
- * there are multiple screens)
- */
-function updateAllTaskbars() {
-  const allWindows:WindowInfoType[] = [];
-  const allScreens:ScreenInfoType[] = [];
-
-  state.windowFilter?.getWindows().forEach((hammerspoonWindow) => {
-    const windowInfo = getWindowInfo(hammerspoonWindow);
-
-    // Even though our Hammerspoon window filter excludes windows that don't
-    // have a role of 'AXWindow', it appears some still get through.
-    // So ensure a proper role here.
-    if (windowInfo.role === 'AXWindow') {
-      allWindows.push(windowInfo);
-    }
-  });
-
-  //----------------------------------------------------------------------------
-  // Update things that may have changed since our last call:
-  //  - screens may have been added or removed
-  //----------------------------------------------------------------------------
-  hs.screen.allScreens().forEach((hammerspoonScreen) => {
-    const screenInfo = getScreenInfo(hammerspoonScreen);
-    allScreens.push(screenInfo);
-  });
-
-  ensureTaskbarsExistForAllScreens(allScreens);
-
-  allScreens.forEach((screen) => {
-    const windowsThisScreen = allWindows.filter(
-      (window) => window.screenId === screen.id
-    );
-    const taskbar = state.taskbarsByScreenId.get(screen.id);
-    if (!taskbar) {
-      printDiagnostic(
-        `Unexpected error: No taskbar for screen ${screen.name} (${screen.id})`
-      );
-    } else {
-      taskbar.update(state.taskbarsAreVisible, windowsThisScreen);
-    }
-  });
-}
-
-/**
- * Ensure a taskbar exists for each screen, since user may add or remove monitors
- */
-function ensureTaskbarsExistForAllScreens(allScreens: ScreenInfoType[]) {
-
-  // Ensure each screen has a corresponding taskbar with proper coordinates
-  // and size.
-  // Screen positions can change when monitors are added or removed.
-  // Screen sizes can change due to retina displays reporting different resolutions
-  // depending on whether external monitors are attached or not
-  allScreens.forEach((screen) => {
-    const taskbar = state.taskbarsByScreenId.get(screen.id);
-    if (taskbar) {
-      taskbar.updateSizeAndPosition(screen);
-    } else {
-      printDiagnostic(`Adding taskbar for screen ${screen.name} (${screen.id})`);
-
-      const newTaskbar = new Taskbar({
-        fontSize: config.fontSize,
-        height: config.taskbarHeight,
-        screenInfo: screen,
-        backgroundColor: config.taskbarColor,
-        launchers: config.launchers,
-        showClock: config.showClock,
-        onToggleButtonClick: onToggleButtonClick,
-        onWindowButtonClick: onTaskbarWindowButtonClick,
-      });
-
-      state.taskbarsByScreenId.set(screen.id, newTaskbar);
-    }
-  });
-
-  // Remove taskbars for screens that no longer exist
-  state.taskbarsByScreenId.forEach((taskbar, screenId) => {
-    const foundScreens = allScreens.filter((screen) => screen.id === screenId);
-    if (foundScreens.length === 0) {
-      printDiagnostic(`Removing taskbar for screen ${screenId}`);
-
-      // We know it'll eventually get garbage collected, but make it invisible
-      // in case screen topology changes prior to garbage collection
-      taskbar.update(false, []);
-      state.taskbarsByScreenId.delete(screenId);
-    }
-  });
-}
-
-/**
- * A callback for the Hammerspoon window filter. This returns whether the
- * specified window should be included in our list of windows in the taskbar.
- *
- * We need this because there are many Mac "windows" that don't actually
- * correspond to something you'd normally see in a taskbar
- */
-function windowFilterCallback(this: void, hsWindow: hs.WindowType) {
-  if (state.allowAllWindows) {
-    return true;
-  }
-
-  // Based on the HammerSpoon docs, you'd think we could just filter out
-  // windows that are not "standard". However that also filters out some
-  // windows that we want in the taskbar. For instance the following are all
-  // classified as not "standard" (but only when they're minimized):
-  //  - gitk
-  //  - Safari
-  //  - DBeaver
-  //
-  // It looks like the windows we want in the taskbar all have a "role" of
-  // "AXWindow".
-  //
-  // Ironically Hammerspoon has its own weirdness to account for:
-  //  - the Console is "standard" unless it's minimized -- then it's not "standard"
-  //  - there are other windows associated with Hammerspoon (that we don't care
-  //    about), all of which have a role of "AXWindow" but they are not "standard"
-  const window = getWindowInfo(hsWindow);
+function isStringArray(obj: unknown): obj is string[] {
   return (
-    (window.appName === 'Hammerspoon' && window.windowTitle === 'Hammerspoon Console') ||
-    (window.appName !== 'Hammerspoon' && window.role === 'AXWindow')
+    Array.isArray(obj) &&
+    obj.reduce((accum, curr) => accum && typeof curr === 'string', true)
   );
 }
 
-/**
- * Determine if user-supplied configuraton for an app launcher is correct
- *
- * @returns true or an array of strings to be presented to the user
- */
-function validateAppLauncherConfig(bundleId: any): true | string[] {
-  if (typeof bundleId === 'string') return true;
-
-  return [
-    'You need to specify a bundleId (a string) but this was received instead:',
-    hs.inspect.inspect(bundleId),
-  ];
+function isWidgetBuildingInfoArray(obj: unknown): obj is WidgetBuildingInfo[] {
+  return (
+    Array.isArray(obj) &&
+    obj.reduce(
+      (accum, curr) =>
+        accum &&
+        isStringArray(curr.buildErrors) &&
+        typeof curr.name === 'string' &&
+        typeof curr.getWidth === 'function' &&
+        typeof curr.getWidget === 'function',
+      true,
+    )
+  );
 }
 
-/**
- * Determine if user-supplied configuraton for an app menu is correct
- *
- * @returns true or an array of strings to be presented to the user
- */
-function validateAppMenuConfig(menuConfig: any): true | string[] {
-  const errors: string[] = [];
+function printValidationError(functionName: string, buildingInfo: unknown) {
+  const sampleAddWidgetsArgsUsingWidgets = [
+    '  {',
+    '    spoon.HammerBar.widgets:appMenu({',
+    '        appList = {',
+    '          { bundleId = "org.mozilla.firefox", label = "Firefox" },',
+    '          { bundleId = "com.google.Chrome", label = "Chrome" },',
+    '        },',
+    '    }),',
+    '    spoon.HammerBar.widgets:appLauncher("com.apple.finder"),',
+    '  }',
+  ];
 
-  if (typeof(menuConfig) !== 'object') {
-    errors.push('You need to specify a table, but this was received instead:');
-    errors.push(hs.inspect.inspect(menuConfig));
-  }
-
-  if (errors.length === 0 && (menuConfig as AppMenuEntryConfigType[]).length === 0) {
-    errors.push('You need to specify a list of menu items, but this was received instead:');
-    errors.push(hs.inspect.inspect(menuConfig));
-  }
-
-  if (errors.length === 0) {
-    (menuConfig as AppMenuEntryConfigType[]).forEach((menuItem, index) => {
-      // Remember that lua users are expecting array indexes to start at 1
-      const errorIndex = index + 1;
-
-      if (!menuItem.bundleId || typeof menuItem.bundleId !== 'string') {
-        errors.push(`Menu item ${errorIndex} is missing a bundleId string. This was received instead:`);
-        errors.push(hs.inspect.inspect(menuItem));
-      }
-
-      if (!menuItem.displayName || typeof menuItem.displayName !== 'string') {
-        errors.push(`Menu item ${errorIndex} is missing a displayName string. This was received instead:`);
-        errors.push(hs.inspect.inspect(menuItem));
-      }
-    });
-  }
-
-  if (errors.length === 0) return true;
-
-  return errors.concat([
-    '',
-    'A valid menu looks like this:',
-    '{',
+  const sampleAddWidgetsArgsExact = [
+    '  {',
     '    {',
-    '        bundleId = "org.mozilla.firefox",',
-    '        displayName = "Firefox",',
+    '      buildErrors = {},',
+    '      getWidget = <function>',
+    '      getWidth = <function>',
+    '      name = "Widget Name",',
     '    }',
-    '    {',
-    '        bundleId = "com.googlecode.iterm2",',
-    '        displayName = "Chrome",',
-    '    }',
-    '}',
+    '  }',
+  ];
+
+  printDiagnostic([
+    `Unexpected argument to ${functionName}`,
+    'Expecting an argument like this:',
+    ...sampleAddWidgetsArgsExact,
     '',
-    'If you\'re not sure of the bundleId, start the application then shift-click',
-    'on the icon in the taskbar. The bundleId (and other information) will be',
-    'printed to the Hammerspoon console',
+    `This would be the result of calling ${functionName} with widget generators like this:`,
+    ...sampleAddWidgetsArgsUsingWidgets,
+    '',
+    'But instead this was received:',
+    '',
+    hs.inspect(buildingInfo),
   ]);
 }
 
-//------------------------------------------------------------------------------
-// Public Interface
-//------------------------------------------------------------------------------
-
-/**
- * Add a list of apps to be displayed when an Taskbar button is clicked.
- * See the validator function for syntax.
- */
-export function addAppMenu(menuConfig: any) {
-  const validation = validateAppMenuConfig(menuConfig);
-
-  if (validation === true) {
-    config.launchers.push({ type: 'appMenu', apps: menuConfig });
-  } else {
-    printDiagnostic(['Error encountered with addAppMenu()'].concat(validation));
+function validateAndAddWidgetsPrimaryScreenLeft(buildingInfo: unknown) {
+  if (!isWidgetBuildingInfoArray(buildingInfo)) {
+    printValidationError('addWidgetsPrimaryScreenLeft', buildingInfo);
+    return;
   }
 
+  addWidgetsPrimaryScreenLeft(buildingInfo);
 }
 
-/**
- * Add a single app button to the Taskbar
- */
-export function addAppLauncher(bundleId: any) {
-  const validation = validateAppLauncherConfig(bundleId);
-
-  if (validation === true) {
-    config.launchers.push({ type: 'app', bundleId: bundleId });
-  } else {
-    printDiagnostic(['Error encountered with addAppLauncher()'].concat(validation));
+function validateAndAddWidgetsPrimaryScreenRight(buildingInfo: unknown) {
+  if (!isWidgetBuildingInfoArray(buildingInfo)) {
+    printValidationError('addWidgetsPrimaryScreenRight', buildingInfo);
+    return;
   }
+
+  addWidgetsPrimaryScreenRight(buildingInfo);
 }
 
-/**
- * Add a clock to the right side of the Taskbar
- */
-export function addClock() {
-  config.showClock = true;
-}
-
-/**
- * Add a button to the Taskbar that will display the OS launcher
- */
-export function addLaunchpadLauncher() {
-  config.launchers.push({ type: 'app', bundleId: 'com.apple.launchpad.launcher' });
-}
-
-// Use this function to allow *all* windows reported by HammerSpoon in the
-// taskbar. This will be useful if a window isn't showing up normally. So with
-// this enabled, user can shift-click on the window button in question and get
-// all the hammerspoon info about it
-export function allowAllWindows() {
-  state.allowAllWindows = true;
-}
-
-export function start() {
-  printDiagnostic(`Version: ${VERSION}`);
-  hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
-  state.windowFilter = hs.window.filter.new(windowFilterCallback);
-  subscribeWindowFilterToEvents();
-  updateAllTaskbars();
-
-  if (config.showClock) {
-    // Schedule clock updates every minute starting at 0s of the next minute
-    const now = os.date('*t') as os.DateTable;
-    state.clockTimer = hs.timer.doAt(
-      `${now.hour}:${now.min + 1}`,
-      '1m',
-      updateAllTaskbars
-    );
+function validateAndAddWidgetsSecondaryScreenLeft(buildingInfo: unknown) {
+  if (!isWidgetBuildingInfoArray(buildingInfo)) {
+    printValidationError('addWidgetsSecondaryScreenLeft', buildingInfo);
+    return;
   }
+
+  addWidgetsSecondaryScreenLeft(buildingInfo);
 }
 
-export function stop() {
-  state.windowFilter?.unsubscribeAll();
-  state.clockTimer?.stop();
+function validateAndAddWidgetsSecondaryScreenRight(buildingInfo: unknown) {
+  if (!isWidgetBuildingInfoArray(buildingInfo)) {
+    printValidationError('addWidgetsSecondaryScreenRight', buildingInfo);
+    return;
+  }
+
+  addWidgetsSecondaryScreenRight(buildingInfo);
 }
 
+function validateAndSetWindowListUpdateInterval(newInterval: unknown) {
+  if (typeof newInterval !== 'number') {
+    printDiagnostic([
+      'Unexpected argument to setWindowListUpdateInterval',
+      'Expected a number, but instead received this:',
+      hs.inspect(newInterval),
+    ]);
+    return;
+  }
+  applyWindowListWatcherUpdateInterval(newInterval);
+}
+
+function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
+  if (typeof newInterval !== 'number') {
+    printDiagnostic([
+      'Unexpected argument to setWindowStatusUpdateInterval',
+      'Expected a number, but instead received this:',
+      hs.inspect(newInterval),
+    ]);
+    return;
+  }
+  setWindowStatusUpdateInterval(newInterval);
+}
+
+// Users don't need to be burdened with understanding that they're getting a
+// builder, so rename on export
+export const widgets = {
+  appLauncher: getAppLauncherBuilder,
+  appMenu: getAppMenuBuilder,
+  clock: getClockBuilder,
+  lineGraph: getLineGraphBuilder,
+  text: getTextBuilder,
+  xeyes: getXEyesBuilder,
+};
+
+export {
+  start,
+  stop,
+  //
+  validateAndAddWidgetsPrimaryScreenLeft as addWidgetsPrimaryScreenLeft,
+  validateAndAddWidgetsPrimaryScreenRight as addWidgetsPrimaryScreenRight,
+  //
+  validateAndAddWidgetsSecondaryScreenLeft as addWidgetsSecondaryScreenLeft,
+  validateAndAddWidgetsSecondaryScreenRight as addWidgetsSecondaryScreenRight,
+  //
+  validateAndSetWindowListUpdateInterval as setWindowListUpdateInterval,
+  validateAndSetWindowStatusUpdateInterval as setWindowStatusUpdateInterval,
+};
