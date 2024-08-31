@@ -64,11 +64,13 @@ export function getWindowListBuilder(
     function hide() {
       state.canvas?.hide();
       state.windowButtonsInfoById.forEach((w) => w.actions.hide());
+      state.isVisible = false;
     }
 
     function show() {
       state.canvas?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.show());
+      state.isVisible = true;
     }
 
     function render() {
@@ -156,6 +158,7 @@ export function getWindowListBuilder(
             buttonWidth,
             buttonHeight: 35,
             windowObject: w,
+            isInitiallyVisible: state.isVisible,
           }),
         });
         windowButtonX += buttonWidth + BUTTON_PADDING;
@@ -174,12 +177,14 @@ export function getWindowListBuilder(
 
     const state: {
       canvas: hs.CanvasType | undefined;
+      isVisible: boolean;
       titlesAndMinimizedStateTimer: hs.TimerType | undefined;
       previousWindowListIds: string;
       windowButtonsInfoById: WindowButtonsInfoById;
       windowListUnsubscriber: (() => void) | undefined;
     } = {
       canvas: undefined,
+      isVisible: true,
       titlesAndMinimizedStateTimer: undefined,
       previousWindowListIds: '',
       windowButtonsInfoById: new Map(),

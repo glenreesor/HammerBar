@@ -24,12 +24,14 @@ export function getWindowButton({
   buttonWidth,
   buttonHeight,
   windowObject,
+  isInitiallyVisible,
 }: {
   x: number;
   y: number;
   buttonWidth: number;
   buttonHeight: number;
   windowObject: hs.WindowType;
+  isInitiallyVisible: boolean;
 }) {
   function cleanupPriorToDelete() {
     state.mainCanvas?.hide();
@@ -281,7 +283,10 @@ export function getWindowButton({
 
   render();
   state.mainCanvas.mouseCallback(mouseCallback);
-  state.mainCanvas.show();
+
+  if (isInitiallyVisible) {
+    state.mainCanvas.show();
+  }
 
   return {
     bringToFront: () => state.mainCanvas?.show(),
