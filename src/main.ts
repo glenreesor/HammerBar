@@ -22,7 +22,7 @@ import { getScreenInfo } from './hammerspoonUtils';
 import panel from './panel';
 import type { WidgetBuildingInfo } from './panel';
 import { printDiagnostic } from './utils';
-import { getWindowListBuilder } from './widgets/windowList';
+import { getWindowListBuilder } from './windowList';
 
 type Config = {
   panelHeight: number;

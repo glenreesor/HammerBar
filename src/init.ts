@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuildingInfo } from './panel';
-import { setWindowListWatcherUpdateInterval as applyWindowListWatcherUpdateInterval } from './widgets/windowList';
+import { setWindowListWatcherUpdateInterval as applyWindowListWatcherUpdateInterval } from './windowList';
 
 import {
   addWidgetsPrimaryScreenLeft,
