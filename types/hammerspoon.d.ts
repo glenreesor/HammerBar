@@ -155,6 +155,7 @@ declare namespace hs {
     role: () => string;
     screen: () => ScreenType;
     setFrame: ({ x, y, w, h }: FrameType) => void;
+    subrole: () => string;
     title: () => string;
     unminimize: () => void;
   };

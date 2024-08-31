@@ -67,6 +67,7 @@ export function printWindowInfo(hsWindow: hs.WindowType) {
     `isStandard : ${window.isStandard}`,
     `role       : ${window.role}`,
     `screenId   : ${window.screenId}`,
+    `subrole    : ${window.subrole}`,
     `windowTitle: ${window.windowTitle}`,
   ]);
 }

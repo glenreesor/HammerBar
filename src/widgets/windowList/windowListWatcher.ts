@@ -71,10 +71,10 @@ function getWindowListAndNotifyListeners() {
       return false;
     }
 
+    // Exclude Hammerspoon canvases (e.g. HammerBar buttons, etc)
     return (
-      w.role() === 'AXWindow' &&
-      (application.name() !== 'Hammerspoon' ||
-        w.title() === 'Hammerspoon Console')
+      application.name() !== 'Hammerspoon' ||
+      w.title() === 'Hammerspoon Console'
     );
   });
 

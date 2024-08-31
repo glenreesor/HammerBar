@@ -23,6 +23,7 @@ export type WindowInfoType = {
   isStandard: boolean;
   role: string;
   screenId: number;
+  subrole: string;
   windowTitle: string;
 };
 
@@ -52,6 +53,7 @@ export function getWindowInfo(window: hs.WindowType): WindowInfoType {
     isStandard: window.isStandard(),
     role: window.role(),
     screenId: window.screen().id(),
+    subrole: window.subrole(),
     windowTitle: window.title(),
   };
 }
