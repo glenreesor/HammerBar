@@ -17,6 +17,11 @@
 
 import { BLACK } from 'src/constants';
 import { printWindowInfo } from 'src/utils';
+import {
+  deleteCanvasesAndStopTimers,
+  hideCanvases,
+  showCanvases,
+} from '../widgets/helpers/util';
 
 export function getWindowButton({
   x,
@@ -34,11 +39,15 @@ export function getWindowButton({
   isInitiallyVisible: boolean;
 }) {
   function cleanupPriorToDelete() {
-    state.mainCanvas?.hide();
-    state.mainCanvas = undefined;
+    deleteCanvasesAndStopTimers(Object.values(state.canvases), []);
+  }
 
-    state.hoverCanvas?.hide();
-    state.hoverCanvas = undefined;
+  function hide() {
+    hideCanvases(Object.values(state.canvases));
+  }
+
+  function show() {
+    showCanvases(Object.values(state.canvases));
   }
 
   const mouseCallback: hs.CanvasMouseCallbackType = function (
@@ -68,15 +77,15 @@ export function getWindowButton({
     const width = state.windowTitle.length * fontSize * 0.75;
     const height = fontSize * 2;
 
-    if (state.hoverCanvas === undefined) {
-      state.hoverCanvas = hs.canvas.new({
+    if (state.canvases.hoverCanvas === undefined) {
+      state.canvases.hoverCanvas = hs.canvas.new({
         x: state.x,
         y: y - fontSize * 2,
         w: width,
         h: height,
       });
     }
-    state.hoverCanvas.replaceElements([
+    state.canvases.hoverCanvas.replaceElements([
       {
         type: 'rectangle',
         fillColor: { red: 1, green: 1, blue: 1 },
@@ -101,7 +110,7 @@ export function getWindowButton({
         },
       },
     ]);
-    state.hoverCanvas.show();
+    state.canvases.hoverCanvas.show();
   }
 
   function render() {
@@ -147,7 +156,7 @@ export function getWindowButton({
 
     const maxTextWidth = state.width - paddingLeft - iconWidth - paddingRight;
 
-    state.mainCanvas?.replaceElements([
+    state.canvases.mainCanvas?.replaceElements([
       {
         type: 'rectangle',
         fillColor: bgColor,
@@ -191,9 +200,9 @@ export function getWindowButton({
     if (state.mouseIsInsideButton) {
       renderHoveredTitle();
     } else {
-      if (state.hoverCanvas !== undefined) {
-        state.hoverCanvas.hide();
-        state.hoverCanvas = undefined;
+      if (state.canvases.hoverCanvas !== undefined) {
+        state.canvases.hoverCanvas.hide();
+        state.canvases.hoverCanvas = undefined;
       }
     }
   }
@@ -251,7 +260,12 @@ export function getWindowButton({
 
   function updatePositionAndWidth(x: number, width: number) {
     if (x !== state.x || width !== state.width) {
-      state.mainCanvas?.frame({ x: x, y: y, w: width, h: buttonHeight });
+      state.canvases.mainCanvas?.frame({
+        x: x,
+        y: y,
+        w: width,
+        h: buttonHeight,
+      });
       state.width = width;
       state.x = x;
       render();
@@ -264,8 +278,10 @@ export function getWindowButton({
   const bundleId = windowObject.application()?.bundleID() || '';
 
   const state: {
-    mainCanvas: hs.CanvasType | undefined;
-    hoverCanvas: hs.CanvasType | undefined;
+    canvases: {
+      mainCanvas: hs.CanvasType | undefined;
+      hoverCanvas: hs.CanvasType | undefined;
+    };
     mouseButtonIsDown: boolean;
     mouseIsInsideButton: boolean;
     x: number;
@@ -274,8 +290,10 @@ export function getWindowButton({
     windowTitle: string;
     isMinimized: boolean;
   } = {
-    mainCanvas: undefined,
-    hoverCanvas: undefined,
+    canvases: {
+      mainCanvas: undefined,
+      hoverCanvas: undefined,
+    },
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
     x,
@@ -285,20 +303,25 @@ export function getWindowButton({
     isMinimized: windowObject.isMinimized(),
   };
 
-  state.mainCanvas = hs.canvas.new({ x, y, w: buttonWidth, h: buttonHeight });
+  state.canvases.mainCanvas = hs.canvas.new({
+    x,
+    y,
+    w: buttonWidth,
+    h: buttonHeight,
+  });
 
   render();
-  state.mainCanvas.mouseCallback(mouseCallback);
+  state.canvases.mainCanvas.mouseCallback(mouseCallback);
 
   if (isInitiallyVisible) {
-    state.mainCanvas.show();
+    state.canvases.mainCanvas.show();
   }
 
   return {
-    bringToFront: () => state.mainCanvas?.show(),
+    bringToFront: () => state.canvases.mainCanvas?.show(),
     cleanupPriorToDelete,
-    hide: () => state.mainCanvas?.hide(),
-    show: () => state.mainCanvas?.show(),
+    hide,
+    show,
     update,
     updatePositionAndWidth,
   };
