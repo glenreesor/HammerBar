@@ -1,0 +1,4 @@
+.gitignore
+.prettierignore
+scripts/*.sh
+src/unmodified_version_ts

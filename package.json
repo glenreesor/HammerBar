@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "build": "tstl",
+    "build": "scripts/set-adhoc-version-info.sh && tstl ; npm run reset-version",
+    "build:version": "scripts/set-specific-version-info.sh && tstl ; npm run reset-version",
+    "reset-version": "cp src/unmodified_version_ts src/version.ts",
     "dev": "tstl --watch",
     "lint-staged": "lint-staged",
     "prettier": "prettier --write"
