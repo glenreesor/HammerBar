@@ -231,8 +231,14 @@ export function getWindowButton({
   }
 
   function update() {
-    const newWindowTitle = state.windowObject.title();
+    const windowObjectTitle = state.windowObject.title();
+    const applicationName = state.windowObject.application()?.name() || '';
+
+    const newWindowTitle =
+      windowObjectTitle !== '' ? windowObjectTitle : applicationName;
+
     const newIsMinimized = state.windowObject.isMinimized();
+
     if (
       newWindowTitle !== state.windowTitle ||
       newIsMinimized !== state.isMinimized
