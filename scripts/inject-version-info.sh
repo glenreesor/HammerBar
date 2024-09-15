@@ -29,15 +29,15 @@ function replace() {
   echo "NEW: $new"
 }
 
-
 if [[ "$VERSION_STRING" = "" ]]; then
   echo -e "${RED} $0: Missing version string${NORMAL}"
   exit 1
 fi
 
-# Use this rather than `date --utc --iso-8601=seconds` so it'll also work
-# on MacOS
-isoUtcTimestamp=$(date -u +"%Y-%m-%dT%H:%M:%S%:z")
+currentCommitHash=$(git rev-parse HEAD)
+localFileChanges=$(git diff --name-only "$currentCommitHash")
+
+isoUtcTimestamp=$(date -u +"%Y-%m-%d %H:%M:%S (UTC)")
 
 replace VERSION "$VERSION_STRING"
 echo
@@ -45,5 +45,9 @@ echo
 replace BUILD_DATE "$isoUtcTimestamp"
 echo
 
-currentCommitHash=$(git rev-parse HEAD)
-replace GIT_HASH "$currentCommitHash"
+hashSuffix=""
+if [[ "$localFileChanges" != "" ]]; then
+  hashSuffix=" (with local changes)"
+fi
+
+replace GIT_HASH "$currentCommitHash $hashSuffix"

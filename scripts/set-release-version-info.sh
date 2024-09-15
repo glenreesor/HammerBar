@@ -8,7 +8,7 @@ thisDir=$(dirname "$0")
 version=""
 
 while [[ $version = "" ]]; do
-  echo -e "${GREEN}Enter new version string without v${NORMAL}"
+  echo -e "${GREEN}Enter new version string${NORMAL}"
   read input
   if [[ "$input" != "" ]]; then
     version="$input"
