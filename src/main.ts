@@ -17,6 +17,7 @@
 
 import { VERSION, BUILD_DATE, GIT_HASH } from './version';
 
+import type { ScreenInfoType } from './hammerspoonUtils';
 import { getScreenInfo } from './hammerspoonUtils';
 
 import panel from './panel';
@@ -44,6 +45,7 @@ type State = {
     left: WidgetBuildingInfo[];
     right: WidgetBuildingInfo[];
   };
+  screensById: Map<number, ScreenInfoType>;
   screenWatcher:
     | {
         start: () => hs.ScreenWatcher;
@@ -62,6 +64,7 @@ const state: State = {
     left: [],
     right: [],
   },
+  screensById: new Map(),
   screenWatcher: undefined,
 };
 
@@ -83,6 +86,8 @@ function createPanelsForAllScreens() {
     printDiagnostic(
       `Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`,
     );
+
+    state.screensById.set(screenInfo.id, screenInfo);
 
     const leftWidgets =
       screenInfo.id === primaryScreenId
@@ -144,6 +149,38 @@ function removeAllPanels() {
   state.panels = [];
 }
 
+function watchForScreenChanges() {
+  // Not all screen changes as reported by Hammerspoon result in different
+  // name, x, y, width, or height (the things we care about). So only recreate
+  // panels if one or more of those has changed
+  const newScreenList = hs.screen.allScreens();
+  let recreateRequired = false;
+
+  if (newScreenList.length !== state.screensById.size) {
+    recreateRequired = true;
+  } else {
+    newScreenList.forEach((ns) => {
+      const newScreenInfo = getScreenInfo(ns);
+      const existingScreen = state.screensById.get(newScreenInfo.id);
+      const screenInfoMatches =
+        existingScreen &&
+        existingScreen.x === newScreenInfo.x &&
+        existingScreen.y === newScreenInfo.y &&
+        existingScreen.width === newScreenInfo.width &&
+        existingScreen.height === newScreenInfo.height;
+
+      recreateRequired = recreateRequired || !screenInfoMatches;
+    });
+  }
+
+  if (recreateRequired) {
+    printDiagnostic('Screen configuration changed');
+    state.screensById = new Map();
+    removeAllPanels();
+    createPanelsForAllScreens();
+  }
+}
+
 //----------------------------------------------------------------------------
 
 export function addWidgetsPrimaryScreenLeft(
@@ -188,12 +225,4 @@ export function start() {
 export function stop() {
   removeAllPanels();
   state.screenWatcher?.stop();
-}
-
-export function watchForScreenChanges() {
-  // When screens get added or removed, resolutions can also change (e.g.
-  // on a macbook when external screens are added or removed)
-  // So just delete all Panels and recreate from scratch
-  removeAllPanels();
-  createPanelsForAllScreens();
 }

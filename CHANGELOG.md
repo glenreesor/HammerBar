@@ -3,6 +3,8 @@
 #### Fixed
 
 - Fixes minimizing of the Hammerspoon console when it's not the only window
+- Fixes unnecessary restarts when Hammerspoon reports screen changes that don't
+  involve screen name, position, or resolution
 
 #### Added
 
