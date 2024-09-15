@@ -224,13 +224,18 @@ export function getWindowButton({
     } else {
       // If window is already completely visible minimize it, otherwise bring
       // it to the foreground
-      const windowsFrontToBack = hs.window.orderedWindows();
+      const windowIdsFrontToBack = hs.window
+        .orderedWindows()
+        .map((w) => w.id());
 
-      if (windowsFrontToBack.length === 0) {
-        // This is an odd edge case corresponding to the Hammerspoon console
-        // being visible (and no other windows).
+      if (!windowIdsFrontToBack.includes(w.id())) {
+        // This is a special case corresponding to the Hammerspoon console.
+        // Since it doesn't show up in the window list we don't know it's stacking
+        // position.
         w.minimize();
-      } else if (windowsFrontToBack[0].id() === w.id()) {
+      }
+
+      if (windowIdsFrontToBack[0] === w.id()) {
         w.minimize();
       } else {
         w.raise();

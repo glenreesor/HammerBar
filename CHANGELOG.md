@@ -1,5 +1,9 @@
 ## Unreleased
 
+#### Fixed
+
+- Fixes minimizing of the Hammerspoon console when it's not the only window
+
 #### Added
 
 - Nothing yet :smile:
