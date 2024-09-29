@@ -57,7 +57,7 @@ export function printDiagnostic(text: string | string[]) {
   }
 }
 
-export function printWindowInfo(hsWindow: hs.WindowType) {
+export function printWindowInfo(hsWindow: hs.window.WindowType) {
   const window = getWindowInfo(hsWindow);
   printDiagnostic([
     `appName    : ${window.appName}`,

@@ -34,9 +34,9 @@ export function getPanelButton({
     state.canvas = undefined;
   }
 
-  const mouseCallback: hs.CanvasMouseCallbackType = function (
+  const mouseCallback: hs.canvas.CanvasMouseCallbackType = function (
     this: void,
-    _canvas: hs.CanvasType,
+    _canvas: hs.canvas.CanvasType,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
   ) {
     if (msg === 'mouseEnter') {
@@ -107,7 +107,7 @@ export function getPanelButton({
   }
 
   const state: {
-    canvas: hs.CanvasType | undefined;
+    canvas: hs.canvas.CanvasType | undefined;
     mouseButtonIsDown: boolean;
     mouseIsInsideButton: boolean;
   } = {

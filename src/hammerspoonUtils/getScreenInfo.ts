@@ -28,7 +28,7 @@ export type ScreenInfoType = {
   height: number;
 };
 
-export function getScreenInfo(screen: hs.ScreenType): ScreenInfoType {
+export function getScreenInfo(screen: hs.screen.ScreenType): ScreenInfoType {
   const id = screen.id();
   let name = screen.name();
 

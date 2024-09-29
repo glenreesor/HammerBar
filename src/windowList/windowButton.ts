@@ -35,7 +35,7 @@ export function getWindowButton({
   y: number;
   buttonWidth: number;
   buttonHeight: number;
-  windowObject: hs.WindowType;
+  windowObject: hs.window.WindowType;
   isInitiallyVisible: boolean;
 }) {
   function cleanupPriorToDelete() {
@@ -50,9 +50,9 @@ export function getWindowButton({
     showCanvases(Object.values(state.canvases));
   }
 
-  const mouseCallback: hs.CanvasMouseCallbackType = function (
+  const mouseCallback: hs.canvas.CanvasMouseCallbackType = function (
     this: void,
-    _canvas: hs.CanvasType,
+    _canvas: hs.canvas.CanvasType,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
   ) {
     if (msg === 'mouseEnter') {
@@ -284,14 +284,14 @@ export function getWindowButton({
 
   const state: {
     canvases: {
-      mainCanvas: hs.CanvasType | undefined;
-      hoverCanvas: hs.CanvasType | undefined;
+      mainCanvas: hs.canvas.CanvasType | undefined;
+      hoverCanvas: hs.canvas.CanvasType | undefined;
     };
     mouseButtonIsDown: boolean;
     mouseIsInsideButton: boolean;
     x: number;
     width: number;
-    windowObject: hs.WindowType;
+    windowObject: hs.window.WindowType;
     windowTitle: string;
     isMinimized: boolean;
   } = {

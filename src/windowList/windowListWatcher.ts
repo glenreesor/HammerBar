@@ -20,10 +20,10 @@ let updateInterval = DEFAULT_UPDATE_INTERVAL;
 
 let windowListListeners: {
   screenId: number;
-  callback: (windows: hs.WindowType[]) => void;
+  callback: (windows: hs.window.WindowType[]) => void;
 }[] = [];
 
-let timer: hs.TimerType | undefined;
+let timer: hs.timer.TimerType | undefined;
 
 export function setUpdateInterval(newInterval: number) {
   updateInterval = newInterval;
@@ -31,7 +31,7 @@ export function setUpdateInterval(newInterval: number) {
 
 export function subscribeToWindowListUpdates(
   screenId: number,
-  callback: (windows: hs.WindowType[]) => void,
+  callback: (windows: hs.window.WindowType[]) => void,
 ) {
   windowListListeners.push({ screenId, callback });
   if (windowListListeners.length === 1) {

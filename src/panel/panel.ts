@@ -71,7 +71,7 @@ export default function panel(params: {
   }
 
   const state: {
-    canvas: hs.CanvasType | undefined;
+    canvas: hs.canvas.CanvasType | undefined;
     isVisible: boolean;
   } = {
     canvas: undefined,

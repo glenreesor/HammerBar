@@ -22,7 +22,7 @@ import { subscribeToWindowListUpdates } from './windowListWatcher';
 type WindowButtonsInfoById = Map<
   number,
   {
-    w: hs.WindowType;
+    w: hs.window.WindowType;
     actions: {
       bringToFront: () => void;
       cleanupPriorToDelete: () => void;
@@ -105,7 +105,7 @@ export function getWindowListBuilder(
       return Math.min(buttonWidth, MAX_BUTTON_WIDTH);
     }
 
-    function updateWindowButtonsList(newWindowsList: hs.WindowType[]) {
+    function updateWindowButtonsList(newWindowsList: hs.window.WindowType[]) {
       const windowListIds = newWindowsList.reduce(
         (acc, w) => `${acc}_${w.id()}`,
         '',
@@ -176,9 +176,9 @@ export function getWindowListBuilder(
     const BUTTON_PADDING = 5;
 
     const state: {
-      canvas: hs.CanvasType | undefined;
+      canvas: hs.canvas.CanvasType | undefined;
       isVisible: boolean;
-      titlesAndMinimizedStateTimer: hs.TimerType | undefined;
+      titlesAndMinimizedStateTimer: hs.timer.TimerType | undefined;
       previousWindowListIds: string;
       windowButtonsInfoById: WindowButtonsInfoById;
       windowListUnsubscriber: (() => void) | undefined;

@@ -61,7 +61,7 @@ export function getLineGraphBuilder(
       '',
       'But instead this was received:',
       '',
-      hs.inspect(unvalidatedConfigParams),
+      hs.inspect.inspect(unvalidatedConfigParams),
     ]);
   }
 
@@ -93,9 +93,9 @@ export function getLineGraphBuilder(
       showCanvases(Object.values(state.canvases));
     }
 
-    const mouseCallback: hs.CanvasMouseCallbackType = function (
+    const mouseCallback: hs.canvas.CanvasMouseCallbackType = function (
       this: void,
-      _canvas: hs.CanvasType,
+      _canvas: hs.canvas.CanvasType,
       msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
     ) {
       if (msg === 'mouseEnter') {
@@ -142,12 +142,12 @@ export function getLineGraphBuilder(
     }
 
     function getGraphLineSegments(args: {
-      bgColor: hs.ColorType;
+      bgColor: hs.canvas.ColorType;
       graphDimensions: { w: number; h: number };
       graphTopLeft: { x: number; y: number };
       scale: { x: number; y: number };
-      strokeColor: hs.ColorType;
-    }): hs.CanvasElementType[] {
+      strokeColor: hs.canvas.ColorType;
+    }): hs.canvas.CanvasElementType[] {
       const { bgColor, graphDimensions, graphTopLeft, scale, strokeColor } =
         args;
 
@@ -193,7 +193,7 @@ export function getLineGraphBuilder(
       graphTopLeft: { x: number; y: number };
       scale: { x: number; y: number };
       value: number;
-    }): hs.CanvasElementType[] {
+    }): hs.canvas.CanvasElementType[] {
       const { graphDimensions, graphTopLeft, scale, value } = args;
 
       const fontSize = 12;
@@ -267,7 +267,7 @@ export function getLineGraphBuilder(
 
       const maxString = `${Math.round(max)}`;
 
-      const mainCanvasElements: hs.CanvasElementType[] = [
+      const mainCanvasElements: hs.canvas.CanvasElementType[] = [
         {
           type: 'rectangle',
           fillColor: bgColor,
@@ -380,7 +380,7 @@ export function getLineGraphBuilder(
 
       const currentValueString = `${Math.round(currentValue)}`;
 
-      const mainCanvasElements: hs.CanvasElementType[] = [
+      const mainCanvasElements: hs.canvas.CanvasElementType[] = [
         {
           type: 'rectangle',
           fillColor: { red: 0.5, green: 0.5, blue: 0.5 },
@@ -527,12 +527,12 @@ export function getLineGraphBuilder(
 
     const state: {
       canvases: {
-        expandedViewCanvas: hs.CanvasType | undefined;
-        graphCanvas: hs.CanvasType | undefined;
-        hoverCanvas: hs.CanvasType | undefined;
+        expandedViewCanvas: hs.canvas.CanvasType | undefined;
+        graphCanvas: hs.canvas.CanvasType | undefined;
+        hoverCanvas: hs.canvas.CanvasType | undefined;
       };
       timers: {
-        timer: hs.TimerType | undefined;
+        timer: hs.timer.TimerType | undefined;
       };
       mouseButtonIsDown: boolean;
       mouseIsInside: boolean;

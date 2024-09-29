@@ -74,7 +74,7 @@ export function getAppMenuBuilder(
       '',
       'But instead this was received:',
       '',
-      hs.inspect(unvalidatedConfigParams),
+      hs.inspect.inspect(unvalidatedConfigParams),
     ]);
   }
 

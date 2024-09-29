@@ -107,8 +107,8 @@ export function getClockBuilder(): WidgetBuildingInfo {
       ]);
     }
     const state: {
-      canvas: hs.CanvasType | undefined;
-      timer: hs.TimerType | undefined;
+      canvas: hs.canvas.CanvasType | undefined;
+      timer: hs.timer.TimerType | undefined;
     } = {
       canvas: undefined,
       timer: undefined,

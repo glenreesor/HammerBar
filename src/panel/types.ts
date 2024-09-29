@@ -18,8 +18,8 @@
 export type WidgetBuilderParams = {
   coords: { x: number; y: number };
   height: number;
-  panelColor: hs.ColorType;
-  panelHoverColor: hs.ColorType;
+  panelColor: hs.canvas.ColorType;
+  panelHoverColor: hs.canvas.ColorType;
 };
 
 export type WidgetBuilderReturnType = {

@@ -54,7 +54,7 @@ export function getTextBuilder(
       '',
       'But instead this was received:',
       '',
-      hs.inspect(unvalidatedConfigParams),
+      hs.inspect.inspect(unvalidatedConfigParams),
     ]);
   }
 
@@ -134,8 +134,8 @@ export function getTextBuilder(
     }
 
     const state: {
-      canvas: hs.CanvasType | undefined;
-      timer: hs.TimerType | undefined;
+      canvas: hs.canvas.CanvasType | undefined;
+      timer: hs.timer.TimerType | undefined;
     } = {
       canvas: undefined,
       timer: undefined,

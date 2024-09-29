@@ -16,19 +16,52 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 declare namespace hs {
-  type Application = {
-    allWindows: () => WindowType[];
+  type FrameType = {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  };
+}
+
+//-----------------------------------------------------------------------------
+declare namespace hs.application {
+  type ApplicationType = {
+    allWindows: () => hs.window.WindowType[];
     hide: () => boolean;
     unhide: () => boolean;
   };
 
+  function find(this: void, bundleId: string): ApplicationType;
+  function launchOrFocusByBundleID(this: void, name: string): boolean;
+}
+
+//-----------------------------------------------------------------------------
+
+// This should be declared like this:
+//   declare namespace hs.canvas {
+//     new: (args) => return Type
+//   }
+//
+// But `new` is a typescript keyword, so use this `type` and `const` hack instead
+declare namespace hs {
+  type Canvas = {
+    new: (
+      this: void,
+      { x, y, w, h }: { x: number; y: number; w: number; h: number },
+    ) => hs.canvas.CanvasType;
+  };
+  const canvas: Canvas;
+}
+
+declare namespace hs.canvas {
   type CanvasElementType = {
     center?: { x: number; y: number };
     coordinates?: { x: number; y: number }[];
     fillColor?: ColorType;
     frame?: { x: number; y: number; w: number; h: number };
     id?: number;
-    image?: ImageType;
+    image?: hs.image.ImageType;
     imageAlpha?: number;
     radius?: number;
     roundedRectRadii?: { xRadius: number; yRadius: number };
@@ -74,24 +107,62 @@ declare namespace hs {
     green: number;
     blue: number;
   };
+}
 
-  type FrameType = {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
+//-----------------------------------------------------------------------------
+declare namespace hs.eventtap {
+  function checkKeyboardModifiers(this: void): {
+    alt?: boolean;
+    capslock?: boolean;
+    cmd?: boolean;
+    ctrl?: boolean;
+    fn?: boolean;
+    shift?: boolean;
   };
+}
 
-  function inspect(this: void, thingToInspect: any): string;
+//-----------------------------------------------------------------------------
+declare namespace hs.hotkey {
+  // There are a bazillion overrides that hammerspoon accepts. Just create
+  // the one I need
+  function bind(
+    this: void,
+    mods: string,
+    key: string,
+    pressedFunction: () => void,
+  ): void;
+}
 
+//-----------------------------------------------------------------------------
+declare namespace hs.image {
   type ImageType = Object;
 
+  function imageFromAppBundle(this: void, bundleID: string): ImageType;
+  function imageFromPath(this: void, path: string): ImageType;
+}
+
+//-----------------------------------------------------------------------------
+declare namespace hs.inspect {
+  function inspect(this: void, thing: any): string;
+}
+
+//-----------------------------------------------------------------------------
+declare namespace hs.mouse {
+  function absolutePosition(this: void): { x: number; y: number };
+}
+
+//-----------------------------------------------------------------------------
+declare namespace hs.screen {
   type ScreenType = {
     frame: () => FrameType;
     id: () => number;
     name: () => string;
   };
 
+  // This should be declared like this:
+  //   new: (args) => return Type
+  //
+  // But `new` is a typescript keyword, so use this `type` and `const` hack instead
   type ScreenWatcher = {
     new: (
       this: void,
@@ -102,10 +173,43 @@ declare namespace hs {
     };
   };
 
+  function allScreens(this: void): ScreenType[];
+  function primaryScreen(this: void): ScreenType;
+  const watcher: ScreenWatcher;
+}
+
+//-----------------------------------------------------------------------------
+declare namespace hs.timer {
   type TimerType = {
     stop: () => void;
   };
 
+  function doAfter(
+    this: void,
+    afterSeconds: number,
+    callback: Function,
+  ): TimerType;
+
+  function doAt(
+    this: void,
+    time: number | string,
+    callback: Function,
+    continueOnError?: boolean,
+  ): TimerType;
+
+  function doAt(
+    this: void,
+    time: number | string,
+    repeatInterval: number | string,
+    callback: Function,
+    continueOnError?: boolean,
+  ): TimerType;
+
+  function doEvery(this: void, seconds: number, callback: Function): TimerType;
+}
+
+//-----------------------------------------------------------------------------
+declare namespace hs.window {
   type WindowFilter = {
     getWindows: () => WindowType[];
     new: (
@@ -146,111 +250,20 @@ declare namespace hs {
       bundleID: () => string | null;
     } | null;
     focus: () => void;
-    frame: () => FrameType;
+    frame: () => hs.FrameType;
     id: () => number;
     isMinimized: () => boolean;
     isStandard: () => boolean;
     minimize: () => void;
     raise: () => void;
     role: () => string;
-    screen: () => ScreenType;
-    setFrame: ({ x, y, w, h }: FrameType) => void;
+    screen: () => hs.screen.ScreenType;
+    setFrame: ({ x, y, w, h }: hs.FrameType) => void;
     subrole: () => string;
     title: () => string;
     unminimize: () => void;
   };
 
-  // This should be declared using a namespace:
-  //     declare namespace hs.canvas {
-  //       new: (
-  //         this: void,
-  //         { x, y, w, h }: { x: number; y: number; w: number; h: number },
-  //       ) => CanvasType;
-  //     }
-  //
-  // But that won't work since `new` is a typescript keyword, hence the following
-  // interface hack
-  interface HsDotCanvas {
-    new: (
-      this: void,
-      { x, y, w, h }: { x: number; y: number; w: number; h: number },
-    ) => CanvasType;
-  }
-  const canvas: HsDotCanvas;
-}
-
-declare namespace hs.application {
-  function find(this: void, bundleId: string): Application;
-  function launchOrFocusByBundleID(this: void, name: string): boolean;
-}
-
-declare namespace hs.eventtap {
-  function checkKeyboardModifiers(this: void): {
-    alt?: boolean;
-    capslock?: boolean;
-    cmd?: boolean;
-    ctrl?: boolean;
-    fn?: boolean;
-    shift?: boolean;
-  };
-}
-
-declare namespace hs.hotkey {
-  // There are a bazillion overrides that hammerspoon accepts. Just create
-  // the one I need
-  function bind(
-    this: void,
-    mods: string,
-    key: string,
-    pressedFunction: () => void,
-  ): void;
-}
-
-declare namespace hs.image {
-  function imageFromAppBundle(this: void, bundleID: string): ImageType;
-  function imageFromPath(this: void, path: string): ImageType;
-}
-
-declare namespace hs.inspect {
-  function inspect(this: void, thing: any): string;
-}
-
-declare namespace hs.mouse {
-  function absolutePosition(this: void): { x: number; y: number };
-}
-
-declare namespace hs.screen {
-  function allScreens(this: void): ScreenType[];
-  function primaryScreen(this: void): ScreenType;
-  const watcher: ScreenWatcher;
-}
-
-declare namespace hs.timer {
-  function doAfter(
-    this: void,
-    afterSeconds: number,
-    callback: Function,
-  ): TimerType;
-
-  function doAt(
-    this: void,
-    time: number | string,
-    callback: Function,
-    continueOnError?: boolean,
-  ): TimerType;
-
-  function doAt(
-    this: void,
-    time: number | string,
-    repeatInterval: number | string,
-    callback: Function,
-    continueOnError?: boolean,
-  ): TimerType;
-
-  function doEvery(this: void, seconds: number, callback: Function): TimerType;
-}
-
-declare namespace hs.window {
   function allWindows(this: void): WindowType[];
   function focusedWindow(this: void): WindowType;
   function get(this: void, windowId: number): WindowType | undefined;

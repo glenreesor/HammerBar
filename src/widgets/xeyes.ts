@@ -51,7 +51,7 @@ export function getXEyesBuilder(
       '',
       'But instead this was received:',
       '',
-      hs.inspect(unvalidatedConfigParams),
+      hs.inspect.inspect(unvalidatedConfigParams),
     ]);
   }
 
@@ -229,8 +229,8 @@ export function getXEyesBuilder(
         x: number;
         y: number;
       };
-      canvas: hs.CanvasType | undefined;
-      timer: hs.TimerType | undefined;
+      canvas: hs.canvas.CanvasType | undefined;
+      timer: hs.timer.TimerType | undefined;
     } = {
       values: [],
       interval: configParams.maxInterval,

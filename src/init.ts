@@ -93,7 +93,7 @@ function printValidationError(functionName: string, buildingInfo: unknown) {
     '',
     'But instead this was received:',
     '',
-    hs.inspect(buildingInfo),
+    hs.inspect.inspect(buildingInfo),
   ]);
 }
 
@@ -138,7 +138,7 @@ function validateAndSetWindowListUpdateInterval(newInterval: unknown) {
     printDiagnostic([
       'Unexpected argument to setWindowListUpdateInterval',
       'Expected a number, but instead received this:',
-      hs.inspect(newInterval),
+      hs.inspect.inspect(newInterval),
     ]);
     return;
   }
@@ -150,7 +150,7 @@ function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
     printDiagnostic([
       'Unexpected argument to setWindowStatusUpdateInterval',
       'Expected a number, but instead received this:',
-      hs.inspect(newInterval),
+      hs.inspect.inspect(newInterval),
     ]);
     return;
   }

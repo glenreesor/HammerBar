@@ -24,8 +24,8 @@ export default function ToggleButton(args: {
   panelWidth: number;
   panelHeight: number;
   side: 'left' | 'right';
-  panelColor: hs.ColorType;
-  panelHoverColor: hs.ColorType;
+  panelColor: hs.canvas.ColorType;
+  panelHoverColor: hs.canvas.ColorType;
   onClick: () => void;
 }) {
   const {
@@ -44,9 +44,9 @@ export default function ToggleButton(args: {
     state.canvas = undefined;
   }
 
-  const mouseCallback: hs.CanvasMouseCallbackType = function (
+  const mouseCallback: hs.canvas.CanvasMouseCallbackType = function (
     this: void,
-    _canvas: hs.CanvasType,
+    _canvas: hs.canvas.CanvasType,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseUp',
   ) {
     if (msg === 'mouseEnter') {
@@ -109,7 +109,7 @@ export default function ToggleButton(args: {
   }
 
   const state: {
-    canvas: hs.CanvasType | undefined;
+    canvas: hs.canvas.CanvasType | undefined;
     mouseIsInsideButton: boolean;
     panelIsVisible: boolean;
   } = {
