@@ -1,4 +1,4 @@
-## Unreleased
+## v1.0.2-beta (2024-10-08)
 
 #### Fixed
 
