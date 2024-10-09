@@ -28,12 +28,14 @@ declare namespace hs {
 declare namespace hs.application {
   type ApplicationType = {
     allWindows: () => hs.window.WindowType[];
+    name: () => string;
     hide: () => boolean;
     unhide: () => boolean;
   };
 
   function find(this: void, bundleId: string): ApplicationType;
   function launchOrFocusByBundleID(this: void, name: string): boolean;
+  function runningApplications(this: void): ApplicationType[];
 }
 
 //-----------------------------------------------------------------------------
