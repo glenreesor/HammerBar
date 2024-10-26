@@ -1,3 +1,7 @@
+## v1.0.2 (2024-10-26)
+
+- No changes from v1.0.2-beta
+
 ## v1.0.2-beta (2024-10-08)
 
 #### Fixed
@@ -7,10 +11,6 @@
   involve screen name, position, or resolution
 - Missed mouse events when mouse enters or leaves window buttons, resulting in
   missed hovers and slow responses to mouse clicks
-
-#### Added
-
-- Nothing yet :smile:
 
 ## v1.0.1 (2024-09-01)
 
