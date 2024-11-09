@@ -28,6 +28,7 @@ declare namespace hs {
 declare namespace hs.application {
   type ApplicationType = {
     allWindows: () => hs.window.WindowType[];
+    bundleID: () => string | null;
     name: () => string;
     hide: () => boolean;
     unhide: () => boolean;
@@ -247,10 +248,7 @@ declare namespace hs.window {
   };
 
   type WindowType = {
-    application: () => {
-      name: () => string;
-      bundleID: () => string | null;
-    } | null;
+    application: () => hs.application.ApplicationType | null;
     focus: () => void;
     frame: () => hs.FrameType;
     id: () => number;
