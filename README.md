@@ -15,6 +15,7 @@ and "widgets" that can show the output of arbitrary lua functions.
 - [API](doc/api.md)
 - [Widgets](doc/widgets.md)
 - [Sample Config](doc/sample-config.md)
+- [Building HammerBar](doc/building.md)
 
 # Quick Start
 
