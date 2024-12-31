@@ -66,7 +66,7 @@ export function getLineGraphBuilder(
   }
 
   // This looks goofy because the type checking should suffice since it
-  // correctly narrows the type of unvalidatedBundleId.
+  // correctly narrows the type of unvalidatedConfigParams.
   //
   // However it appears that typescript doesn't maintain that knowledge
   // within the function below.

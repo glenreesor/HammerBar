@@ -1,3 +1,9 @@
+## Unreleased
+
+#### Added
+
+- `CpuMonitor` widget
+
 ## v1.0.2 (2024-10-26)
 
 - No changes from v1.0.2-beta

@@ -35,5 +35,14 @@ declare namespace os {
 }
 
 declare namespace io {
-  function popen(this: void, something: string, somethingElse: string): any;
+  type FileHandle = {
+    // There are other keys on this object. Just typing the ones we need
+    close: () => void;
+
+    // Lua supports formats other than 'a', however we only need 'a' and I don't
+    // want to figure out the typing for the others :-)
+    read: (format: 'a') => string;
+  };
+
+  function popen(this: void, cmd: string, mode?: 'r' | 'w'): FileHandle;
 }
