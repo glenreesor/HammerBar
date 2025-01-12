@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import { printWindowInfo } from 'src/utils';
 import {
   deleteCanvasesAndStopTimers,

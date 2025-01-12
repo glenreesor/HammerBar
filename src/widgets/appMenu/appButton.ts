@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -17,6 +17,7 @@
 
 import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams } from 'src/panel';
+import { DEFAULT_THEME } from 'src/theme';
 
 export function getAppButton({
   coords,
@@ -59,19 +60,12 @@ export function getAppButton({
   };
 
   function render() {
-    let bgColor;
     let fontSize;
     let iconHeight;
     let iconWidth;
     let iconY;
     let paddingLeft;
     let paddingRight;
-
-    if (state.mouseIsInsideButton) {
-      bgColor = panelColor;
-    } else {
-      bgColor = panelHoverColor;
-    }
 
     if (state.mouseButtonIsDown) {
       fontSize = 10;
@@ -87,6 +81,26 @@ export function getAppButton({
       iconY = 0;
       paddingLeft = 2;
       paddingRight = 5;
+    }
+
+    let fgColor;
+    let bgColor;
+    let borderColor;
+
+    if (state.mouseButtonIsDown) {
+      fgColor = DEFAULT_THEME.widget.mouseDown.foreground;
+      bgColor = DEFAULT_THEME.widget.mouseDown.background;
+      borderColor = BLACK;
+    } else {
+      if (state.mouseIsInsideButton) {
+        fgColor = DEFAULT_THEME.widget.normal.foreground;
+        bgColor = DEFAULT_THEME.widget.normal.background;
+        borderColor = BLACK;
+      } else {
+        fgColor = DEFAULT_THEME.widget.normal.foreground;
+        bgColor = DEFAULT_THEME.widget.normal.background;
+        borderColor = BLACK;
+      }
     }
 
     const textX = paddingLeft + iconWidth;
@@ -127,7 +141,7 @@ export function getAppButton({
       {
         type: 'text',
         text: label,
-        textColor: BLACK,
+        textColor: DEFAULT_THEME.widget.normal.foreground,
         textSize: fontSize,
         frame: {
           x: textX,
