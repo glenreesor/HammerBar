@@ -32,7 +32,7 @@ export const DEFAULT_THEME = {
   },
 
   windowButtonsPanel: {
-    background: { red: 0.5, green: 0.5, blue: 0.5 },
+    background: { red: 255 / 255, green: 0 / 255, blue: 255 / 255 },
     windowButton: {
       normal: {
         foreground: { red: 1, green: 1, blue: 1 },

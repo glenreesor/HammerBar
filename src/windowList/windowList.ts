@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -18,6 +18,7 @@
 import type { WidgetBuilderReturnType } from 'src/panel';
 import { getWindowButton } from './windowButton';
 import { subscribeToWindowListUpdates } from './windowListWatcher';
+import { DEFAULT_THEME } from 'src/theme';
 
 type WindowButtonsInfoById = Map<
   number,
@@ -74,7 +75,7 @@ export function getWindowListBuilder(
     }
 
     function render() {
-      const color = { red: 150 / 255, green: 150 / 255, blue: 150 / 255 };
+      const color = DEFAULT_THEME.windowButtonsPanel.background;
 
       state.canvas?.replaceElements([
         {
