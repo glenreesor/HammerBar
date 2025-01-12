@@ -89,7 +89,7 @@ export function getWindowButton({
     state.canvases.hoverCanvas.replaceElements([
       {
         type: 'rectangle',
-        fillColor: { red: 1, green: 1, blue: 1 },
+        fillColor: DEFAULT_THEME.tooltip.background,
         frame: {
           x: 0,
           y: 0,
@@ -97,11 +97,13 @@ export function getWindowButton({
           h: height,
         },
         roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
+        strokeColor: DEFAULT_THEME.tooltip.border,
+        strokeWidth: 2,
       },
       {
         type: 'text',
         text: state.windowTitle,
-        textColor: BLACK,
+        textColor: DEFAULT_THEME.tooltip.foreground,
         textSize: fontSize,
         frame: {
           x: 10,

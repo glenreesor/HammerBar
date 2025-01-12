@@ -111,10 +111,8 @@ export const DEFAULT_THEME = {
   },
 
   tooltip: {
-    foreground: { red: 1, green: 1, blue: 1 },
-    foregroundSecondary: { red: 1, green: 1, blue: 1 },
-    background: { red: 0.5, green: 0.5, blue: 0.5 },
-    backgroundSecondary: { red: 1, green: 1, blue: 1 },
-    border: { red: 1, green: 1, blue: 1 },
+    foreground: { red: 1, green: 0, blue: 0 },
+    background: { red: 0, green: 1, blue: 0 },
+    border: { red: 0, green: 0, blue: 1 },
   },
 };
