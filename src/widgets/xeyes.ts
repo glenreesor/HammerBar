@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -23,6 +23,7 @@ import {
   hideCanvases,
   showCanvases,
 } from './helpers/util';
+import { DEFAULT_THEME } from 'src/theme';
 
 type ConfigParams = {
   minInterval: number;
@@ -177,8 +178,8 @@ export function getXEyesBuilder(
       state.canvas?.replaceElements([
         {
           type: 'rectangle',
-          fillColor: panelHoverColor,
-          strokeColor: panelColor,
+          fillColor: DEFAULT_THEME.widget.normal.background,
+          strokeColor: DEFAULT_THEME.widget.normal.background,
           frame: {
             x: 0,
             y: 0,
@@ -190,29 +191,29 @@ export function getXEyesBuilder(
           type: 'circle',
           radius: eyeRadius,
           center: leftEyeCenter,
-          strokeColor: BLACK,
+          strokeColor: DEFAULT_THEME.widget.normal.foreground,
           fillColor: WHITE,
         },
         {
           type: 'circle',
           radius: pupilRadius,
           center: leftPupilCenter,
-          strokeColor: BLACK,
-          fillColor: BLACK,
+          strokeColor: DEFAULT_THEME.widget.normal.foregroundSecondary,
+          fillColor: DEFAULT_THEME.widget.normal.foregroundSecondary,
         },
         {
           type: 'circle',
           radius: eyeRadius,
           center: rightEyeCenter,
-          strokeColor: BLACK,
+          strokeColor: DEFAULT_THEME.widget.normal.foreground,
           fillColor: WHITE,
         },
         {
           type: 'circle',
           radius: pupilRadius,
           center: rightPupilCenter,
-          strokeColor: BLACK,
-          fillColor: BLACK,
+          strokeColor: DEFAULT_THEME.widget.normal.foregroundSecondary,
+          fillColor: DEFAULT_THEME.widget.normal.foregroundSecondary,
         },
       ]);
       state.timer = hs.timer.doAfter(state.interval, render);
