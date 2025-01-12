@@ -60,7 +60,7 @@ export const DEFAULT_THEME = {
 
   widget: {
     normal: {
-      foreground: { red: 1, green: 1, blue: 1 },
+      foreground: { red: 0, green: 0, blue: 1 },
       foregroundSecondary: { red: 1, green: 1, blue: 1 },
       background: { red: 1, green: 0, blue: 0 },
       backgroundSecondary: { red: 1, green: 1, blue: 1 },
