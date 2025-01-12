@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
+import { DEFAULT_THEME } from 'src/theme';
 
 export default function ToggleButton(args: {
   panelX: number;
@@ -62,6 +62,9 @@ export default function ToggleButton(args: {
 
   function render() {
     const bgColor = state.mouseIsInsideButton ? panelHoverColor : panelColor;
+    const fgColor = state.mouseIsInsideButton
+      ? DEFAULT_THEME.panel.hover.foreground
+      : DEFAULT_THEME.panel.normal.foreground;
 
     const fontSize = 14;
     let toggleSymbol;
@@ -89,7 +92,7 @@ export default function ToggleButton(args: {
       {
         type: 'text',
         text: toggleSymbol,
-        textColor: BLACK,
+        textColor: fgColor,
         textSize: fontSize,
         frame: {
           x: TOGGLE_BUTTON_WIDTH / 4,
