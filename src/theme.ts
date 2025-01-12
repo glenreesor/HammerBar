@@ -35,19 +35,29 @@ export const DEFAULT_THEME = {
     background: { red: 255 / 255, green: 0 / 255, blue: 255 / 255 },
     windowButton: {
       normal: {
-        foreground: { red: 1, green: 1, blue: 1 },
-        background: { red: 0.5, green: 0.5, blue: 0.5 },
-        border: { red: 0.5, green: 0.5, blue: 0.5 },
+        foreground: { red: 0, green: 1, blue: 0 },
+        background: { red: 0, green: 0, blue: 1 },
+        border: { red: 1, green: 0, blue: 0 },
       },
-      hover: {
-        foreground: { red: 1, green: 1, blue: 1 },
-        background: { red: 0.5, green: 0.5, blue: 0.5 },
-        border: { red: 0.5, green: 0.5, blue: 0.5 },
+      normalHover: {
+        foreground: { red: 1, green: 0, blue: 0 },
+        background: { red: 0, green: 1, blue: 0 },
+        border: { red: 0, green: 0, blue: 1 },
+      },
+      minimized: {
+        foreground: { red: 1, green: 0, blue: 1 },
+        background: { red: 1, green: 1, blue: 1 },
+        border: { red: 1, green: 1, blue: 0 },
+      },
+      minimizedHover: {
+        foreground: { red: 0, green: 1, blue: 0 },
+        background: { red: 1, green: 0, blue: 0 },
+        border: { red: 1, green: 0, blue: 0 },
       },
       mouseDown: {
         foreground: { red: 1, green: 1, blue: 1 },
         background: { red: 0.5, green: 0.5, blue: 0.5 },
-        border: { red: 0.5, green: 0.5, blue: 0.5 },
+        border: { red: 1, green: 0, blue: 0 },
       },
     },
   },

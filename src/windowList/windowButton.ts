@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -22,6 +22,7 @@ import {
   hideCanvases,
   showCanvases,
 } from '../widgets/helpers/util';
+import { DEFAULT_THEME } from 'src/theme';
 
 export function getWindowButton({
   x,
@@ -114,7 +115,6 @@ export function getWindowButton({
   }
 
   function render() {
-    let borderWidth;
     let fontSize;
     let iconHeight;
     let iconWidth;
@@ -123,9 +123,6 @@ export function getWindowButton({
     let paddingRight;
 
     if (state.mouseIsInsideButton) {
-      borderWidth = 4;
-    } else {
-      borderWidth = 0;
     }
 
     if (state.mouseButtonIsDown) {
@@ -144,11 +141,56 @@ export function getWindowButton({
       paddingRight = 5;
     }
 
-    const borderColor = { red: 0.5, green: 0.5, blue: 0.5 };
+    let fgColor;
+    let bgColor;
+    let borderColor;
 
-    const bgColor = state.isMinimized
-      ? { red: 0.7, green: 0.7, blue: 0.7 }
-      : { red: 1, green: 1, blue: 1 };
+    if (state.mouseButtonIsDown) {
+      fgColor =
+        DEFAULT_THEME.windowButtonsPanel.windowButton.mouseDown.foreground;
+      bgColor =
+        DEFAULT_THEME.windowButtonsPanel.windowButton.mouseDown.background;
+      borderColor =
+        DEFAULT_THEME.windowButtonsPanel.windowButton.mouseDown.border;
+    } else {
+      if (state.isMinimized) {
+        if (state.mouseIsInsideButton) {
+          fgColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.minimizedHover
+              .foreground;
+          bgColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.minimizedHover
+              .background;
+          borderColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.minimizedHover.border;
+        } else {
+          fgColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.minimized.foreground;
+          bgColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.minimized.background;
+          borderColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.minimized.border;
+        }
+      } else {
+        if (state.mouseIsInsideButton) {
+          fgColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.normalHover
+              .foreground;
+          bgColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.normalHover
+              .background;
+          borderColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.normalHover.border;
+        } else {
+          fgColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.normal.foreground;
+          bgColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.normal.background;
+          borderColor =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.normal.border;
+        }
+      }
+    }
 
     const textX = paddingLeft + iconWidth;
 
@@ -161,7 +203,7 @@ export function getWindowButton({
         type: 'rectangle',
         fillColor: bgColor,
         strokeColor: borderColor,
-        strokeWidth: borderWidth,
+        strokeWidth: 2,
         frame: {
           x: 0,
           y: 0,
@@ -186,7 +228,7 @@ export function getWindowButton({
       {
         type: 'text',
         text: state.windowTitle,
-        textColor: BLACK,
+        textColor: fgColor,
         textSize: fontSize,
         frame: {
           x: textX,
