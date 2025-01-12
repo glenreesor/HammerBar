@@ -271,7 +271,7 @@ export function getLineGraphBuilder(
         {
           type: 'rectangle',
           fillColor: bgColor,
-          strokeColor: panelColor,
+          strokeColor: bgColor,
           frame: {
             x: 0,
             y: 0,
