@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import {
@@ -23,6 +22,7 @@ import {
   hideCanvases,
   showCanvases,
 } from './helpers/util';
+import { DEFAULT_THEME } from 'src/theme';
 
 type ConfigParams = {
   title: string;
@@ -93,8 +93,8 @@ export function getTextBuilder(
       state.canvas?.replaceElements([
         {
           type: 'rectangle',
-          fillColor: panelHoverColor,
-          strokeColor: panelColor,
+          fillColor: DEFAULT_THEME.widget.normal.background,
+          strokeColor: DEFAULT_THEME.widget.normal.background,
           frame: {
             x: 0,
             y: 0,
@@ -106,7 +106,7 @@ export function getTextBuilder(
           type: 'text',
           text: configParams.title,
           textAlignment: 'center',
-          textColor: BLACK,
+          textColor: DEFAULT_THEME.widget.normal.foreground,
           textSize: fontSize,
           frame: {
             x: 0,
@@ -119,7 +119,7 @@ export function getTextBuilder(
           type: 'text',
           text: output,
           textAlignment: 'center',
-          textColor: BLACK,
+          textColor: DEFAULT_THEME.widget.normal.foreground,
           textSize: fontSize,
           frame: {
             x: 0,

@@ -62,7 +62,7 @@ export const DEFAULT_THEME = {
     normal: {
       foreground: { red: 0, green: 0, blue: 1 },
       foregroundSecondary: { red: 1, green: 0, blue: 0 },
-      background: { red: 0.2, green: 0, blue: 0 },
+      background: { red: 0.8, green: 0.9, blue: 0.2 },
       backgroundSecondary: { red: 1, green: 1, blue: 1 },
     },
     hover: {
