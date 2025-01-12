@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -19,6 +19,7 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import { getPanelButton } from '../helpers/panelButton';
 import { getAppButton } from './appButton';
+import { DEFAULT_THEME } from 'src/theme';
 
 type IconInfo =
   | { bundleId: string; imagePath: undefined }
@@ -162,8 +163,8 @@ export function getAppMenuBuilder(
     const panelButton = getPanelButton({
       coords,
       height,
-      panelColor,
-      panelHoverColor,
+      panelColor: DEFAULT_THEME.widget.normal.background,
+      panelHoverColor: DEFAULT_THEME.widget.hover.background,
       imageInfo: iconInfo,
       onClick: toggleMenu,
     });
