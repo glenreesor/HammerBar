@@ -61,19 +61,21 @@ export const DEFAULT_THEME = {
   widget: {
     normal: {
       foreground: { red: 0, green: 0, blue: 1 },
-      foregroundSecondary: { red: 1, green: 1, blue: 1 },
-      background: { red: 1, green: 0, blue: 0 },
+      foregroundSecondary: { red: 1, green: 0, blue: 0 },
+      background: { red: 0.2, green: 0, blue: 0 },
       backgroundSecondary: { red: 1, green: 1, blue: 1 },
     },
     hover: {
       foreground: { red: 1, green: 1, blue: 1 },
       foregroundSecondary: { red: 1, green: 1, blue: 1 },
+      foregroundTertiary: { red: 1, green: 1, blue: 1 },
       background: { red: 0, green: 0, blue: 1 },
       backgroundSecondary: { red: 1, green: 1, blue: 1 },
     },
     mouseDown: {
       foreground: { red: 1, green: 1, blue: 1 },
       foregroundSecondary: { red: 1, green: 1, blue: 1 },
+      foregroundTertiary: { red: 1, green: 1, blue: 1 },
       background: { red: 0.5, green: 0.5, blue: 0.5 },
       backgroundSecondary: { red: 1, green: 1, blue: 1 },
     },
@@ -81,8 +83,8 @@ export const DEFAULT_THEME = {
 
   popup: {
     normal: {
-      foreground: { red: 1, green: 1, blue: 1 },
-      foregroundSecondary: { red: 1, green: 1, blue: 1 },
+      foreground: { red: 1, green: 0, blue: 1 },
+      foregroundSecondary: { red: 0, green: 1, blue: 1 },
       background: { red: 0.5, green: 0.5, blue: 0.5 },
       backgroundSecondary: { red: 1, green: 1, blue: 1 },
       border: { red: 1, green: 1, blue: 1 },
