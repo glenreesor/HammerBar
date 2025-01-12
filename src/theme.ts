@@ -18,17 +18,17 @@
 export const DEFAULT_THEME = {
   panel: {
     normal: {
-      foreground: { red: 255 / 255, green: 0 / 255, blue: 0 / 255 },
-      background: { red: 0 / 255, green: 255 / 255, blue: 0 / 255 },
+      foreground: { red: 1, green: 0, blue: 0 },
+      background: { red: 0, green: 1, blue: 0 },
     },
     hover: {
-      foreground: { red: 0 / 255, green: 0 / 255, blue: 255 / 255 },
-      background: { red: 0 / 255, green: 155 / 255, blue: 0 / 255 },
+      foreground: { red: 0, green: 0, blue: 1 },
+      background: { red: 0, green: 0.5, blue: 0 },
     },
   },
 
   windowButtonsPanel: {
-    background: { red: 255 / 255, green: 0 / 255, blue: 255 / 255 },
+    background: { red: 1, green: 0, blue: 1 },
     windowButton: {
       normal: {
         foreground: { red: 0, green: 1, blue: 0 },
@@ -59,26 +59,23 @@ export const DEFAULT_THEME = {
   },
 
   widget: {
-    background: { red: 0.5, green: 0.5, blue: 0.5 },
-    windowButton: {
-      normal: {
-        foreground: { red: 1, green: 1, blue: 1 },
-        foregroundSecondary: { red: 1, green: 1, blue: 1 },
-        background: { red: 0.5, green: 0.5, blue: 0.5 },
-        backgroundSecondary: { red: 1, green: 1, blue: 1 },
-      },
-      hover: {
-        foreground: { red: 1, green: 1, blue: 1 },
-        foregroundSecondary: { red: 1, green: 1, blue: 1 },
-        background: { red: 0.5, green: 0.5, blue: 0.5 },
-        backgroundSecondary: { red: 1, green: 1, blue: 1 },
-      },
-      mouseDown: {
-        foreground: { red: 1, green: 1, blue: 1 },
-        foregroundSecondary: { red: 1, green: 1, blue: 1 },
-        background: { red: 0.5, green: 0.5, blue: 0.5 },
-        backgroundSecondary: { red: 1, green: 1, blue: 1 },
-      },
+    normal: {
+      foreground: { red: 1, green: 1, blue: 1 },
+      foregroundSecondary: { red: 1, green: 1, blue: 1 },
+      background: { red: 1, green: 0, blue: 0 },
+      backgroundSecondary: { red: 1, green: 1, blue: 1 },
+    },
+    hover: {
+      foreground: { red: 1, green: 1, blue: 1 },
+      foregroundSecondary: { red: 1, green: 1, blue: 1 },
+      background: { red: 0, green: 0, blue: 1 },
+      backgroundSecondary: { red: 1, green: 1, blue: 1 },
+    },
+    mouseDown: {
+      foreground: { red: 1, green: 1, blue: 1 },
+      foregroundSecondary: { red: 1, green: 1, blue: 1 },
+      background: { red: 0.5, green: 0.5, blue: 0.5 },
+      backgroundSecondary: { red: 1, green: 1, blue: 1 },
     },
   },
 
