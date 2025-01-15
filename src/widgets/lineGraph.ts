@@ -357,6 +357,30 @@ export function getLineGraphBuilder(
       const expandedViewHeight = 150;
       const expandedViewWidth = 150;
 
+      const bgColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.background
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.background
+          : DEFAULT_THEME.widget.normal.background;
+
+      const titleColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foreground
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foreground
+          : DEFAULT_THEME.widget.normal.foreground;
+
+      const maxColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foregroundSecondary
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foregroundSecondary
+          : DEFAULT_THEME.widget.normal.foregroundSecondary;
+
+      const graphColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foregroundTertiary
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foregroundTertiary
+          : DEFAULT_THEME.widget.normal.foregroundTertiary;
+
       if (state.canvases.expandedViewCanvas === undefined) {
         state.canvases.expandedViewCanvas = hs.canvas.new({
           x: coords.x - expandedViewWidth + width,
@@ -405,7 +429,7 @@ export function getLineGraphBuilder(
       const mainCanvasElements: hs.canvas.CanvasElementType[] = [
         {
           type: 'rectangle',
-          fillColor: DEFAULT_THEME.popup.normal.background,
+          fillColor: bgColor,
           strokeColor: DEFAULT_THEME.popup.normal.border,
           frame: {
             x: 0,
@@ -432,7 +456,7 @@ export function getLineGraphBuilder(
           // Title
           type: 'text',
           text: configParams.title,
-          textColor: DEFAULT_THEME.popup.normal.foreground,
+          textColor: titleColor,
           textSize: fontSize,
           frame: {
             x: 4,
@@ -446,7 +470,7 @@ export function getLineGraphBuilder(
           type: 'text',
           text: currentValueString,
           textAlignment: 'right',
-          textColor: DEFAULT_THEME.popup.normal.foregroundSecondary,
+          textColor: maxColor,
           textSize: fontSize,
           frame: {
             x: 0,
@@ -458,11 +482,11 @@ export function getLineGraphBuilder(
       ];
 
       const graphLineSegments = getGraphLineSegments({
-        bgColor: DEFAULT_THEME.popup.normal.background,
+        bgColor: bgColor,
         graphDimensions,
         graphTopLeft,
         scale,
-        strokeColor: DEFAULT_THEME.popup.normal.foreground,
+        strokeColor: graphColor,
       });
 
       const horizontalScaleLinesWithLabels = [0, 0.25, 0.5, 0.75, 1].flatMap(
