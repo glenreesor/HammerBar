@@ -104,6 +104,7 @@ export function getLineGraphBuilder(
         render();
       } else if (msg === 'mouseExit') {
         state.mouseIsInside = false;
+        state.mouseButtonIsDown = false;
         updateShowHoverValue();
         render();
       } else if (msg === 'mouseDown') {
@@ -240,9 +241,30 @@ export function getLineGraphBuilder(
         : baseFontSize;
 
       const titleY = height / 2 - fontSize - fontSize / 2;
-      const bgColor = state.mouseIsInside
-        ? DEFAULT_THEME.widget.hover.background
-        : DEFAULT_THEME.widget.normal.background;
+
+      const bgColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.background
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.background
+          : DEFAULT_THEME.widget.normal.background;
+
+      const titleColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foreground
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foreground
+          : DEFAULT_THEME.widget.normal.foreground;
+
+      const maxColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foregroundSecondary
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foregroundSecondary
+          : DEFAULT_THEME.widget.normal.foregroundSecondary;
+
+      const graphColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foregroundTertiary
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foregroundTertiary
+          : DEFAULT_THEME.widget.normal.foregroundTertiary;
 
       const max =
         configParams.maxGraphValue ??
@@ -285,7 +307,7 @@ export function getLineGraphBuilder(
         {
           type: 'text',
           text: configParams.title,
-          textColor: DEFAULT_THEME.widget.normal.foreground,
+          textColor: titleColor,
           textSize: fontSize,
           frame: {
             x: 2,
@@ -298,7 +320,7 @@ export function getLineGraphBuilder(
           // Max line
           type: 'segments',
           coordinates: [graphTopLeft, { x: width, y: graphTopLeft.y }],
-          strokeColor: DEFAULT_THEME.widget.normal.foregroundSecondary,
+          strokeColor: maxColor,
           strokeWidth: 1,
         },
         {
@@ -306,7 +328,7 @@ export function getLineGraphBuilder(
           type: 'text',
           text: maxString,
           textAlignment: 'right',
-          textColor: DEFAULT_THEME.widget.normal.foregroundSecondary,
+          textColor: maxColor,
           textSize: fontSize * 0.8,
           frame: {
             x: 0,
@@ -322,7 +344,7 @@ export function getLineGraphBuilder(
         graphDimensions,
         graphTopLeft,
         scale,
-        strokeColor: DEFAULT_THEME.widget.normal.foreground,
+        strokeColor: graphColor,
       });
 
       state.canvases.graphCanvas?.replaceElements([
