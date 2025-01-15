@@ -357,29 +357,10 @@ export function getLineGraphBuilder(
       const expandedViewHeight = 150;
       const expandedViewWidth = 150;
 
-      const bgColor = state.mouseButtonIsDown
-        ? DEFAULT_THEME.widget.mouseDown.background
-        : state.mouseIsInside
-          ? DEFAULT_THEME.widget.hover.background
-          : DEFAULT_THEME.widget.normal.background;
-
-      const titleColor = state.mouseButtonIsDown
-        ? DEFAULT_THEME.widget.mouseDown.foreground
-        : state.mouseIsInside
-          ? DEFAULT_THEME.widget.hover.foreground
-          : DEFAULT_THEME.widget.normal.foreground;
-
-      const maxColor = state.mouseButtonIsDown
-        ? DEFAULT_THEME.widget.mouseDown.foregroundSecondary
-        : state.mouseIsInside
-          ? DEFAULT_THEME.widget.hover.foregroundSecondary
-          : DEFAULT_THEME.widget.normal.foregroundSecondary;
-
-      const graphColor = state.mouseButtonIsDown
-        ? DEFAULT_THEME.widget.mouseDown.foregroundTertiary
-        : state.mouseIsInside
-          ? DEFAULT_THEME.widget.hover.foregroundTertiary
-          : DEFAULT_THEME.widget.normal.foregroundTertiary;
+      const bgColor = DEFAULT_THEME.widget.normal.background;
+      const titleColor = DEFAULT_THEME.widget.normal.foreground;
+      const maxColor = DEFAULT_THEME.widget.mouseDown.foregroundSecondary;
+      const graphColor = DEFAULT_THEME.widget.mouseDown.foregroundTertiary;
 
       if (state.canvases.expandedViewCanvas === undefined) {
         state.canvases.expandedViewCanvas = hs.canvas.new({
