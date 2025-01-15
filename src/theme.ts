@@ -80,7 +80,7 @@ export const DEFAULT_THEME = {
       foreground: { red: 1, green: 1, blue: 1 },
       foregroundSecondary: { red: 1, green: 1, blue: 1 },
       foregroundTertiary: { red: 1, green: 1, blue: 1 },
-      background: { red: 0.5, green: 0.5, blue: 0.5 },
+      background: { red: 1, green: 1, blue: 1 },
       backgroundSecondary: { red: 1, green: 1, blue: 1 },
     },
   },
