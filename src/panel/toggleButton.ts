@@ -47,24 +47,37 @@ export default function ToggleButton(args: {
   const mouseCallback: hs.canvas.CanvasMouseCallbackType = function (
     this: void,
     _canvas: hs.canvas.CanvasType,
-    msg: 'mouseEnter' | 'mouseExit' | 'mouseUp',
+    msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
   ) {
     if (msg === 'mouseEnter') {
       state.mouseIsInsideButton = true;
       render();
     } else if (msg === 'mouseExit') {
       state.mouseIsInsideButton = false;
+      state.mouseButtonIsDown = false;
+      render();
+    } else if (msg === 'mouseDown') {
+      state.mouseButtonIsDown = true;
       render();
     } else if (msg === 'mouseUp') {
+      state.mouseButtonIsDown = false;
       onClick();
+      render();
     }
   };
 
   function render() {
-    const bgColor = state.mouseIsInsideButton ? panelHoverColor : panelColor;
-    const fgColor = state.mouseIsInsideButton
-      ? DEFAULT_THEME.panel.hover.foreground
-      : DEFAULT_THEME.panel.normal.foreground;
+    const bgColor = state.mouseButtonIsDown
+      ? DEFAULT_THEME.panel.mouseDown.background
+      : state.mouseIsInsideButton
+        ? DEFAULT_THEME.panel.hover.background
+        : DEFAULT_THEME.panel.normal.background;
+
+    const fgColor = state.mouseButtonIsDown
+      ? DEFAULT_THEME.panel.mouseDown.foreground
+      : state.mouseIsInsideButton
+        ? DEFAULT_THEME.panel.hover.foreground
+        : DEFAULT_THEME.panel.normal.foreground;
 
     const fontSize = 14;
     let toggleSymbol;
@@ -87,6 +100,7 @@ export default function ToggleButton(args: {
           h: panelHeight,
         },
         trackMouseEnterExit: true,
+        trackMouseDown: true,
         trackMouseUp: true,
       },
       {
@@ -101,6 +115,7 @@ export default function ToggleButton(args: {
           h: fontSize * 1.2,
         },
         trackMouseEnterExit: true,
+        trackMouseDown: true,
         trackMouseUp: true,
       },
     ]);
@@ -113,10 +128,12 @@ export default function ToggleButton(args: {
 
   const state: {
     canvas: hs.canvas.CanvasType | undefined;
+    mouseButtonIsDown: boolean;
     mouseIsInsideButton: boolean;
     panelIsVisible: boolean;
   } = {
     canvas: undefined,
+    mouseButtonIsDown: false,
     mouseIsInsideButton: false,
     panelIsVisible: true,
   };

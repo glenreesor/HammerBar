@@ -25,6 +25,10 @@ export const DEFAULT_THEME = {
       foreground: { red: 0, green: 0, blue: 1 },
       background: { red: 0, green: 0.5, blue: 0 },
     },
+    mouseDown: {
+      foreground: { red: 0, green: 1, blue: 0 },
+      background: { red: 1, green: 1, blue: 1 },
+    },
   },
 
   windowButtonsPanel: {
