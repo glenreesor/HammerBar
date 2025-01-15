@@ -88,17 +88,18 @@ export function getAppButton({
     let borderColor;
 
     if (state.mouseButtonIsDown) {
-      fgColor = DEFAULT_THEME.widget.mouseDown.foreground;
-      bgColor = DEFAULT_THEME.widget.mouseDown.background;
-      borderColor = BLACK;
+      fgColor = DEFAULT_THEME.popup.mouseDown.foreground;
+      bgColor = DEFAULT_THEME.popup.mouseDown.background;
+      borderColor = DEFAULT_THEME.popup.mouseDown.border;
     } else {
       if (state.mouseIsInsideButton) {
-        fgColor = DEFAULT_THEME.widget.normal.foreground;
-        bgColor = DEFAULT_THEME.widget.normal.background;
-        borderColor = BLACK;
+        fgColor = DEFAULT_THEME.popup.hover.foreground;
+        bgColor = DEFAULT_THEME.popup.hover.background;
+        borderColor = DEFAULT_THEME.popup.hover.border;
       } else {
-        fgColor = DEFAULT_THEME.widget.normal.foreground;
-        bgColor = DEFAULT_THEME.widget.normal.background;
+        fgColor = DEFAULT_THEME.popup.normal.foreground;
+        bgColor = DEFAULT_THEME.popup.normal.background;
+        borderColor = DEFAULT_THEME.popup.normal.border;
         borderColor = BLACK;
       }
     }
@@ -141,7 +142,7 @@ export function getAppButton({
       {
         type: 'text',
         text: label,
-        textColor: DEFAULT_THEME.widget.normal.foreground,
+        textColor: fgColor,
         textSize: fontSize,
         frame: {
           x: textX,

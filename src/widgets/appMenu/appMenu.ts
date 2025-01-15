@@ -134,8 +134,8 @@ export function getAppMenuBuilder(
           getAppButton({
             coords: { x: coords.x, y: widgetY },
             height: 30,
-            panelColor,
-            panelHoverColor,
+            panelColor: DEFAULT_THEME.popup.normal.foreground,
+            panelHoverColor: DEFAULT_THEME.popup.hover.foreground,
             bundleId: app.bundleId,
             label: app.label,
             onClick: () => {
