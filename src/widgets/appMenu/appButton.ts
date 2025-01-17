@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -17,6 +17,7 @@
 
 import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams } from 'src/panel';
+import { DEFAULT_THEME } from 'src/theme';
 
 export function getAppButton({
   coords,
@@ -59,19 +60,12 @@ export function getAppButton({
   };
 
   function render() {
-    let bgColor;
     let fontSize;
     let iconHeight;
     let iconWidth;
     let iconY;
     let paddingLeft;
     let paddingRight;
-
-    if (state.mouseIsInsideButton) {
-      bgColor = panelColor;
-    } else {
-      bgColor = panelHoverColor;
-    }
 
     if (state.mouseButtonIsDown) {
       fontSize = 10;
@@ -87,6 +81,27 @@ export function getAppButton({
       iconY = 0;
       paddingLeft = 2;
       paddingRight = 5;
+    }
+
+    let fgColor;
+    let bgColor;
+    let borderColor;
+
+    if (state.mouseButtonIsDown) {
+      fgColor = DEFAULT_THEME.popup.mouseDown.foreground;
+      bgColor = DEFAULT_THEME.popup.mouseDown.background;
+      borderColor = DEFAULT_THEME.popup.mouseDown.border;
+    } else {
+      if (state.mouseIsInsideButton) {
+        fgColor = DEFAULT_THEME.popup.hover.foreground;
+        bgColor = DEFAULT_THEME.popup.hover.background;
+        borderColor = DEFAULT_THEME.popup.hover.border;
+      } else {
+        fgColor = DEFAULT_THEME.popup.normal.foreground;
+        bgColor = DEFAULT_THEME.popup.normal.background;
+        borderColor = DEFAULT_THEME.popup.normal.border;
+        borderColor = BLACK;
+      }
     }
 
     const textX = paddingLeft + iconWidth;
@@ -127,7 +142,7 @@ export function getAppButton({
       {
         type: 'text',
         text: label,
-        textColor: BLACK,
+        textColor: fgColor,
         textSize: fontSize,
         frame: {
           x: textX,

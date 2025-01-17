@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -16,6 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuilderParams } from 'src/panel';
+import { DEFAULT_THEME } from 'src/theme';
 
 type ImageInfo =
   | { bundleId: string; imagePath?: undefined }
@@ -65,7 +66,11 @@ export function getPanelButton({
         ? hs.image.imageFromAppBundle(imageInfo.bundleId)
         : hs.image.imageFromPath(imageInfo.imagePath);
 
-    const bgColor = state.mouseIsInsideButton ? panelHoverColor : panelColor;
+    const bgColor = state.mouseButtonIsDown
+      ? DEFAULT_THEME.widget.mouseDown.background
+      : state.mouseIsInsideButton
+        ? DEFAULT_THEME.widget.hover.background
+        : DEFAULT_THEME.widget.normal.background;
 
     const imageWidth = state.mouseButtonIsDown
       ? 0.8 * normalImageWidth

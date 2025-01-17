@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
+import { DEFAULT_THEME } from 'src/theme';
 
 export default function ToggleButton(args: {
   panelX: number;
@@ -47,21 +47,37 @@ export default function ToggleButton(args: {
   const mouseCallback: hs.canvas.CanvasMouseCallbackType = function (
     this: void,
     _canvas: hs.canvas.CanvasType,
-    msg: 'mouseEnter' | 'mouseExit' | 'mouseUp',
+    msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
   ) {
     if (msg === 'mouseEnter') {
       state.mouseIsInsideButton = true;
       render();
     } else if (msg === 'mouseExit') {
       state.mouseIsInsideButton = false;
+      state.mouseButtonIsDown = false;
+      render();
+    } else if (msg === 'mouseDown') {
+      state.mouseButtonIsDown = true;
       render();
     } else if (msg === 'mouseUp') {
+      state.mouseButtonIsDown = false;
       onClick();
+      render();
     }
   };
 
   function render() {
-    const bgColor = state.mouseIsInsideButton ? panelHoverColor : panelColor;
+    const bgColor = state.mouseButtonIsDown
+      ? DEFAULT_THEME.panel.mouseDown.background
+      : state.mouseIsInsideButton
+        ? DEFAULT_THEME.panel.hover.background
+        : DEFAULT_THEME.panel.normal.background;
+
+    const fgColor = state.mouseButtonIsDown
+      ? DEFAULT_THEME.panel.mouseDown.foreground
+      : state.mouseIsInsideButton
+        ? DEFAULT_THEME.panel.hover.foreground
+        : DEFAULT_THEME.panel.normal.foreground;
 
     const fontSize = 14;
     let toggleSymbol;
@@ -84,12 +100,13 @@ export default function ToggleButton(args: {
           h: panelHeight,
         },
         trackMouseEnterExit: true,
+        trackMouseDown: true,
         trackMouseUp: true,
       },
       {
         type: 'text',
         text: toggleSymbol,
-        textColor: BLACK,
+        textColor: fgColor,
         textSize: fontSize,
         frame: {
           x: TOGGLE_BUTTON_WIDTH / 4,
@@ -98,6 +115,7 @@ export default function ToggleButton(args: {
           h: fontSize * 1.2,
         },
         trackMouseEnterExit: true,
+        trackMouseDown: true,
         trackMouseUp: true,
       },
     ]);
@@ -110,10 +128,12 @@ export default function ToggleButton(args: {
 
   const state: {
     canvas: hs.canvas.CanvasType | undefined;
+    mouseButtonIsDown: boolean;
     mouseIsInsideButton: boolean;
     panelIsVisible: boolean;
   } = {
     canvas: undefined,
+    mouseButtonIsDown: false,
     mouseIsInsideButton: false,
     panelIsVisible: true,
   };

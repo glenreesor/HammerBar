@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK, WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import {
@@ -23,6 +22,7 @@ import {
   hideCanvases,
   showCanvases,
 } from './helpers/util';
+import { DEFAULT_THEME } from 'src/theme';
 
 type ConfigParams = {
   title: string;
@@ -104,6 +104,7 @@ export function getLineGraphBuilder(
         render();
       } else if (msg === 'mouseExit') {
         state.mouseIsInside = false;
+        state.mouseButtonIsDown = false;
         updateShowHoverValue();
         render();
       } else if (msg === 'mouseDown') {
@@ -215,13 +216,13 @@ export function getLineGraphBuilder(
               y,
             },
           ],
-          strokeColor: { red: 0.8, green: 0.8, blue: 0.8 },
+          strokeColor: DEFAULT_THEME.widget.normal.foregroundSecondary,
           strokeWidth: 1,
         },
         {
           type: 'text',
           text: label,
-          textColor: { red: 0.8, green: 0.8, blue: 0.8 },
+          textColor: DEFAULT_THEME.widget.normal.foregroundSecondary,
           textSize: fontSize * 0.8,
           frame: {
             x: 4,
@@ -240,9 +241,30 @@ export function getLineGraphBuilder(
         : baseFontSize;
 
       const titleY = height / 2 - fontSize - fontSize / 2;
-      const bgColor = state.mouseIsInside
-        ? { red: 120 / 255, green: 140 / 255, blue: 140 / 255 }
-        : panelHoverColor;
+
+      const bgColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.background
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.background
+          : DEFAULT_THEME.widget.normal.background;
+
+      const titleColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foreground
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foreground
+          : DEFAULT_THEME.widget.normal.foreground;
+
+      const maxColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foregroundSecondary
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foregroundSecondary
+          : DEFAULT_THEME.widget.normal.foregroundSecondary;
+
+      const graphColor = state.mouseButtonIsDown
+        ? DEFAULT_THEME.widget.mouseDown.foregroundTertiary
+        : state.mouseIsInside
+          ? DEFAULT_THEME.widget.hover.foregroundTertiary
+          : DEFAULT_THEME.widget.normal.foregroundTertiary;
 
       const max =
         configParams.maxGraphValue ??
@@ -271,7 +293,7 @@ export function getLineGraphBuilder(
         {
           type: 'rectangle',
           fillColor: bgColor,
-          strokeColor: panelColor,
+          strokeColor: bgColor,
           frame: {
             x: 0,
             y: 0,
@@ -285,7 +307,7 @@ export function getLineGraphBuilder(
         {
           type: 'text',
           text: configParams.title,
-          textColor: BLACK,
+          textColor: titleColor,
           textSize: fontSize,
           frame: {
             x: 2,
@@ -298,7 +320,7 @@ export function getLineGraphBuilder(
           // Max line
           type: 'segments',
           coordinates: [graphTopLeft, { x: width, y: graphTopLeft.y }],
-          strokeColor: { red: 1, green: 1, blue: 1 },
+          strokeColor: maxColor,
           strokeWidth: 1,
         },
         {
@@ -306,7 +328,7 @@ export function getLineGraphBuilder(
           type: 'text',
           text: maxString,
           textAlignment: 'right',
-          textColor: WHITE,
+          textColor: maxColor,
           textSize: fontSize * 0.8,
           frame: {
             x: 0,
@@ -318,11 +340,11 @@ export function getLineGraphBuilder(
       ];
 
       const graphLineSegments = getGraphLineSegments({
-        bgColor: panelHoverColor,
+        bgColor: bgColor,
         graphDimensions,
         graphTopLeft,
         scale,
-        strokeColor: { red: 0, green: 1, blue: 1 },
+        strokeColor: graphColor,
       });
 
       state.canvases.graphCanvas?.replaceElements([
@@ -334,6 +356,11 @@ export function getLineGraphBuilder(
     function renderExpandedView() {
       const expandedViewHeight = 150;
       const expandedViewWidth = 150;
+
+      const bgColor = DEFAULT_THEME.widget.normal.background;
+      const titleColor = DEFAULT_THEME.widget.normal.foreground;
+      const maxColor = DEFAULT_THEME.widget.mouseDown.foregroundSecondary;
+      const graphColor = DEFAULT_THEME.widget.mouseDown.foregroundTertiary;
 
       if (state.canvases.expandedViewCanvas === undefined) {
         state.canvases.expandedViewCanvas = hs.canvas.new({
@@ -383,8 +410,8 @@ export function getLineGraphBuilder(
       const mainCanvasElements: hs.canvas.CanvasElementType[] = [
         {
           type: 'rectangle',
-          fillColor: { red: 0.5, green: 0.5, blue: 0.5 },
-          strokeColor: { red: 0.4, green: 0.4, blue: 0.4 },
+          fillColor: bgColor,
+          strokeColor: DEFAULT_THEME.popup.normal.border,
           frame: {
             x: 0,
             y: 0,
@@ -396,8 +423,8 @@ export function getLineGraphBuilder(
         {
           // Indicator bar over regular canvas
           type: 'rectangle',
-          fillColor: { red: 0, green: 0, blue: 1 },
-          strokeColor: { red: 0, green: 0, blue: 1 },
+          fillColor: DEFAULT_THEME.popup.normal.backgroundSecondary,
+          strokeColor: DEFAULT_THEME.popup.normal.backgroundSecondary,
           frame: {
             x: expandedViewWidth - width,
             y: expandedViewHeight - indicatorBarHeight,
@@ -410,7 +437,7 @@ export function getLineGraphBuilder(
           // Title
           type: 'text',
           text: configParams.title,
-          textColor: BLACK,
+          textColor: titleColor,
           textSize: fontSize,
           frame: {
             x: 4,
@@ -424,7 +451,7 @@ export function getLineGraphBuilder(
           type: 'text',
           text: currentValueString,
           textAlignment: 'right',
-          textColor: WHITE,
+          textColor: maxColor,
           textSize: fontSize,
           frame: {
             x: 0,
@@ -436,11 +463,11 @@ export function getLineGraphBuilder(
       ];
 
       const graphLineSegments = getGraphLineSegments({
-        bgColor: { red: 0.5, green: 0.5, blue: 0.5 },
+        bgColor: bgColor,
         graphDimensions,
         graphTopLeft,
         scale,
-        strokeColor: { red: 0, green: 1, blue: 1 },
+        strokeColor: graphColor,
       });
 
       const horizontalScaleLinesWithLabels = [0, 0.25, 0.5, 0.75, 1].flatMap(
@@ -480,7 +507,7 @@ export function getLineGraphBuilder(
       state.canvases.hoverCanvas.replaceElements([
         {
           type: 'rectangle',
-          fillColor: WHITE,
+          fillColor: DEFAULT_THEME.tooltip.background,
           frame: {
             x: 0,
             y: 0,
@@ -492,7 +519,7 @@ export function getLineGraphBuilder(
         {
           type: 'text',
           text: `${value}`,
-          textColor: BLACK,
+          textColor: DEFAULT_THEME.tooltip.foreground,
           textSize: fontSize,
           textAlignment: 'center',
           frame: {

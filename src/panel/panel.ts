@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -22,6 +22,7 @@ import type {
   WidgetBuilderReturnType,
   WidgetBuildingInfo,
 } from './types';
+import { DEFAULT_THEME } from 'src/theme';
 
 export default function panel(params: {
   coords: { x: number; y: number };
@@ -78,8 +79,8 @@ export default function panel(params: {
     isVisible: true,
   };
 
-  const panelColor = { red: 100 / 255, green: 100 / 255, blue: 100 / 255 };
-  const panelHoverColor = { red: 120 / 255, green: 120 / 255, blue: 120 / 255 };
+  const panelColor = DEFAULT_THEME.panel.normal.background;
+  const panelHoverColor = DEFAULT_THEME.panel.hover.background;
 
   state.canvas = hs.canvas.new({
     x: params.coords.x,

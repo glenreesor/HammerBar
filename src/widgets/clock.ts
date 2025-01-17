@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
 } from './helpers/util';
+import { DEFAULT_THEME } from 'src/theme';
 
 export function getClockBuilder(): WidgetBuildingInfo {
   const CLOCK_WIDTH = 100;
@@ -60,7 +60,8 @@ export function getClockBuilder(): WidgetBuildingInfo {
     }
 
     function render() {
-      const bgColor = { red: 1, green: 1, blue: 1 };
+      const bgColor = DEFAULT_THEME.widget.normal.background;
+      const fgColor = DEFAULT_THEME.widget.normal.foreground;
       const { formattedTime, formattedDate } = getFormattedDateTime();
       const fontSize = 12;
       const timeY = height / 2 - fontSize - fontSize / 2;
@@ -82,7 +83,7 @@ export function getClockBuilder(): WidgetBuildingInfo {
           type: 'text',
           text: formattedTime,
           textAlignment: 'center',
-          textColor: BLACK,
+          textColor: fgColor,
           textSize: fontSize,
           frame: {
             x: 0,
@@ -95,7 +96,7 @@ export function getClockBuilder(): WidgetBuildingInfo {
           type: 'text',
           text: formattedDate,
           textAlignment: 'center',
-          textColor: BLACK,
+          textColor: fgColor,
           textSize: fontSize,
           frame: {
             x: 0,
