@@ -22,7 +22,7 @@ and "widgets" that can show the output of arbitrary lua functions.
 - install [Hammerspoon](https://www.hammerspoon.org)
 - create the directory `~/.hammerspoon/Spoons/HammerBar.spoon/`
 - copy `appMenuButton.png` and `init.lua`
-  from the [current release](https://github.com/glenreesor/HammerBar/releases/tag/v1.0)
+  from the [current release](https://github.com/glenreesor/HammerBar/releases/latest)
   to `~/.hammerspoon/Spoons/HammerBar.spoon/`
 - add the following lines to `~/.hammerspoon/init.lua`:
 
