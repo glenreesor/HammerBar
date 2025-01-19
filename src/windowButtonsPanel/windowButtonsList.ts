@@ -34,7 +34,7 @@ type WindowButtonsInfoById = Map<
   }
 >;
 
-export function getWindowListBuilder(
+export function getWindowButtonsListBuilder(
   screenId: number,
   windowStatusUpdateInterval: number,
 ) {

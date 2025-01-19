@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -16,6 +16,6 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { setUpdateInterval as setWindowListWatcherUpdateInterval } from './windowListWatcher';
-import { getWindowListBuilder } from './windowList';
+import { getWindowButtonsListBuilder } from './windowButtonsList';
 
-export { getWindowListBuilder, setWindowListWatcherUpdateInterval };
+export { getWindowButtonsListBuilder, setWindowListWatcherUpdateInterval };
