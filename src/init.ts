@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2021 - 2024 Glen Reesor
 //
 // This file is part of HammerBar.
 //
