@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -89,7 +89,7 @@ export function getAppMenuBuilder(
 
   function getAppMenuWidget({
     coords,
-    height,
+    widgetHeight,
     panelColor,
     panelHoverColor,
   }: WidgetBuilderParams) {
@@ -132,7 +132,7 @@ export function getAppMenuBuilder(
         appButtons.push(
           getAppButton({
             coords: { x: coords.x, y: widgetY },
-            height: 30,
+            widgetHeight: 30,
             panelColor,
             panelHoverColor,
             bundleId: app.bundleId,
@@ -161,7 +161,7 @@ export function getAppMenuBuilder(
 
     const panelButton = getPanelButton({
       coords,
-      height,
+      widgetHeight,
       panelColor,
       panelHoverColor,
       imageInfo: iconInfo,
@@ -181,9 +181,9 @@ export function getAppMenuBuilder(
   }
 
   return {
-    buildErrors: [],
-    name: 'AppMenu',
-    getWidth: (widgetHeight) => widgetHeight,
-    getWidget: getAppMenuWidget,
+    widgetName: 'AppMenu',
+    widgetParamErrors: [],
+    getWidgetWidth: (widgetHeight) => widgetHeight,
+    buildWidget: getAppMenuWidget,
   };
 }

@@ -1,4 +1,4 @@
-// Copyright 2023, 2024 Glen Reesor
+// Copyright 2023-2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -17,8 +17,8 @@
 
 export { default } from './panel';
 export type {
-  WidgetBuilder,
+  Widget,
+  WidgetBuilderGetter,
   WidgetBuilderParams,
-  WidgetBuilderReturnType,
   WidgetBuildingInfo,
 } from './types';

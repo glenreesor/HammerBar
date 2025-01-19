@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -123,11 +123,11 @@ function createPanelsForAllScreens() {
 }
 
 function validateWidgetConfig(buildingInfo: WidgetBuildingInfo): boolean {
-  if (buildingInfo.buildErrors.length === 0) {
+  if (buildingInfo.widgetParamErrors.length === 0) {
     return true;
   }
-  print(`Error building widget ${buildingInfo.name}:`);
-  buildingInfo.buildErrors.forEach((txt) => print(`    ${txt}`));
+  print(`Error building widget ${buildingInfo.widgetName}:`);
+  buildingInfo.widgetParamErrors.forEach((txt) => print(`    ${txt}`));
 
   return false;
 }

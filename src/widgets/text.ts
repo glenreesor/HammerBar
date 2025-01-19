@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -67,7 +67,7 @@ export function getTextBuilder(
 
   function getTextWidget({
     coords,
-    height,
+    widgetHeight,
     panelColor,
     panelHoverColor,
   }: WidgetBuilderParams) {
@@ -85,7 +85,7 @@ export function getTextBuilder(
 
     function render() {
       const fontSize = 12;
-      const titleY = height / 2 - fontSize - fontSize / 2;
+      const titleY = widgetHeight / 2 - fontSize - fontSize / 2;
       const outputY = titleY + fontSize * 1.6;
 
       const output = configParams.cmd();
@@ -99,7 +99,7 @@ export function getTextBuilder(
             x: 0,
             y: 0,
             w: width,
-            h: height,
+            h: widgetHeight,
           },
         },
         {
@@ -141,12 +141,12 @@ export function getTextBuilder(
       timer: undefined,
     };
 
-    const width = height * 1.5;
+    const width = widgetHeight * 1.5;
     state.canvas = hs.canvas.new({
       x: coords.x,
       y: coords.y,
       w: width,
-      h: height,
+      h: widgetHeight,
     });
 
     render();
@@ -161,9 +161,9 @@ export function getTextBuilder(
   }
 
   return {
-    buildErrors: [],
-    name: 'Text',
-    getWidth: (widgetHeight) => widgetHeight * 1.5,
-    getWidget: getTextWidget,
+    widgetName: 'Text',
+    widgetParamErrors: [],
+    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
+    buildWidget: getTextWidget,
   };
 }

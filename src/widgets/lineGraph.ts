@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -74,7 +74,7 @@ export function getLineGraphBuilder(
 
   function getLineGraphWidget({
     coords,
-    height,
+    widgetHeight,
     panelColor,
     panelHoverColor,
   }: WidgetBuilderParams) {
@@ -239,7 +239,7 @@ export function getLineGraphBuilder(
         ? baseFontSize * 0.8
         : baseFontSize;
 
-      const titleY = height / 2 - fontSize - fontSize / 2;
+      const titleY = widgetHeight / 2 - fontSize - fontSize / 2;
       const bgColor = state.mouseIsInside
         ? { red: 120 / 255, green: 140 / 255, blue: 140 / 255 }
         : panelHoverColor;
@@ -255,7 +255,7 @@ export function getLineGraphBuilder(
 
       const graphDimensions = {
         w: width,
-        h: height - graphTopLeft.y,
+        h: widgetHeight - graphTopLeft.y,
       };
 
       const scale = getGraphScaleFactors({
@@ -276,7 +276,7 @@ export function getLineGraphBuilder(
             x: 0,
             y: 0,
             w: width,
-            h: height,
+            h: widgetHeight,
           },
           trackMouseEnterExit: true,
           trackMouseDown: true,
@@ -555,12 +555,12 @@ export function getLineGraphBuilder(
       values: [],
     };
 
-    const width = height * 1.5;
+    const width = widgetHeight * 1.5;
     state.canvases.graphCanvas = hs.canvas.new({
       x: coords.x,
       y: coords.y,
       w: width,
-      h: height,
+      h: widgetHeight,
     });
 
     runCmdAndRender();
@@ -576,9 +576,9 @@ export function getLineGraphBuilder(
   }
 
   return {
-    buildErrors: [],
-    name: 'LineGraph',
-    getWidth: (widgetHeight) => widgetHeight * 1.5,
-    getWidget: getLineGraphWidget,
+    widgetName: 'LineGraph',
+    widgetParamErrors: [],
+    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
+    buildWidget: getLineGraphWidget,
   };
 }

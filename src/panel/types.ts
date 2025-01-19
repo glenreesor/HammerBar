@@ -1,4 +1,4 @@
-// Copyright 2023, 2024 Glen Reesor
+// Copyright 2023-2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,27 +15,27 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+export type WidgetBuilderGetter = (
+  unvalidatedWidgetParams: unknown,
+) => WidgetBuildingInfo;
+
+export type WidgetBuildingInfo = {
+  widgetName: string;
+  widgetParamErrors: string[];
+  getWidgetWidth: (widgetHeight: number) => number;
+  buildWidget: (params: WidgetBuilderParams) => Widget;
+};
+
 export type WidgetBuilderParams = {
   coords: { x: number; y: number };
-  height: number;
+  widgetHeight: number;
   panelColor: hs.canvas.ColorType;
   panelHoverColor: hs.canvas.ColorType;
 };
 
-export type WidgetBuilderReturnType = {
+export type Widget = {
   bringToFront: () => void;
   cleanupPriorToDelete: () => void;
   hide: () => void;
   show: () => void;
-};
-
-export type WidgetBuilder = (
-  params: WidgetBuilderParams,
-) => WidgetBuilderReturnType;
-
-export type WidgetBuildingInfo = {
-  buildErrors: string[];
-  name: string;
-  getWidth: (widgetHeight: number) => number;
-  getWidget: WidgetBuilder;
 };

@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -64,7 +64,7 @@ export function getXEyesBuilder(
 
   function getXEyesWidget({
     coords,
-    height,
+    widgetHeight,
     panelColor,
     panelHoverColor,
   }: WidgetBuilderParams) {
@@ -87,12 +87,15 @@ export function getXEyesBuilder(
       const eyeRadius = width / 5;
       const pupilRadius = eyeRadius / 2;
 
-      const leftEyeCenter = { x: 2 + eyeRadius, y: height / 2 };
+      const leftEyeCenter = { x: 2 + eyeRadius, y: widgetHeight / 2 };
       const leftEyeCenterAbsolute = {
         x: coords.x + leftEyeCenter.x,
         y: coords.y + leftEyeCenter.y,
       };
-      const rightEyeCenter = { x: width / 2 + 2 + eyeRadius, y: height / 2 };
+      const rightEyeCenter = {
+        x: width / 2 + 2 + eyeRadius,
+        y: widgetHeight / 2,
+      };
       const rightEyeCenterAbsolute = {
         x: coords.x + rightEyeCenter.x,
         y: coords.y + rightEyeCenter.y,
@@ -183,7 +186,7 @@ export function getXEyesBuilder(
             x: 0,
             y: 0,
             w: width,
-            h: height,
+            h: widgetHeight,
           },
         },
         {
@@ -246,12 +249,12 @@ export function getXEyesBuilder(
       timer: undefined,
     };
 
-    const width = height;
+    const width = widgetHeight;
     state.canvas = hs.canvas.new({
       x: coords.x,
       y: coords.y,
       w: width,
-      h: height,
+      h: widgetHeight,
     });
 
     render();
@@ -266,9 +269,9 @@ export function getXEyesBuilder(
   }
 
   return {
-    buildErrors: [],
-    name: 'Xeyes',
-    getWidth: (widgetHeight) => widgetHeight,
-    getWidget: getXEyesWidget,
+    widgetName: 'Xeyes',
+    widgetParamErrors: [],
+    getWidgetWidth: (widgetHeight) => widgetHeight,
+    buildWidget: getXEyesWidget,
   };
 }

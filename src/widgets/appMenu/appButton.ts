@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -20,7 +20,7 @@ import type { WidgetBuilderParams } from 'src/panel';
 
 export function getAppButton({
   coords,
-  height,
+  widgetHeight,
   panelColor,
   panelHoverColor,
   bundleId,
@@ -75,14 +75,14 @@ export function getAppButton({
 
     if (state.mouseButtonIsDown) {
       fontSize = 10;
-      iconWidth = 0.8 * height;
+      iconWidth = 0.8 * widgetHeight;
       iconHeight = iconWidth;
-      iconY = 0.1 * height;
-      paddingLeft = 2 + 0.2 * height;
+      iconY = 0.1 * widgetHeight;
+      paddingLeft = 2 + 0.2 * widgetHeight;
       paddingRight = 5;
     } else {
       fontSize = 12;
-      iconWidth = height;
+      iconWidth = widgetHeight;
       iconHeight = iconWidth;
       iconY = 0;
       paddingLeft = 2;
@@ -104,7 +104,7 @@ export function getAppButton({
           x: 0,
           y: 0,
           w: CANVAS_WIDTH,
-          h: height,
+          h: widgetHeight,
         },
         roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
         trackMouseDown: true,
@@ -133,7 +133,7 @@ export function getAppButton({
           x: textX,
           y: textY,
           w: maxTextWidth,
-          h: height,
+          h: widgetHeight,
         },
         trackMouseDown: true,
         trackMouseEnterExit: true,
@@ -157,7 +157,7 @@ export function getAppButton({
     x: coords.x,
     y: coords.y,
     w: CANVAS_WIDTH,
-    h: height,
+    h: widgetHeight,
   });
 
   render();

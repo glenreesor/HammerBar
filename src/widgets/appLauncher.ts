@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -41,7 +41,7 @@ export function getAppLauncherBuilder(
 
   function getAppLauncherWidget({
     coords,
-    height,
+    widgetHeight,
     panelColor,
     panelHoverColor,
   }: WidgetBuilderParams) {
@@ -51,7 +51,7 @@ export function getAppLauncherBuilder(
 
     const panelButton = getPanelButton({
       coords,
-      height,
+      widgetHeight,
       panelColor,
       panelHoverColor,
       imageInfo: { bundleId },
@@ -67,9 +67,9 @@ export function getAppLauncherBuilder(
   }
 
   return {
-    buildErrors: [],
-    name: 'AppLauncher',
-    getWidth: (widgetHeight) => widgetHeight,
-    getWidget: getAppLauncherWidget,
+    widgetName: 'AppLauncher',
+    widgetParamErrors: [],
+    getWidgetWidth: (widgetHeight) => widgetHeight,
+    buildWidget: getAppLauncherWidget,
   };
 }

@@ -1,4 +1,4 @@
-// Copyright 2023, 2024 Glen Reesor
+// Copyright 2023-2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -26,7 +26,7 @@ import {
 export function getClockBuilder(): WidgetBuildingInfo {
   const CLOCK_WIDTH = 100;
 
-  function getClockWidget({ coords, height }: WidgetBuilderParams) {
+  function getClockWidget({ coords, widgetHeight }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
     }
@@ -63,7 +63,7 @@ export function getClockBuilder(): WidgetBuildingInfo {
       const bgColor = { red: 1, green: 1, blue: 1 };
       const { formattedTime, formattedDate } = getFormattedDateTime();
       const fontSize = 12;
-      const timeY = height / 2 - fontSize - fontSize / 2;
+      const timeY = widgetHeight / 2 - fontSize - fontSize / 2;
       const dateY = timeY + fontSize * 1.6;
 
       state.canvas?.replaceElements([
@@ -75,7 +75,7 @@ export function getClockBuilder(): WidgetBuildingInfo {
             x: 0,
             y: 0,
             w: CLOCK_WIDTH,
-            h: height,
+            h: widgetHeight,
           },
         },
         {
@@ -118,7 +118,7 @@ export function getClockBuilder(): WidgetBuildingInfo {
       x: coords.x,
       y: coords.y,
       w: CLOCK_WIDTH,
-      h: height,
+      h: widgetHeight,
     });
 
     render();
@@ -141,9 +141,9 @@ export function getClockBuilder(): WidgetBuildingInfo {
   }
 
   return {
-    buildErrors: [],
-    name: 'Clock',
-    getWidth: () => CLOCK_WIDTH,
-    getWidget: getClockWidget,
+    widgetName: 'Clock',
+    widgetParamErrors: [],
+    getWidgetWidth: () => CLOCK_WIDTH,
+    buildWidget: getClockWidget,
   };
 }

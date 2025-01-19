@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -23,7 +23,7 @@ type ImageInfo =
 
 export function getPanelButton({
   coords,
-  height,
+  widgetHeight,
   panelColor,
   panelHoverColor,
   imageInfo,
@@ -83,8 +83,8 @@ export function getPanelButton({
         frame: {
           x: 0,
           y: 0,
-          w: height,
-          h: height,
+          w: widgetHeight,
+          h: widgetHeight,
         },
         trackMouseEnterExit: true,
         trackMouseDown: true,
@@ -94,7 +94,7 @@ export function getPanelButton({
         type: 'image',
         frame: {
           x: imageX,
-          y: (height - imageWidth) / 2,
+          y: (widgetHeight - imageWidth) / 2,
           w: imageWidth,
           h: imageWidth,
         },
@@ -116,12 +116,12 @@ export function getPanelButton({
     mouseIsInsideButton: false,
   };
 
-  const width = height;
+  const width = widgetHeight;
   state.canvas = hs.canvas.new({
     x: coords.x,
     y: coords.y,
     w: width,
-    h: height,
+    h: widgetHeight,
   });
 
   render();

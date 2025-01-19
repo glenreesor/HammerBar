@@ -1,4 +1,4 @@
-// Copyright 2023, 2024 Glen Reesor
+// Copyright 2023-2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -17,11 +17,7 @@
 
 import ToggleButton from './toggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
-import type {
-  WidgetBuilder,
-  WidgetBuilderReturnType,
-  WidgetBuildingInfo,
-} from './types';
+import type { Widget, WidgetBuildingInfo } from './types';
 
 export default function panel(params: {
   coords: { x: number; y: number };
@@ -33,7 +29,7 @@ export default function panel(params: {
   windowListBuilder: (panelParams: {
     coords: { x: number; y: number };
     dimensions: { height: number; width: number };
-  }) => WidgetBuilderReturnType;
+  }) => Widget;
 }) {
   function cleanupPriorToDelete() {
     state.canvas?.hide();
@@ -132,20 +128,20 @@ export default function panel(params: {
     }),
   );
 
-  const widgets: ReturnType<WidgetBuilder>[] = [];
+  const widgets: Widget[] = [];
 
   // Left Widgets
   let widgetX = params.coords.x + TOGGLE_BUTTON_WIDTH;
   params.widgetsBuildingInfo.left.forEach((builderInfo) => {
     widgets.push(
-      builderInfo.getWidget({
+      builderInfo.buildWidget({
         coords: { x: widgetX, y: params.coords.y },
-        height: params.dimensions.h,
+        widgetHeight: params.dimensions.h,
         panelColor,
         panelHoverColor,
       }),
     );
-    widgetX += builderInfo.getWidth(params.dimensions.h);
+    widgetX += builderInfo.getWidgetWidth(params.dimensions.h);
   });
 
   const endOfLeftWidgets = widgetX;
@@ -153,11 +149,11 @@ export default function panel(params: {
   // Right Widgets
   widgetX = params.coords.x + params.dimensions.w - TOGGLE_BUTTON_WIDTH;
   params.widgetsBuildingInfo.right.forEach((builderInfo) => {
-    widgetX -= builderInfo.getWidth(params.dimensions.h);
+    widgetX -= builderInfo.getWidgetWidth(params.dimensions.h);
     widgets.push(
-      builderInfo.getWidget({
+      builderInfo.buildWidget({
         coords: { x: widgetX, y: params.coords.y },
-        height: params.dimensions.h,
+        widgetHeight: params.dimensions.h,
         panelColor,
         panelHoverColor,
       }),
@@ -167,11 +163,11 @@ export default function panel(params: {
   const totalWidgetWidth =
     2 * TOGGLE_BUTTON_WIDTH +
     params.widgetsBuildingInfo.right.reduce(
-      (acc, info) => acc + info.getWidth(params.dimensions.h),
+      (acc, info) => acc + info.getWidgetWidth(params.dimensions.h),
       0,
     ) +
     params.widgetsBuildingInfo.left.reduce(
-      (acc, info) => acc + info.getWidth(params.dimensions.h),
+      (acc, info) => acc + info.getWidgetWidth(params.dimensions.h),
       0,
     );
 

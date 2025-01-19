@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderReturnType } from 'src/panel';
+import type { Widget } from 'src/panel';
 import { getWindowButton } from './windowButton';
 import { subscribeToWindowListUpdates } from './windowListWatcher';
 
@@ -41,7 +41,7 @@ export function getWindowListBuilder(
   return function getWindowList(args: {
     coords: { x: number; y: number };
     dimensions: { height: number; width: number };
-  }): WidgetBuilderReturnType {
+  }): Widget {
     function bringToFront() {
       state.canvas?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.bringToFront());

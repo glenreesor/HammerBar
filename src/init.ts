@@ -1,4 +1,4 @@
-// Copyright 2021 - 2024 Glen Reesor
+// Copyright 2021-2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -51,10 +51,10 @@ function isWidgetBuildingInfoArray(obj: unknown): obj is WidgetBuildingInfo[] {
     obj.reduce(
       (accum, curr) =>
         accum &&
-        isStringArray(curr.buildErrors) &&
-        typeof curr.name === 'string' &&
-        typeof curr.getWidth === 'function' &&
-        typeof curr.getWidget === 'function',
+        isStringArray(curr.widgetParamErrors) &&
+        typeof curr.widgetName === 'string' &&
+        typeof curr.getWidgetWidth === 'function' &&
+        typeof curr.buildWidget === 'function',
       true,
     )
   );
@@ -76,10 +76,10 @@ function printValidationError(functionName: string, buildingInfo: unknown) {
   const sampleAddWidgetsArgsExact = [
     '  {',
     '    {',
-    '      buildErrors = {},',
-    '      getWidget = <function>',
-    '      getWidth = <function>',
-    '      name = "Widget Name",',
+    '      buildWidget = <function>',
+    '      getWidgetWidth = <function>',
+    '      widgetName = "Widget Name",',
+    '      widgetParamErrors = {},',
     '    }',
     '  }',
   ];

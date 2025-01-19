@@ -1,4 +1,4 @@
-// Copyright 2022, 2024 Glen Reesor
+// Copyright 2022, 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -20,13 +20,13 @@ import { WidgetBuildingInfo } from 'src/panel';
 
 export function getNoopWidgetBuildingInfo(
   widgetName: string,
-  buildErrors: string[],
+  widgetParamErrors: string[],
 ): WidgetBuildingInfo {
   return {
-    buildErrors,
-    name: widgetName,
-    getWidth: (_widgetHeight: number) => 0,
-    getWidget: () => ({
+    widgetName,
+    widgetParamErrors,
+    getWidgetWidth: (_widgetHeight: number) => 0,
+    buildWidget: () => ({
       bringToFront: () => undefined,
       cleanupPriorToDelete: () => undefined,
       hide: () => undefined,

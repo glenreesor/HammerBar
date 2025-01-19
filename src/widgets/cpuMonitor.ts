@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -93,12 +93,12 @@ export function getCpuMonitorBuilder(
     maxValues: configParams.maxValues,
     maxGraphValue: configParams.maxGraphValue,
     cmd: getCpuUsage,
-  }).getWidget;
+  }).buildWidget;
 
   return {
-    buildErrors: [],
-    name: 'CpuMonitor',
-    getWidth: (widgetHeight) => widgetHeight * 1.5,
-    getWidget: getLineGraphWidget,
+    widgetName: 'CpuMonitor',
+    widgetParamErrors: [],
+    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
+    buildWidget: getLineGraphWidget,
   };
 }
