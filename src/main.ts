@@ -20,8 +20,8 @@ import { VERSION, BUILD_DATE, GIT_HASH } from './version';
 import type { ScreenInfoType } from './hammerspoonUtils';
 import { getScreenInfo } from './hammerspoonUtils';
 
-import panel from './panel';
-import type { WidgetBuildingInfo } from './panel';
+import { mainPanel } from './mainPanel';
+import type { WidgetBuildingInfo } from './mainPanel';
 import { printDiagnostic } from './utils';
 import { getWindowButtonsListBuilder } from './windowButtonsPanel';
 
@@ -100,7 +100,7 @@ function createPanelsForAllScreens() {
         : errorFreeWidgetBuildersSecondaryRight;
 
     state.panels.push(
-      panel({
+      mainPanel({
         coords: {
           x: screenInfo.x,
           y: screenInfo.y + screenInfo.height - config.panelHeight,

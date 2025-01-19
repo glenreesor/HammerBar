@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { Widget } from 'src/panel';
+import type { Widget } from 'src/mainPanel';
 import { getWindowButton } from './windowButton';
 import { subscribeToWindowListUpdates } from './windowListWatcher';
 

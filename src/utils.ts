@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { getWindowInfo } from 'src/hammerspoonUtils';
-import { WidgetBuildingInfo } from 'src/panel';
+import { WidgetBuildingInfo } from 'src/mainPanel';
 
 export function getNoopWidgetBuildingInfo(
   widgetName: string,

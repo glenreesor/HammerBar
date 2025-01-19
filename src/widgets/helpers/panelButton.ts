@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/panel';
+import type { WidgetBuilderParams } from 'src/mainPanel';
 
 type ImageInfo =
   | { bundleId: string; imagePath?: undefined }

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export { default } from './panel';
+export { mainPanel } from './mainPanel';
 export type {
   Widget,
   WidgetBuilderGetter,

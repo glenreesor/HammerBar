@@ -19,7 +19,7 @@ import ToggleButton from './toggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 import type { Widget, WidgetBuildingInfo } from './types';
 
-export default function panel(params: {
+export function mainPanel(params: {
   coords: { x: number; y: number };
   dimensions: { w: number; h: number };
   widgetsBuildingInfo: {
