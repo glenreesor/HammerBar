@@ -3,11 +3,11 @@
     "target": "esnext",
     "lib": ["esnext"],
     "moduleResolution": "node",
-    "types": ["./types/hammerspoon", "jest"],
+    "types": ["./types/hammerspoon"],
     "strict": true,
     "baseUrl": "./"
   },
-  "exclude": ["test/*"],
+  "exclude": ["src/**/*.test.ts"],
   "tstl": {
     "luaBundle": "build/init.lua",
     "luaBundleEntry": "src/init.ts",

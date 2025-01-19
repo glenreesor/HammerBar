@@ -5,18 +5,15 @@
     "reset-version-info": "cp src/unmodified_version_ts src/version.ts",
     "dev": "tstl --watch",
     "lint-staged": "lint-staged",
-    "prettier": "prettier --write"
+    "prettier": "prettier --write",
+    "test": "vitest run",
+    "test-watch": "vitest watch"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.5",
-    "@babel/preset-env": "^7.16.5",
-    "@babel/preset-typescript": "^7.16.5",
-    "@types/jest": "^27.0.3",
-    "babel-jest": "^27.4.5",
-    "jest": "^27.4.5",
     "lint-staged": "^15.2.2",
     "prettier": "3.2.5",
     "typescript": "^5.3.3",
-    "typescript-to-lua": "^1.23.0"
+    "typescript-to-lua": "^1.23.0",
+    "vitest": "^3.0.2"
   }
 }
