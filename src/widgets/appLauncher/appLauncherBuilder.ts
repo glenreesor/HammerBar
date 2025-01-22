@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuilderParams } from 'src/mainPanel';
-import { getPanelButton } from '../helpers/panelButton';
+import { getPanelButton } from '../_helpers/panelButton';
 
 export function buildAppLauncherWidget(
   bundleId: string,

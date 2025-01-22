@@ -17,7 +17,7 @@
 
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
-import { getPanelButton } from '../helpers/panelButton';
+import { getPanelButton } from '../_helpers/panelButton';
 import { getAppButton } from './appButton';
 
 type IconInfo =

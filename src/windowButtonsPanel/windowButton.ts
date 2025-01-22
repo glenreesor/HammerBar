@@ -21,7 +21,7 @@ import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
-} from '../widgets/helpers/util';
+} from '../widgets/_helpers/util';
 
 export function getWindowButton({
   x,

@@ -22,7 +22,7 @@ import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
-} from './helpers/util';
+} from './_helpers/util';
 
 type ConfigParams = {
   title: string;

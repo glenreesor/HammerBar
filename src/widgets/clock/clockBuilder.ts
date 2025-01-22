@@ -21,7 +21,7 @@ import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
-} from '../helpers/util';
+} from '../_helpers/util';
 
 const CLOCK_WIDTH = 100;
 

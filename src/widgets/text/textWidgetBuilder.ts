@@ -20,7 +20,7 @@ import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
-} from '../helpers/util';
+} from '../_helpers/util';
 import type { ConfigParams } from './types';
 import { renderTextWidget } from './renderTextWidget';
 import { getWidgetWidth } from './getWidgetWidth';
