@@ -22,7 +22,8 @@ import { validateParams } from './validateParams';
 test('fails when params is a number', () => {
   const testParams = 1;
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -30,7 +31,8 @@ test('fails when params is a number', () => {
 test('fails when params is a string', () => {
   const testParams = 'bob';
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -38,7 +40,8 @@ test('fails when params is a string', () => {
 test('fails when params is an array', () => {
   const testParams: unknown = [];
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -46,7 +49,8 @@ test('fails when params is an array', () => {
 test('fails when params is an empty object', () => {
   const testParams = {};
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -57,7 +61,8 @@ test('fails when title is missing', () => {
     cmd: () => undefined,
   };
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -69,7 +74,8 @@ test('fails when title is not a string', () => {
     cmd: () => undefined,
   };
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -80,7 +86,8 @@ test('fails when interval is missing', () => {
     cmd: () => undefined,
   };
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -92,7 +99,8 @@ test('fails when interval is not a number', () => {
     cmd: () => undefined,
   };
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -103,7 +111,8 @@ test('fails when cmd is missing', () => {
     interval: 6,
   };
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -115,7 +124,8 @@ test('fails when cmd not a function', () => {
     cmd: 'hello',
   };
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -128,7 +138,8 @@ test('fails when extra keys are present', () => {
     blarp: 'blarp',
   };
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(false);
   expect(validParams).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 });
@@ -140,7 +151,8 @@ test('passes when all keys are correct', () => {
     cmd: () => undefined,
   };
 
-  const { validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
   expect(validParams).toBeDefined();
 });
