@@ -44,10 +44,13 @@ export function getWindowListBuilder(
     dimensions: { height: number; width: number };
   }): WidgetBuilderReturnType {
     function bringToFront() {
+      state.fillerPanel?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.bringToFront());
     }
 
     function cleanupPriorToDelete() {
+      state.fillerPanel?.hide();
+      state.fillerPanel = undefined;
       state.windowButtonsInfoById.forEach((w) =>
         w.actions.cleanupPriorToDelete(),
       );
@@ -59,11 +62,13 @@ export function getWindowListBuilder(
     }
 
     function hide() {
+      state.fillerPanel?.hide();
       state.windowButtonsInfoById.forEach((w) => w.actions.hide());
       state.isVisible = false;
     }
 
     function show() {
+      state.fillerPanel?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.show());
       state.isVisible = true;
     }
@@ -140,6 +145,24 @@ export function getWindowListBuilder(
       });
 
       state.windowButtonsInfoById = newWindowButtonsInfoById;
+
+      // Adjust width of filler panel so it's not underneath the window buttons
+      const newFillerX = state.windowButtonsInfoById.size * buttonWidth;
+      const newFillerWidth = args.dimensions.width - newFillerX;
+
+      state.fillerPanel?.replaceElements([
+        {
+          type: 'rectangle',
+          fillColor: DEFAULT_THEME.windowButtonsPanel.background,
+          strokeColor: DEFAULT_THEME.windowButtonsPanel.background,
+          frame: {
+            x: newFillerX,
+            y: 0,
+            w: newFillerWidth,
+            h: args.dimensions.height,
+          },
+        },
+      ]);
     }
 
     function updateWindowButtonsTitleAndMinimized() {
@@ -156,12 +179,14 @@ export function getWindowListBuilder(
       previousWindowListIds: string;
       windowButtonsInfoById: WindowButtonsInfoById;
       windowListUnsubscriber: (() => void) | undefined;
+      fillerPanel: hs.canvas.CanvasType | undefined;
     } = {
       isVisible: true,
       titlesAndMinimizedStateTimer: undefined,
       previousWindowListIds: '',
       windowButtonsInfoById: new Map(),
       windowListUnsubscriber: undefined,
+      fillerPanel: undefined,
     };
 
     state.windowListUnsubscriber = subscribeToWindowListUpdates(
@@ -173,6 +198,28 @@ export function getWindowListBuilder(
       windowStatusUpdateInterval,
       updateWindowButtonsTitleAndMinimized,
     );
+
+    state.fillerPanel = hs.canvas.new({
+      x: args.coords.x,
+      y: args.coords.y,
+      w: args.dimensions.width,
+      h: args.dimensions.height,
+    });
+
+    state.fillerPanel.replaceElements([
+      {
+        type: 'rectangle',
+        fillColor: DEFAULT_THEME.windowButtonsPanel.background,
+        strokeColor: DEFAULT_THEME.windowButtonsPanel.background,
+        frame: {
+          x: 0,
+          y: 0,
+          w: args.dimensions.width,
+          h: args.dimensions.height,
+        },
+      },
+    ]);
+    state.fillerPanel.show();
 
     return {
       bringToFront,
