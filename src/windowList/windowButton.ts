@@ -24,8 +24,8 @@ import {
 import { DEFAULT_THEME } from 'src/theme';
 
 export function getWindowButton({
-  x,
-  y,
+  x: xCanvas,
+  y: yCanvas,
   buttonWidth,
   buttonHeight,
   windowObject,
@@ -80,7 +80,7 @@ export function getWindowButton({
     if (state.canvases.hoverCanvas === undefined) {
       state.canvases.hoverCanvas = hs.canvas.new({
         x: state.x,
-        y: y - fontSize * 2,
+        y: yCanvas - fontSize * 2,
         w: width,
         h: height,
       });
@@ -310,7 +310,7 @@ export function getWindowButton({
     if (x !== state.x || width !== state.width) {
       state.canvases.mainCanvas?.frame({
         x: x,
-        y: y,
+        y: yCanvas,
         w: width,
         h: buttonHeight,
       });
@@ -344,7 +344,7 @@ export function getWindowButton({
     },
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
-    x,
+    x: xCanvas,
     width: buttonWidth,
     windowObject,
     windowTitle: windowObject.title(),
@@ -352,8 +352,8 @@ export function getWindowButton({
   };
 
   state.canvases.mainCanvas = hs.canvas.new({
-    x,
-    y,
+    x: xCanvas,
+    y: yCanvas,
     w: buttonWidth,
     h: buttonHeight,
   });

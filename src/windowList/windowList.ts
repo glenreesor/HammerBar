@@ -44,14 +44,10 @@ export function getWindowListBuilder(
     dimensions: { height: number; width: number };
   }): WidgetBuilderReturnType {
     function bringToFront() {
-      state.canvas?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.bringToFront());
     }
 
     function cleanupPriorToDelete() {
-      state.canvas?.hide();
-      state.canvas = undefined;
-
       state.windowButtonsInfoById.forEach((w) =>
         w.actions.cleanupPriorToDelete(),
       );
@@ -63,34 +59,13 @@ export function getWindowListBuilder(
     }
 
     function hide() {
-      state.canvas?.hide();
       state.windowButtonsInfoById.forEach((w) => w.actions.hide());
       state.isVisible = false;
     }
 
     function show() {
-      state.canvas?.show();
       state.windowButtonsInfoById.forEach((w) => w.actions.show());
       state.isVisible = true;
-    }
-
-    function render() {
-      const color = DEFAULT_THEME.windowButtonsPanel.background;
-
-      state.canvas?.replaceElements([
-        {
-          type: 'rectangle',
-          fillColor: color,
-          strokeColor: color,
-          frame: {
-            x: 0,
-            y: 0,
-            w: args.dimensions.width,
-            h: args.dimensions.height,
-          },
-        },
-      ]);
-      state.canvas?.show();
     }
 
     //--------------------------------------------------------------------------
@@ -129,7 +104,7 @@ export function getWindowListBuilder(
         newWindowsList.length,
       );
 
-      let windowButtonX = args.coords.x + BUTTON_PADDING;
+      let windowButtonX = args.coords.x; //  + BUTTON_PADDING;
       state.windowButtonsInfoById.forEach((windowButtonInfo, id) => {
         if (newWindowsListMap.has(id)) {
           // Window for this button still exists so add it to our new list
@@ -140,7 +115,7 @@ export function getWindowListBuilder(
             windowButtonX,
             buttonWidth,
           );
-          windowButtonX += buttonWidth + BUTTON_PADDING;
+          windowButtonX += buttonWidth; // + BUTTON_PADDING;
 
           newWindowsListMap.delete(id);
         } else {
@@ -155,14 +130,14 @@ export function getWindowListBuilder(
           w,
           actions: getWindowButton({
             x: windowButtonX,
-            y: args.coords.y + 4,
+            y: args.coords.y, // + 4,
             buttonWidth,
-            buttonHeight: 35,
+            buttonHeight: 44, // 35,
             windowObject: w,
             isInitiallyVisible: state.isVisible,
           }),
         });
-        windowButtonX += buttonWidth + BUTTON_PADDING;
+        windowButtonX += buttonWidth; // + BUTTON_PADDING;
       });
 
       state.windowButtonsInfoById = newWindowButtonsInfoById;
@@ -177,28 +152,18 @@ export function getWindowListBuilder(
     const BUTTON_PADDING = 5;
 
     const state: {
-      canvas: hs.canvas.CanvasType | undefined;
       isVisible: boolean;
       titlesAndMinimizedStateTimer: hs.timer.TimerType | undefined;
       previousWindowListIds: string;
       windowButtonsInfoById: WindowButtonsInfoById;
       windowListUnsubscriber: (() => void) | undefined;
     } = {
-      canvas: undefined,
       isVisible: true,
       titlesAndMinimizedStateTimer: undefined,
       previousWindowListIds: '',
       windowButtonsInfoById: new Map(),
       windowListUnsubscriber: undefined,
     };
-
-    state.canvas = hs.canvas.new({
-      x: args.coords.x,
-      y: args.coords.y,
-      w: args.dimensions.width,
-      h: args.dimensions.height,
-    });
-    render();
 
     state.windowListUnsubscriber = subscribeToWindowListUpdates(
       screenId,
