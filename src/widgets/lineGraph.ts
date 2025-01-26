@@ -72,12 +72,7 @@ export function getLineGraphBuilder(
   // within the function below.
   const configParams = unvalidatedConfigParams;
 
-  function getLineGraphWidget({
-    coords,
-    height,
-    panelColor,
-    panelHoverColor,
-  }: WidgetBuilderParams) {
+  function getLineGraphWidget({ coords, height }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       deleteCanvasesAndStopTimers(
         Object.values(state.canvases),

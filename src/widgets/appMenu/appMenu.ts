@@ -19,7 +19,6 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import { getPanelButton } from '../helpers/panelButton';
 import { getAppButton } from './appButton';
-import { DEFAULT_THEME } from 'src/theme';
 
 type IconInfo =
   | { bundleId: string; imagePath: undefined }
@@ -88,12 +87,7 @@ export function getAppMenuBuilder(
 
   const { appList, icon } = configParams;
 
-  function getAppMenuWidget({
-    coords,
-    height,
-    panelColor,
-    panelHoverColor,
-  }: WidgetBuilderParams) {
+  function getAppMenuWidget({ coords, height }: WidgetBuilderParams) {
     const appButtons: ReturnType<typeof getAppButton>[] = [];
 
     function bringToFront() {
@@ -134,8 +128,6 @@ export function getAppMenuBuilder(
           getAppButton({
             coords: { x: coords.x, y: widgetY },
             height: 30,
-            panelColor: DEFAULT_THEME.popup.normal.foreground,
-            panelHoverColor: DEFAULT_THEME.popup.hover.foreground,
             bundleId: app.bundleId,
             label: app.label,
             onClick: () => {
@@ -163,8 +155,6 @@ export function getAppMenuBuilder(
     const panelButton = getPanelButton({
       coords,
       height,
-      panelColor: DEFAULT_THEME.widget.normal.background,
-      panelHoverColor: DEFAULT_THEME.widget.hover.background,
       imageInfo: iconInfo,
       onClick: toggleMenu,
     });

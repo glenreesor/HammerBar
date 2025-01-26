@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK, WHITE } from 'src/constants';
+import { WHITE } from 'src/constants';
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/panel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import {
@@ -63,12 +63,7 @@ export function getXEyesBuilder(
   // within the function below.
   const configParams = unvalidatedConfigParams;
 
-  function getXEyesWidget({
-    coords,
-    height,
-    panelColor,
-    panelHoverColor,
-  }: WidgetBuilderParams) {
+  function getXEyesWidget({ coords, height }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
     }

@@ -24,20 +24,9 @@ export default function ToggleButton(args: {
   panelWidth: number;
   panelHeight: number;
   side: 'left' | 'right';
-  panelColor: hs.canvas.ColorType;
-  panelHoverColor: hs.canvas.ColorType;
   onClick: () => void;
 }) {
-  const {
-    panelX,
-    panelY,
-    panelWidth,
-    panelHeight,
-    side,
-    panelColor,
-    panelHoverColor,
-    onClick,
-  } = args;
+  const { panelX, panelY, panelWidth, panelHeight, side, onClick } = args;
 
   function cleanupPriorToDelete() {
     state.canvas?.hide();

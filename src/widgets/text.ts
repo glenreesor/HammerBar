@@ -65,12 +65,7 @@ export function getTextBuilder(
   // within the function below.
   const configParams = unvalidatedConfigParams;
 
-  function getTextWidget({
-    coords,
-    height,
-    panelColor,
-    panelHoverColor,
-  }: WidgetBuilderParams) {
+  function getTextWidget({ coords, height }: WidgetBuilderParams) {
     function cleanupPriorToDelete() {
       deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
     }

@@ -22,8 +22,6 @@ import { DEFAULT_THEME } from 'src/theme';
 export function getAppButton({
   coords,
   height,
-  panelColor,
-  panelHoverColor,
   bundleId,
   label,
   onClick,

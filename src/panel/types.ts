@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -18,8 +18,6 @@
 export type WidgetBuilderParams = {
   coords: { x: number; y: number };
   height: number;
-  panelColor: hs.canvas.ColorType;
-  panelHoverColor: hs.canvas.ColorType;
 };
 
 export type WidgetBuilderReturnType = {

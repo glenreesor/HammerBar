@@ -25,8 +25,6 @@ type ImageInfo =
 export function getPanelButton({
   coords,
   height,
-  panelColor,
-  panelHoverColor,
   imageInfo,
   onClick,
 }: WidgetBuilderParams & { imageInfo: ImageInfo; onClick: () => void }) {

@@ -22,7 +22,6 @@ import type {
   WidgetBuilderReturnType,
   WidgetBuildingInfo,
 } from './types';
-import { DEFAULT_THEME } from 'src/theme';
 
 export default function panel(params: {
   coords: { x: number; y: number };
@@ -69,9 +68,6 @@ export default function panel(params: {
     isVisible: true,
   };
 
-  const panelColor = DEFAULT_THEME.panel.normal.background;
-  const panelHoverColor = DEFAULT_THEME.panel.hover.background;
-
   const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
 
   // Left Toggle Button
@@ -82,8 +78,6 @@ export default function panel(params: {
       panelWidth: params.dimensions.w,
       panelHeight: params.dimensions.h,
       side: 'left',
-      panelColor,
-      panelHoverColor,
       onClick: toggleVisibility,
     }),
   );
@@ -96,8 +90,6 @@ export default function panel(params: {
       panelWidth: params.dimensions.w,
       panelHeight: params.dimensions.h,
       side: 'right',
-      panelColor,
-      panelHoverColor,
       onClick: toggleVisibility,
     }),
   );
@@ -111,8 +103,6 @@ export default function panel(params: {
       builderInfo.getWidget({
         coords: { x: widgetX, y: params.coords.y },
         height: params.dimensions.h,
-        panelColor,
-        panelHoverColor,
       }),
     );
     widgetX += builderInfo.getWidth(params.dimensions.h);
@@ -128,8 +118,6 @@ export default function panel(params: {
       builderInfo.getWidget({
         coords: { x: widgetX, y: params.coords.y },
         height: params.dimensions.h,
-        panelColor,
-        panelHoverColor,
       }),
     );
   });
