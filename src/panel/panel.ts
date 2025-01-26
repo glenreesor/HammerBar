@@ -37,20 +37,13 @@ export default function panel(params: {
   }) => WidgetBuilderReturnType;
 }) {
   function cleanupPriorToDelete() {
-    state.canvas?.hide();
-    state.canvas = undefined;
     toggleButtons.forEach((button) => button.cleanupPriorToDelete());
     widgets.forEach((widget) => widget.cleanupPriorToDelete());
   }
 
   function toggleVisibility() {
-    if (!state.canvas) {
-      return;
-    }
-
     state.isVisible = !state.isVisible;
     if (state.isVisible) {
-      state.canvas.show();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(true);
         button.bringToFront();
@@ -60,7 +53,6 @@ export default function panel(params: {
         widget.bringToFront();
       });
     } else {
-      state.canvas.hide();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(false);
         button.bringToFront();
@@ -72,36 +64,13 @@ export default function panel(params: {
   }
 
   const state: {
-    canvas: hs.canvas.CanvasType | undefined;
     isVisible: boolean;
   } = {
-    canvas: undefined,
     isVisible: true,
   };
 
   const panelColor = DEFAULT_THEME.panel.normal.background;
   const panelHoverColor = DEFAULT_THEME.panel.hover.background;
-
-  state.canvas = hs.canvas.new({
-    x: params.coords.x,
-    y: params.coords.y,
-    w: params.dimensions.w,
-    h: params.dimensions.h,
-  });
-  state.canvas.replaceElements([
-    {
-      type: 'rectangle',
-      fillColor: panelColor,
-      strokeColor: panelColor,
-      frame: {
-        x: 0,
-        y: 0,
-        w: params.dimensions.w,
-        h: params.dimensions.h,
-      },
-    },
-  ]);
-  state.canvas.show();
 
   const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
 
