@@ -16,6 +16,21 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 export const DEFAULT_THEME = {
+  toggleButtons: {
+    normal: {
+      foreground: { red: 0, green: 0, blue: 0 },
+      background: { red: 0.5, green: 0.5, blue: 0.5 },
+    },
+    hover: {
+      foreground: { red: 1, green: 1, blue: 1 },
+      background: { red: 0, green: 0, blue: 0 },
+    },
+    mouseDown: {
+      foreground: { red: 1, green: 0, blue: 0 },
+      background: { red: 1, green: 1, blue: 1 },
+    },
+  },
+
   panel: {
     normal: {
       foreground: { red: 0, green: 0, blue: 0 },

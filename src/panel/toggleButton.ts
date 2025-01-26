@@ -68,16 +68,16 @@ export default function ToggleButton(args: {
 
   function render() {
     const bgColor = state.mouseButtonIsDown
-      ? DEFAULT_THEME.panel.mouseDown.background
+      ? DEFAULT_THEME.toggleButtons.mouseDown.background
       : state.mouseIsInsideButton
-        ? DEFAULT_THEME.panel.hover.background
-        : DEFAULT_THEME.panel.normal.background;
+        ? DEFAULT_THEME.toggleButtons.hover.background
+        : DEFAULT_THEME.toggleButtons.normal.background;
 
     const fgColor = state.mouseButtonIsDown
-      ? DEFAULT_THEME.panel.mouseDown.foreground
+      ? DEFAULT_THEME.toggleButtons.mouseDown.foreground
       : state.mouseIsInsideButton
-        ? DEFAULT_THEME.panel.hover.foreground
-        : DEFAULT_THEME.panel.normal.foreground;
+        ? DEFAULT_THEME.toggleButtons.hover.foreground
+        : DEFAULT_THEME.toggleButtons.normal.foreground;
 
     const fontSize = 14;
     let toggleSymbol;
