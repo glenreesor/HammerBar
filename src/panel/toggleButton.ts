@@ -135,6 +135,8 @@ export default function ToggleButton(args: {
     w: TOGGLE_BUTTON_WIDTH,
     h: panelHeight,
   });
+  state.canvas.alpha(DEFAULT_THEME.toggleButtons.alpha);
+
   render();
   state.canvas.mouseCallback(mouseCallback);
   state.canvas.show();

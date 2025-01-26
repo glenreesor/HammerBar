@@ -126,6 +126,7 @@ export function getPanelButton({
     w: width,
     h: height,
   });
+  state.canvas.alpha(DEFAULT_THEME.widget.alpha);
 
   render();
   state.canvas.mouseCallback(mouseCallback);

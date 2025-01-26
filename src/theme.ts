@@ -17,6 +17,7 @@
 
 export const DEFAULT_THEME = {
   toggleButtons: {
+    alpha: 0.9,
     normal: {
       foreground: { red: 0, green: 0, blue: 0 },
       background: { red: 0.5, green: 0.5, blue: 0.5 },
@@ -32,6 +33,7 @@ export const DEFAULT_THEME = {
   },
 
   windowButtonsPanel: {
+    alpha: 0.9,
     background: { red: 0.9, green: 0.9, blue: 0.9 },
     windowButton: {
       normal: {
@@ -63,6 +65,7 @@ export const DEFAULT_THEME = {
   },
 
   widget: {
+    alpha: 0.9,
     normal: {
       foreground: { red: 0, green: 0, blue: 0 },
       foregroundSecondary: { red: 0, green: 0, blue: 1 },
@@ -84,6 +87,7 @@ export const DEFAULT_THEME = {
   },
 
   popup: {
+    alpha: 0.9,
     normal: {
       foreground: { red: 0, green: 0, blue: 0 },
       foregroundSecondary: { red: 0, green: 0, blue: 1 },
@@ -111,6 +115,7 @@ export const DEFAULT_THEME = {
   },
 
   tooltip: {
+    alpha: 0.9,
     foreground: { red: 1, green: 0, blue: 0 },
     background: { red: 0, green: 1, blue: 0 },
     border: { red: 0, green: 0, blue: 1 },

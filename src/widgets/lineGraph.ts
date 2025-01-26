@@ -364,6 +364,7 @@ export function getLineGraphBuilder(
           w: expandedViewWidth,
           h: expandedViewHeight,
         });
+        state.canvases.expandedViewCanvas.alpha(DEFAULT_THEME.popup.alpha);
         state.canvases.expandedViewCanvas.show();
       }
 
@@ -497,6 +498,7 @@ export function getLineGraphBuilder(
           w: width,
           h: hoverHeight,
         });
+        state.canvases.hoverCanvas.alpha(DEFAULT_THEME.tooltip.alpha);
       }
 
       state.canvases.hoverCanvas.replaceElements([
@@ -584,6 +586,7 @@ export function getLineGraphBuilder(
       w: width,
       h: height,
     });
+    state.canvases.graphCanvas.alpha(DEFAULT_THEME.widget.alpha);
 
     runCmdAndRender();
     state.canvases.graphCanvas.mouseCallback(mouseCallback);

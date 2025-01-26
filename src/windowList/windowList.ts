@@ -205,6 +205,7 @@ export function getWindowListBuilder(
       w: args.dimensions.width,
       h: args.dimensions.height,
     });
+    state.fillerPanel.alpha(DEFAULT_THEME.windowButtonsPanel.alpha);
 
     state.fillerPanel.replaceElements([
       {

@@ -250,6 +250,8 @@ export function getXEyesBuilder(
       h: height,
     });
 
+    state.canvas.alpha(DEFAULT_THEME.widget.alpha);
+
     render();
     state.canvas.show();
 

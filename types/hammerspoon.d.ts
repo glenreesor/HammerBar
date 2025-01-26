@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -103,6 +103,7 @@ declare namespace hs.canvas {
     topLeft:
       | ((point: { x: number; y: number }) => CanvasType)
       | (() => { x: number; y: number }[]);
+    alpha: (newAlpha: number) => void;
   };
 
   type ColorType = {

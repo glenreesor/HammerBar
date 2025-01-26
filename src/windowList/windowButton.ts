@@ -84,6 +84,7 @@ export function getWindowButton({
         w: width,
         h: height,
       });
+      state.canvases.hoverCanvas.alpha(DEFAULT_THEME.popup.alpha);
     }
     state.canvases.hoverCanvas.replaceElements([
       {
@@ -373,6 +374,8 @@ export function getWindowButton({
     w: buttonWidth,
     h: canvasHeight,
   });
+
+  state.canvases.mainCanvas.alpha(DEFAULT_THEME.windowButtonsPanel.alpha);
 
   render();
   state.canvases.mainCanvas.mouseCallback(mouseCallback);

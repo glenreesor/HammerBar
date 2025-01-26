@@ -122,6 +122,8 @@ export function getClockBuilder(): WidgetBuildingInfo {
       h: height,
     });
 
+    state.canvas.alpha(DEFAULT_THEME.widget.alpha);
+
     render();
     state.canvas.show();
 
