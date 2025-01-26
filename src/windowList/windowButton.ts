@@ -24,10 +24,10 @@ import {
 import { DEFAULT_THEME } from 'src/theme';
 
 export function getWindowButton({
-  x: xCanvas,
-  y: yCanvas,
+  x: canvasX,
+  y: canvasY,
   buttonWidth,
-  buttonHeight,
+  buttonHeight: canvasHeight,
   windowObject,
   isInitiallyVisible,
 }: {
@@ -80,7 +80,7 @@ export function getWindowButton({
     if (state.canvases.hoverCanvas === undefined) {
       state.canvases.hoverCanvas = hs.canvas.new({
         x: state.x,
-        y: yCanvas - fontSize * 2,
+        y: canvasY - fontSize * 2,
         w: width,
         h: height,
       });
@@ -123,6 +123,11 @@ export function getWindowButton({
     let paddingLeft;
     let paddingRight;
 
+    const buttonY = 4;
+    const buttonHeight = canvasHeight - 9;
+
+    const BUTTON_PADDING = 5;
+
     if (state.mouseIsInsideButton) {
     }
 
@@ -130,14 +135,14 @@ export function getWindowButton({
       fontSize = 10;
       iconWidth = 0.8 * buttonHeight;
       iconHeight = iconWidth;
-      iconY = 0.1 * buttonHeight;
+      iconY = buttonY + 0.1 * buttonHeight;
       paddingLeft = 2 + 0.2 * buttonHeight;
       paddingRight = 5;
     } else {
       fontSize = 12;
       iconWidth = buttonHeight;
       iconHeight = iconWidth;
-      iconY = 0;
+      iconY = buttonY;
       paddingLeft = 2;
       paddingRight = 5;
     }
@@ -195,20 +200,31 @@ export function getWindowButton({
 
     const textX = paddingLeft + iconWidth;
 
-    const textY = 2;
+    const textY = buttonY + 2;
 
     const maxTextWidth = state.width - paddingLeft - iconWidth - paddingRight;
 
     state.canvases.mainCanvas?.replaceElements([
       {
         type: 'rectangle',
-        fillColor: bgColor,
-        strokeColor: borderColor,
-        strokeWidth: 2,
+        fillColor: DEFAULT_THEME.windowButtonsPanel.background,
+        strokeColor: DEFAULT_THEME.windowButtonsPanel.background,
         frame: {
           x: 0,
           y: 0,
           w: state.width,
+          h: canvasHeight,
+        },
+      },
+      {
+        type: 'rectangle',
+        fillColor: bgColor,
+        strokeColor: borderColor,
+        strokeWidth: 2,
+        frame: {
+          x: BUTTON_PADDING,
+          y: buttonY,
+          w: state.width - BUTTON_PADDING,
           h: buttonHeight,
         },
         roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
@@ -310,9 +326,9 @@ export function getWindowButton({
     if (x !== state.x || width !== state.width) {
       state.canvases.mainCanvas?.frame({
         x: x,
-        y: yCanvas,
+        y: canvasY,
         w: width,
-        h: buttonHeight,
+        h: canvasHeight,
       });
       state.width = width;
       state.x = x;
@@ -344,7 +360,7 @@ export function getWindowButton({
     },
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
-    x: xCanvas,
+    x: canvasX,
     width: buttonWidth,
     windowObject,
     windowTitle: windowObject.title(),
@@ -352,10 +368,10 @@ export function getWindowButton({
   };
 
   state.canvases.mainCanvas = hs.canvas.new({
-    x: xCanvas,
-    y: yCanvas,
+    x: canvasX,
+    y: canvasY,
     w: buttonWidth,
-    h: buttonHeight,
+    h: canvasHeight,
   });
 
   render();

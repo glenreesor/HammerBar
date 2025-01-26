@@ -99,10 +99,9 @@ export function getWindowListBuilder(
       const newWindowsListMap = new Map(newWindowsList.map((w) => [w.id(), w]));
       const newWindowButtonsInfoById: WindowButtonsInfoById = new Map();
 
-      const buttonWidth = getButtonWidth(
-        args.dimensions.width,
-        newWindowsList.length,
-      );
+      const buttonWidth =
+        getButtonWidth(args.dimensions.width, newWindowsList.length) +
+        BUTTON_PADDING;
 
       let windowButtonX = args.coords.x; //  + BUTTON_PADDING;
       state.windowButtonsInfoById.forEach((windowButtonInfo, id) => {
@@ -132,7 +131,7 @@ export function getWindowListBuilder(
             x: windowButtonX,
             y: args.coords.y, // + 4,
             buttonWidth,
-            buttonHeight: 44, // 35,
+            buttonHeight: 45, // 35,
             windowObject: w,
             isInitiallyVisible: state.isVisible,
           }),

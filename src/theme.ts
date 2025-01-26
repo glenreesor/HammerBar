@@ -47,12 +47,12 @@ export const DEFAULT_THEME = {
   },
 
   windowButtonsPanel: {
-    background: { red: 0.8, green: 0.8, blue: 0.8 },
+    background: { red: 0.9, green: 0.9, blue: 0.9 },
     windowButton: {
       normal: {
         foreground: { red: 0, green: 0, blue: 0 },
         background: { red: 0.5, green: 0.5, blue: 0.5 },
-        border: { red: 1, green: 0, blue: 0 },
+        border: { red: 0.5, green: 0.5, blue: 0.5 },
       },
       normalHover: {
         foreground: { red: 1, green: 1, blue: 1 },
