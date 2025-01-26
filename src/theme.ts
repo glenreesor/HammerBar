@@ -17,7 +17,7 @@
 
 export const DEFAULT_THEME = {
   toggleButtons: {
-    alpha: 0.9,
+    alpha: 1,
     normal: {
       foreground: { red: 0, green: 0, blue: 0 },
       background: { red: 0.5, green: 0.5, blue: 0.5 },
