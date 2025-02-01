@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,4 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export { getAppMenuBuilder } from './appMenuBuilderGetter';
+export type ConfigParams = {
+  appList: { bundleId: string; label: string }[];
+  icon?: IconInfo;
+};
+
+export type IconInfo =
+  | { bundleId: string; imagePath: undefined }
+  | { bundleId: undefined; imagePath: string };
