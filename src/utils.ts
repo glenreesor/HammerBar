@@ -25,8 +25,8 @@ export function getNoopWidgetBuildingInfo(
   return {
     widgetName,
     widgetParamErrors,
-    getWidgetWidth: (_widgetHeight: number) => 0,
     buildWidget: () => ({
+      width: 0,
       bringToFront: () => undefined,
       cleanupPriorToDelete: () => undefined,
       hide: () => undefined,

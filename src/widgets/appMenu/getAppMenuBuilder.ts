@@ -41,7 +41,6 @@ export function getAppMenuBuilder(
   return {
     widgetName: 'AppMenu',
     widgetParamErrors: [],
-    getWidgetWidth: (widgetHeight) => widgetHeight,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
       buildAppMenuWidget(validParams, widgetBuilderParams),
   };

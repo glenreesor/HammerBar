@@ -53,7 +53,6 @@ function isWidgetBuildingInfoArray(obj: unknown): obj is WidgetBuildingInfo[] {
         accum &&
         isStringArray(curr.widgetParamErrors) &&
         typeof curr.widgetName === 'string' &&
-        typeof curr.getWidgetWidth === 'function' &&
         typeof curr.buildWidget === 'function',
       true,
     )
@@ -77,7 +76,6 @@ function printValidationError(functionName: string, buildingInfo: unknown) {
     '  {',
     '    {',
     '      buildWidget = <function>',
-    '      getWidgetWidth = <function>',
     '      widgetName = "Widget Name",',
     '      widgetParamErrors = {},',
     '    }',

@@ -32,7 +32,6 @@ export function getAppLauncherBuilder(
   return {
     widgetName: 'AppLauncher',
     widgetParamErrors: [],
-    getWidgetWidth: (widgetHeight) => widgetHeight,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
       buildAppLauncherWidget(validBundleId, widgetBuilderParams),
   };

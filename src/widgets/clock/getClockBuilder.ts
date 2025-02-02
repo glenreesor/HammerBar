@@ -19,12 +19,9 @@ import type { WidgetBuildingInfo } from 'src/mainPanel';
 import { buildClockWidget } from './buildClockWidget';
 
 export function getClockBuilder(): WidgetBuildingInfo {
-  const CLOCK_WIDTH = 100;
-
   return {
     widgetName: 'Clock',
     widgetParamErrors: [],
-    getWidgetWidth: () => CLOCK_WIDTH,
     buildWidget: buildClockWidget,
   };
 }

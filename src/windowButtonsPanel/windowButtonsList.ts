@@ -210,6 +210,7 @@ export function getWindowButtonsListBuilder(
     );
 
     return {
+      width: 0, // this isn't used, but need it for the type
       bringToFront,
       cleanupPriorToDelete,
       hide,

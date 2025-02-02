@@ -23,7 +23,6 @@ import {
 } from '../_helpers/util';
 import type { ConfigParams } from './types';
 import { renderTextWidget } from './renderTextWidget';
-import { getWidgetWidth } from './getWidgetWidth';
 
 export function buildTextWidget(
   configParams: ConfigParams,
@@ -39,9 +38,12 @@ export function buildTextWidget(
     timer: undefined,
   };
 
-  const width = getWidgetWidth(builderParams.widgetHeight);
+  const width = builderParams.widgetHeight * 1.5;
+  const canvasX =
+    builderParams.coords.leftX ?? builderParams.coords.rightX - width;
+
   state.canvas = hs.canvas.new({
-    x: builderParams.coords.x,
+    x: canvasX,
     y: builderParams.coords.y,
     w: width,
     h: builderParams.widgetHeight,
@@ -69,6 +71,7 @@ export function buildTextWidget(
   renderTextWidget(configParams, builderParams, state.canvas);
 
   return {
+    width,
     bringToFront: () => state.canvas?.show(),
     cleanupPriorToDelete,
     hide,

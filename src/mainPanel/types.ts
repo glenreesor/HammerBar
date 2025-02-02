@@ -22,18 +22,28 @@ export type WidgetBuilderGetter = (
 export type WidgetBuildingInfo = {
   widgetName: string;
   widgetParamErrors: string[];
-  getWidgetWidth: (widgetHeight: number) => number;
   buildWidget: (params: WidgetBuilderParams) => Widget;
 };
 
 export type WidgetBuilderParams = {
-  coords: { x: number; y: number };
+  coords:
+    | {
+        leftX: number;
+        rightX: undefined;
+        y: number;
+      }
+    | {
+        leftX: undefined;
+        rightX: number;
+        y: number;
+      };
   widgetHeight: number;
   panelColor: hs.canvas.ColorType;
   panelHoverColor: hs.canvas.ColorType;
 };
 
 export type Widget = {
+  width: number;
   bringToFront: () => void;
   cleanupPriorToDelete: () => void;
   hide: () => void;

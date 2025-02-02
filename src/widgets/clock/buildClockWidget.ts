@@ -116,8 +116,9 @@ export function buildClockWidget({
     timer: undefined,
   };
 
+  const canvasX = coords.leftX ?? coords.rightX - CLOCK_WIDTH;
   state.canvas = hs.canvas.new({
-    x: coords.x,
+    x: canvasX,
     y: coords.y,
     w: CLOCK_WIDTH,
     h: widgetHeight,
@@ -135,6 +136,7 @@ export function buildClockWidget({
   });
 
   return {
+    width: CLOCK_WIDTH,
     bringToFront: () => state.canvas?.show(),
     cleanupPriorToDelete,
     hide,

@@ -41,7 +41,6 @@ export function getLineGraphBuilder(
   return {
     widgetName: 'LineGraph',
     widgetParamErrors: [],
-    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
       buildLineGraphWidget(validParams, widgetBuilderParams),
   };

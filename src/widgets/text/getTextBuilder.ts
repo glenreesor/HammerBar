@@ -19,7 +19,6 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import { validateParams } from './validateParams';
 import { buildTextWidget } from './buildTextWidget';
-import { getWidgetWidth } from './getWidgetWidth';
 
 export function getTextBuilder(
   unvalidatedConfigParams: unknown,
@@ -42,7 +41,6 @@ export function getTextBuilder(
   return {
     widgetName: 'Text',
     widgetParamErrors: [],
-    getWidgetWidth,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
       buildTextWidget(validParams, widgetBuilderParams),
   };

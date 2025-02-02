@@ -117,8 +117,9 @@ export function getPanelButton({
   };
 
   const width = widgetHeight;
+  const canvasX = coords.leftX ?? coords.rightX - width;
   state.canvas = hs.canvas.new({
-    x: coords.x,
+    x: canvasX,
     y: coords.y,
     w: width,
     h: widgetHeight,
@@ -129,6 +130,7 @@ export function getPanelButton({
   state.canvas.show();
 
   return {
+    width,
     bringToFront: () => state.canvas?.show(),
     cleanupPriorToDelete,
     hide: () => state.canvas?.hide(),

@@ -62,7 +62,7 @@ export function buildAppMenuWidget(
     configParams.appList.forEach((app) => {
       appButtons.push(
         getAppButton({
-          coords: { x: builderParams.coords.x, y: widgetY },
+          coords: { ...builderParams.coords, y: widgetY },
           widgetHeight: 30,
           panelColor: builderParams.panelColor,
           panelHoverColor: builderParams.panelHoverColor,
@@ -104,6 +104,7 @@ export function buildAppMenuWidget(
   };
 
   return {
+    width: panelButton.width,
     bringToFront,
     cleanupPriorToDelete,
     hide,

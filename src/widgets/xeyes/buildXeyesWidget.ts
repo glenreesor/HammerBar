@@ -52,7 +52,9 @@ export function buildXeyesWidget(
       y: builderParams.widgetHeight / 2,
     };
     const leftEyeCenterAbsolute = {
-      x: builderParams.coords.x + leftEyeCenter.x,
+      x:
+        (builderParams.coords.leftX ?? builderParams.coords.rightX) +
+        leftEyeCenter.x,
       y: builderParams.coords.y + leftEyeCenter.y,
     };
     const rightEyeCenter = {
@@ -60,7 +62,9 @@ export function buildXeyesWidget(
       y: builderParams.widgetHeight / 2,
     };
     const rightEyeCenterAbsolute = {
-      x: builderParams.coords.x + rightEyeCenter.x,
+      x:
+        (builderParams.coords.leftX ?? builderParams.coords.rightX) +
+        rightEyeCenter.x,
       y: builderParams.coords.y + rightEyeCenter.y,
     };
 
@@ -213,8 +217,10 @@ export function buildXeyesWidget(
   };
 
   const width = builderParams.widgetHeight;
+  const canvasX =
+    builderParams.coords.leftX ?? builderParams.coords.rightX - width;
   state.canvas = hs.canvas.new({
-    x: builderParams.coords.x,
+    x: canvasX,
     y: builderParams.coords.y,
     w: width,
     h: builderParams.widgetHeight,
@@ -224,6 +230,7 @@ export function buildXeyesWidget(
   state.canvas.show();
 
   return {
+    width,
     bringToFront: () => state.canvas?.show(),
     cleanupPriorToDelete,
     hide,

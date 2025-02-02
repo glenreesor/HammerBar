@@ -281,10 +281,14 @@ export function buildLineGraphWidget(
   function renderExpandedView() {
     const expandedViewHeight = 150;
     const expandedViewWidth = 150;
+    const canvasX =
+      (builderParams.coords.leftX ?? builderParams.coords.rightX) -
+      expandedViewWidth +
+      width;
 
     if (state.canvases.expandedViewCanvas === undefined) {
       state.canvases.expandedViewCanvas = hs.canvas.new({
-        x: builderParams.coords.x - expandedViewWidth + width,
+        x: canvasX,
         y: builderParams.coords.y - expandedViewHeight,
         w: expandedViewWidth,
         h: expandedViewHeight,
@@ -411,7 +415,7 @@ export function buildLineGraphWidget(
   function renderHoverValue() {
     const fontSize = 10;
     const value = state.values[state.values.length - 1];
-    const canvasX = builderParams.coords.x;
+    const canvasX = builderParams.coords.leftX ?? builderParams.coords.rightX;
     const hoverWidth = fontSize * (value.toString().length + 1);
     const hoverHeight = fontSize * 2;
 
@@ -503,8 +507,11 @@ export function buildLineGraphWidget(
   };
 
   const width = builderParams.widgetHeight * 1.5;
+  const canvasX =
+    builderParams.coords.leftX ?? builderParams.coords.rightX - width;
+
   state.canvases.graphCanvas = hs.canvas.new({
-    x: builderParams.coords.x,
+    x: canvasX,
     y: builderParams.coords.y,
     w: width,
     h: builderParams.widgetHeight,
@@ -515,6 +522,7 @@ export function buildLineGraphWidget(
   state.canvases.graphCanvas.show();
 
   return {
+    width,
     bringToFront: () => state.canvases.graphCanvas?.show(),
     cleanupPriorToDelete,
     hide: hide,

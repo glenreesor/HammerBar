@@ -153,8 +153,9 @@ export function getAppButton({
   };
 
   const CANVAS_WIDTH = 120;
+  const canvasX = coords.leftX ?? coords.rightX;
   state.canvas = hs.canvas.new({
-    x: coords.x,
+    x: canvasX,
     y: coords.y,
     w: CANVAS_WIDTH,
     h: widgetHeight,

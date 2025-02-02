@@ -18,14 +18,13 @@
 import { BLACK } from 'src/constants';
 import type { WidgetBuilderParams } from 'src/mainPanel';
 import type { ConfigParams } from './types';
-import { getWidgetWidth } from './getWidgetWidth';
 
 export function renderTextWidget(
   configParams: ConfigParams,
   builderParams: WidgetBuilderParams,
   canvas: hs.canvas.CanvasType,
 ) {
-  const width = getWidgetWidth(builderParams.widgetHeight);
+  const width = builderParams.widgetHeight * 1.5;
   const fontSize = 12;
   const titleY = builderParams.widgetHeight / 2 - fontSize - fontSize / 2;
   const outputY = titleY + fontSize * 1.6;

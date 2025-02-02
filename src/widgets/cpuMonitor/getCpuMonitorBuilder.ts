@@ -41,7 +41,6 @@ export function getCpuMonitorBuilder(
   return {
     widgetName: 'CpuMonitor',
     widgetParamErrors: [],
-    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
       buildCpuMonitorWidget(validParams, widgetBuilderParams),
   };

@@ -22,10 +22,6 @@ export function buildAppLauncherWidget(
   bundleId: string,
   builderParams: WidgetBuilderParams,
 ) {
-  function cleanupPriorToDelete() {
-    panelButton.cleanupPriorToDelete();
-  }
-
   const panelButton = getPanelButton({
     coords: builderParams.coords,
     widgetHeight: builderParams.widgetHeight,
@@ -35,10 +31,5 @@ export function buildAppLauncherWidget(
     onClick: () => hs.application.launchOrFocusByBundleID(bundleId),
   });
 
-  return {
-    bringToFront: () => panelButton.show(),
-    cleanupPriorToDelete,
-    hide: () => panelButton.hide(),
-    show: () => panelButton.show(),
-  };
+  return panelButton;
 }

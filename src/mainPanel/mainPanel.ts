@@ -133,45 +133,40 @@ export function mainPanel(params: {
   const widgets: Widget[] = [];
 
   // Left Widgets
-  let widgetX = params.coords.x + TOGGLE_BUTTON_WIDTH;
+  let widgetLeftX = params.coords.x + TOGGLE_BUTTON_WIDTH;
   params.widgetsBuildingInfo.left.forEach((builderInfo) => {
-    widgets.push(
-      builderInfo.buildWidget({
-        coords: { x: widgetX, y: params.coords.y },
-        widgetHeight: params.dimensions.h,
-        panelColor,
-        panelHoverColor,
-      }),
-    );
-    widgetX += builderInfo.getWidgetWidth(params.dimensions.h);
+    const newWidget = builderInfo.buildWidget({
+      coords: { leftX: widgetLeftX, rightX: undefined, y: params.coords.y },
+      widgetHeight: params.dimensions.h,
+      panelColor,
+      panelHoverColor,
+    });
+
+    widgets.push(newWidget);
+    widgetLeftX += newWidget.width;
   });
 
-  const endOfLeftWidgets = widgetX;
+  const endOfLeftWidgets = widgetLeftX;
 
   // Right Widgets
-  widgetX = params.coords.x + params.dimensions.w - TOGGLE_BUTTON_WIDTH;
+  let widgetRightX =
+    params.coords.x + params.dimensions.w - TOGGLE_BUTTON_WIDTH;
+
   params.widgetsBuildingInfo.right.forEach((builderInfo) => {
-    widgetX -= builderInfo.getWidgetWidth(params.dimensions.h);
-    widgets.push(
-      builderInfo.buildWidget({
-        coords: { x: widgetX, y: params.coords.y },
-        widgetHeight: params.dimensions.h,
-        panelColor,
-        panelHoverColor,
-      }),
-    );
+    const newWidget = builderInfo.buildWidget({
+      coords: { leftX: undefined, rightX: widgetRightX, y: params.coords.y },
+      widgetHeight: params.dimensions.h,
+      panelColor,
+      panelHoverColor,
+    });
+
+    widgets.push(newWidget);
+    widgetRightX -= newWidget.width;
   });
 
   const totalWidgetWidth =
     2 * TOGGLE_BUTTON_WIDTH +
-    params.widgetsBuildingInfo.right.reduce(
-      (acc, info) => acc + info.getWidgetWidth(params.dimensions.h),
-      0,
-    ) +
-    params.widgetsBuildingInfo.left.reduce(
-      (acc, info) => acc + info.getWidgetWidth(params.dimensions.h),
-      0,
-    );
+    widgets.reduce((acc, widget) => acc + widget.width, 0);
 
   widgets.push(
     params.windowListBuilder({

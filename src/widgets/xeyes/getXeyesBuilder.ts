@@ -41,7 +41,6 @@ export function getXeyesBuilder(
   return {
     widgetName: 'Xeyes',
     widgetParamErrors: [],
-    getWidgetWidth: (widgetHeight) => widgetHeight,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
       buildXeyesWidget(validParams, widgetBuilderParams),
   };
