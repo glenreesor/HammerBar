@@ -18,10 +18,9 @@
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import { validateParams } from './validateParams';
-import { buildTextWidget } from './textWidgetBuilder';
-import { getWidgetWidth } from './getWidgetWidth';
+import { buildCpuMonitorWidget } from './buildCpuMonitorWidget';
 
-export function getTextBuilder(
+export function getCpuMonitorBuilder(
   unvalidatedConfigParams: unknown,
 ): WidgetBuildingInfo {
   const { isValid, validParams, expectedArgument } = validateParams(
@@ -36,14 +35,14 @@ export function getTextBuilder(
       hs.inspect.inspect(unvalidatedConfigParams),
     ];
 
-    return getNoopWidgetBuildingInfo('Text', errorDetails);
+    return getNoopWidgetBuildingInfo('CpuMonitor', errorDetails);
   }
 
   return {
-    widgetName: 'Text',
+    widgetName: 'CpuMonitor',
     widgetParamErrors: [],
-    getWidgetWidth,
+    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
-      buildTextWidget(validParams, widgetBuilderParams),
+      buildCpuMonitorWidget(validParams, widgetBuilderParams),
   };
 }

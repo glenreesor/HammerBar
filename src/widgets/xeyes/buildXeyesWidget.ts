@@ -24,7 +24,7 @@ import {
 } from '../_helpers/util';
 import type { ConfigParams } from './types';
 
-export function buildXEyesWidget(
+export function buildXeyesWidget(
   configParams: ConfigParams,
   builderParams: WidgetBuilderParams,
 ) {

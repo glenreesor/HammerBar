@@ -17,10 +17,10 @@
 
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
-import { buildXEyesWidget } from './buildXEyesWidget';
 import { validateParams } from './validateParams';
+import { buildLineGraphWidget } from './buildLineGraphWidget';
 
-export function getXEyesBuilder(
+export function getLineGraphBuilder(
   unvalidatedConfigParams: unknown,
 ): WidgetBuildingInfo {
   const { isValid, validParams, expectedArgument } = validateParams(
@@ -35,14 +35,14 @@ export function getXEyesBuilder(
       hs.inspect.inspect(unvalidatedConfigParams),
     ];
 
-    return getNoopWidgetBuildingInfo('XEyes', errorDetails);
+    return getNoopWidgetBuildingInfo('CpuMonitor', errorDetails);
   }
 
   return {
-    widgetName: 'Xeyes',
+    widgetName: 'LineGraph',
     widgetParamErrors: [],
-    getWidgetWidth: (widgetHeight) => widgetHeight,
+    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
-      buildXEyesWidget(validParams, widgetBuilderParams),
+      buildLineGraphWidget(validParams, widgetBuilderParams),
   };
 }

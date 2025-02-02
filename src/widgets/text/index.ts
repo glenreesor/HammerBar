@@ -15,6 +15,6 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { getTextBuilder } from './textWidgetBuilderGetter';
+import { getTextBuilder } from './getTextBuilder';
 
 export { getTextBuilder };

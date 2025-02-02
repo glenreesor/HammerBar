@@ -15,6 +15,6 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { getLineGraphBuilder } from './lineGraphBuilderGetter';
+import { getLineGraphBuilder } from './getLineGraphBuilder';
 
 export { getLineGraphBuilder };

@@ -18,31 +18,22 @@
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import { validateParams } from './validateParams';
-import { buildCpuMonitor } from './buildCpuMonitor';
+import { buildAppLauncherWidget } from './buildAppLauncherWidget';
 
-export function getCpuMonitorBuilder(
-  unvalidatedConfigParams: unknown,
+export function getAppLauncherBuilder(
+  unvalidatedBundleId: unknown,
 ): WidgetBuildingInfo {
-  const { isValid, validParams, expectedArgument } = validateParams(
-    unvalidatedConfigParams,
-  );
-
+  const { isValid, validBundleId, errorString } =
+    validateParams(unvalidatedBundleId);
   if (!isValid) {
-    const errorDetails = [
-      'Unexpected argument. Expecting an argument like this:',
-      ...expectedArgument,
-      'But instead this was received:',
-      hs.inspect.inspect(unvalidatedConfigParams),
-    ];
-
-    return getNoopWidgetBuildingInfo('CpuMonitor', errorDetails);
+    return getNoopWidgetBuildingInfo('AppLauncher', [errorString]);
   }
 
   return {
-    widgetName: 'CpuMonitor',
+    widgetName: 'AppLauncher',
     widgetParamErrors: [],
-    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
+    getWidgetWidth: (widgetHeight) => widgetHeight,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
-      buildCpuMonitor(validParams, widgetBuilderParams),
+      buildAppLauncherWidget(validBundleId, widgetBuilderParams),
   };
 }

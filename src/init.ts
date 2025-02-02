@@ -36,7 +36,7 @@ import { getClockBuilder } from './widgets/clock';
 import { getCpuMonitorBuilder } from './widgets/cpuMonitor';
 import { getLineGraphBuilder } from './widgets/lineGraph';
 import { getTextBuilder } from './widgets/text';
-import { getXEyesBuilder } from './widgets/xeyes';
+import { getXeyesBuilder } from './widgets/xeyes';
 
 function isStringArray(obj: unknown): obj is string[] {
   return (
@@ -167,7 +167,7 @@ export const widgets = {
   cpuMonitor: getCpuMonitorBuilder,
   lineGraph: getLineGraphBuilder,
   text: getTextBuilder,
-  xeyes: getXEyesBuilder,
+  xeyes: getXeyesBuilder,
 };
 
 export {

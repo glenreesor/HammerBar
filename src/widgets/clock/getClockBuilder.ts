@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuildingInfo } from 'src/mainPanel';
-import { buildClockWidget } from './clockBuilder';
+import { buildClockWidget } from './buildClockWidget';
 
 export function getClockBuilder(): WidgetBuildingInfo {
   const CLOCK_WIDTH = 100;

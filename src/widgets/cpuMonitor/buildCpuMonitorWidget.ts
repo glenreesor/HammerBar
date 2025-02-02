@@ -19,7 +19,7 @@ import type { WidgetBuilderParams } from 'src/mainPanel';
 import { getLineGraphBuilder } from '../lineGraph';
 import type { ConfigParams } from './types';
 
-export function buildCpuMonitor(
+export function buildCpuMonitorWidget(
   configParams: ConfigParams,
   builderParams: WidgetBuilderParams,
 ) {

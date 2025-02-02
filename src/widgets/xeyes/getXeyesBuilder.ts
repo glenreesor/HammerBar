@@ -17,23 +17,32 @@
 
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
+import { buildXeyesWidget } from './buildXeyesWidget';
 import { validateParams } from './validateParams';
-import { buildAppLauncherWidget } from './appLauncherBuilder';
 
-export function getAppLauncherBuilder(
-  unvalidatedBundleId: unknown,
+export function getXeyesBuilder(
+  unvalidatedConfigParams: unknown,
 ): WidgetBuildingInfo {
-  const { isValid, validBundleId, errorString } =
-    validateParams(unvalidatedBundleId);
+  const { isValid, validParams, expectedArgument } = validateParams(
+    unvalidatedConfigParams,
+  );
+
   if (!isValid) {
-    return getNoopWidgetBuildingInfo('AppLauncher', [errorString]);
+    const errorDetails = [
+      'Unexpected argument. Expecting an argument like this:',
+      ...expectedArgument,
+      'But instead this was received:',
+      hs.inspect.inspect(unvalidatedConfigParams),
+    ];
+
+    return getNoopWidgetBuildingInfo('XEyes', errorDetails);
   }
 
   return {
-    widgetName: 'AppLauncher',
+    widgetName: 'Xeyes',
     widgetParamErrors: [],
     getWidgetWidth: (widgetHeight) => widgetHeight,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
-      buildAppLauncherWidget(validBundleId, widgetBuilderParams),
+      buildXeyesWidget(validParams, widgetBuilderParams),
   };
 }

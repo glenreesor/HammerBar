@@ -24,7 +24,7 @@ import {
 } from '../_helpers/util';
 import type { ConfigParams } from './types';
 
-export function buildTextWidget(
+export function buildLineGraphWidget(
   configParams: ConfigParams,
   builderParams: WidgetBuilderParams,
 ) {

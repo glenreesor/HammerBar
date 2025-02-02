@@ -19,8 +19,9 @@ import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
 import { validateParams } from './validateParams';
 import { buildTextWidget } from './buildTextWidget';
+import { getWidgetWidth } from './getWidgetWidth';
 
-export function getLineGraphBuilder(
+export function getTextBuilder(
   unvalidatedConfigParams: unknown,
 ): WidgetBuildingInfo {
   const { isValid, validParams, expectedArgument } = validateParams(
@@ -35,13 +36,13 @@ export function getLineGraphBuilder(
       hs.inspect.inspect(unvalidatedConfigParams),
     ];
 
-    return getNoopWidgetBuildingInfo('CpuMonitor', errorDetails);
+    return getNoopWidgetBuildingInfo('Text', errorDetails);
   }
 
   return {
-    widgetName: 'LineGraph',
+    widgetName: 'Text',
     widgetParamErrors: [],
-    getWidgetWidth: (widgetHeight) => widgetHeight * 1.5,
+    getWidgetWidth,
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
       buildTextWidget(validParams, widgetBuilderParams),
   };
