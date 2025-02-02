@@ -103,13 +103,14 @@ export function mainPanel(params: {
   // Left Toggle Button
   toggleButtons.push(
     ToggleButton({
-      panelX: params.coords.x,
-      panelY: params.coords.y,
-      panelWidth: params.dimensions.w,
+      coords: {
+        x: params.coords.x,
+        y: params.coords.y,
+      },
       panelHeight: params.dimensions.h,
-      side: 'left',
       panelColor,
       panelHoverColor,
+      side: 'left',
       onClick: toggleVisibility,
     }),
   );
@@ -117,13 +118,14 @@ export function mainPanel(params: {
   // Right Toggle Button
   toggleButtons.push(
     ToggleButton({
-      panelX: params.coords.x,
-      panelY: params.coords.y,
-      panelWidth: params.dimensions.w,
+      coords: {
+        x: params.coords.x + params.dimensions.w - TOGGLE_BUTTON_WIDTH,
+        y: params.coords.y,
+      },
       panelHeight: params.dimensions.h,
-      side: 'right',
       panelColor,
       panelHoverColor,
+      side: 'right',
       onClick: toggleVisibility,
     }),
   );

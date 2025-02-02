@@ -1,4 +1,4 @@
-// Copyright 2023, 2024 Glen Reesor
+// Copyright 2023-2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -19,25 +19,15 @@ import { BLACK } from 'src/constants';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 
 export default function ToggleButton(args: {
-  panelX: number;
-  panelY: number;
-  panelWidth: number;
+  coords: { x: number; y: number };
   panelHeight: number;
-  side: 'left' | 'right';
   panelColor: hs.canvas.ColorType;
   panelHoverColor: hs.canvas.ColorType;
+  side: 'left' | 'right';
   onClick: () => void;
 }) {
-  const {
-    panelX,
-    panelY,
-    panelWidth,
-    panelHeight,
-    side,
-    panelColor,
-    panelHoverColor,
-    onClick,
-  } = args;
+  const { coords, panelHeight, panelColor, panelHoverColor, side, onClick } =
+    args;
 
   function cleanupPriorToDelete() {
     state.canvas?.hide();
@@ -118,11 +108,9 @@ export default function ToggleButton(args: {
     panelIsVisible: true,
   };
 
-  const x =
-    side === 'left' ? panelX : panelX + panelWidth - TOGGLE_BUTTON_WIDTH;
   state.canvas = hs.canvas.new({
-    x,
-    y: panelY,
+    x: coords.x,
+    y: coords.y,
     w: TOGGLE_BUTTON_WIDTH,
     h: panelHeight,
   });
