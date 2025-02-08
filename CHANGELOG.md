@@ -4,6 +4,11 @@
 
 - `CpuMonitor` widget
 
+#### Fixed
+
+- widget popups on the right side of the panel don't go off the
+  screen (Fixes https://github.com/glenreesor/HammerBar/issues/9)
+
 ## v1.0.2 (2024-10-26)
 
 - No changes from v1.0.2-beta

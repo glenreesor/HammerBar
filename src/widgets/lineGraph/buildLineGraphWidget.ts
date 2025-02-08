@@ -282,9 +282,8 @@ export function buildLineGraphWidget(
     const expandedViewHeight = 150;
     const expandedViewWidth = 150;
     const canvasX =
-      (builderParams.coords.leftX ?? builderParams.coords.rightX) -
-      expandedViewWidth +
-      width;
+      builderParams.coords.leftX ??
+      builderParams.coords.rightX - expandedViewWidth;
 
     if (state.canvases.expandedViewCanvas === undefined) {
       state.canvases.expandedViewCanvas = hs.canvas.new({
@@ -350,7 +349,10 @@ export function buildLineGraphWidget(
         fillColor: { red: 0, green: 0, blue: 1 },
         strokeColor: { red: 0, green: 0, blue: 1 },
         frame: {
-          x: expandedViewWidth - width,
+          x:
+            builderParams.coords.leftX !== undefined
+              ? 0
+              : expandedViewWidth - width,
           y: expandedViewHeight - indicatorBarHeight,
           w: width,
           h: indicatorBarHeight,
@@ -415,7 +417,8 @@ export function buildLineGraphWidget(
   function renderHoverValue() {
     const fontSize = 10;
     const value = state.values[state.values.length - 1];
-    const canvasX = builderParams.coords.leftX ?? builderParams.coords.rightX;
+    const canvasX =
+      builderParams.coords.leftX ?? builderParams.coords.rightX - width;
     const hoverWidth = fontSize * (value.toString().length + 1);
     const hoverHeight = fontSize * 2;
 
