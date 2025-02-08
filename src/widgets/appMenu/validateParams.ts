@@ -53,7 +53,7 @@ export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
 function isConfigParams(obj: unknown): obj is ConfigParams {
   return (
     typeof obj === 'object' &&
-    isAppListArray((obj as ConfigParams).appList) &&
+    isNonEmptyAppListArray((obj as ConfigParams).appList) &&
     (typeof (obj as ConfigParams).icon === 'undefined' ||
       isIconInfo((obj as ConfigParams).icon))
   );
@@ -68,15 +68,17 @@ function isIconInfo(obj: unknown): boolean {
   );
 }
 
-function isAppListArray(obj: unknown): boolean {
+function isNonEmptyAppListArray(obj: unknown): boolean {
   return (
     Array.isArray(obj) &&
     obj.reduce(
       (accum, curr) =>
         accum &&
         typeof curr.bundleId === 'string' &&
-        typeof curr.label === 'string',
+        typeof curr.label === 'string' &&
+        Object.keys(curr).length === 2,
       true,
-    )
+    ) &&
+    obj.length > 0
   );
 }

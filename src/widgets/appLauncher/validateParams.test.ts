@@ -15,51 +15,42 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { validateParams } from './validateParams';
 
-test('fails when params is a number', () => {
-  const testParams = 1;
+describe('invalid params types', () => {
+  const tests = [
+    { description: 'fails when params is a number', testParams: 1 },
+    { description: 'fails when params is an array', testParams: ['bob'] },
+    { description: 'fails when params is an object', testParams: {} },
+  ];
 
-  const { isValid, validBundleId, errorString } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validBundleId).toBeUndefined();
-  expect(errorString?.length).toBeGreaterThan(0);
+  test.each(tests)('$description', ({ testParams }) => {
+    const { isValid, validBundleId, errorString } = validateParams(testParams);
+
+    expect(isValid).toBe(false);
+    expect(validBundleId).toBeUndefined();
+    expect(errorString?.length).toBeGreaterThan(0);
+  });
 });
 
-test('fails when params is an array', () => {
-  const testParams: unknown = [];
+describe('valid params type', () => {
+  test('fails when params is an empty string', () => {
+    const testParams = '';
 
-  const { isValid, validBundleId, errorString } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validBundleId).toBeUndefined();
-  expect(errorString?.length).toBeGreaterThan(0);
-});
+    const { isValid, validBundleId, errorString } = validateParams(testParams);
+    expect(isValid).toBe(false);
+    expect(validBundleId).toBeUndefined();
+    expect(errorString?.length).toBeGreaterThan(0);
+  });
 
-test('fails when params is an empty object', () => {
-  const testParams = {};
+  test('passes when params is a non-empty string', () => {
+    const testParams = 'bob';
 
-  const { isValid, validBundleId, errorString } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validBundleId).toBeUndefined();
-  expect(errorString?.length).toBeGreaterThan(0);
-});
-
-test('fails when params is an empty string', () => {
-  const testParams = '';
-
-  const { isValid, validBundleId, errorString } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validBundleId).toBeUndefined();
-  expect(errorString?.length).toBeGreaterThan(0);
-});
-
-test('passes when params is a non-empty string', () => {
-  const testParams = 'hello';
-
-  const { isValid, validBundleId, errorString } = validateParams(testParams);
-  expect(isValid).toBe(true);
-  expect(validBundleId).toBeDefined();
-  expect(errorString).toBeUndefined();
+    const { isValid, validBundleId, errorString } = validateParams(testParams);
+    expect(isValid).toBe(true);
+    expect(validBundleId).toBe('bob');
+    expect(errorString?.length).toBeUndefined;
+  });
 });
