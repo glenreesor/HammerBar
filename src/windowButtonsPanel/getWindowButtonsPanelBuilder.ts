@@ -15,7 +15,19 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { setUpdateInterval as setWindowListWatcherUpdateInterval } from './windowListWatcher';
-import { getWindowButtonsPanelBuilder } from './getWindowButtonsPanelBuilder';
+import { buildWindowButtonsPanel } from './buildWindowButtonsPanel';
 
-export { getWindowButtonsPanelBuilder, setWindowListWatcherUpdateInterval };
+export function getWindowButtonsPanelBuilder(
+  screenId: number,
+  windowStatusUpdateInterval: number,
+) {
+  return (args: {
+    coords: { x: number; y: number };
+    dimensions: { height: number; width: number };
+  }) =>
+    buildWindowButtonsPanel({
+      screenId,
+      windowStatusUpdateInterval,
+      ...args,
+    });
+}

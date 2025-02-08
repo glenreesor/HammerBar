@@ -23,7 +23,7 @@ import { getScreenInfo } from './hammerspoonUtils';
 import { mainPanel } from './mainPanel';
 import type { WidgetBuildingInfo } from './mainPanel';
 import { printDiagnostic } from './utils';
-import { getWindowButtonsListBuilder } from './windowButtonsPanel';
+import { getWindowButtonsPanelBuilder } from './windowButtonsPanel';
 
 type Config = {
   panelHeight: number;
@@ -113,7 +113,7 @@ function createPanelsForAllScreens() {
           left: leftWidgets,
           right: rightWidgets,
         },
-        windowListBuilder: getWindowButtonsListBuilder(
+        windowButtonsPanelBuilder: getWindowButtonsPanelBuilder(
           screenInfo.id,
           config.windowStatusUpdateInterval,
         ),

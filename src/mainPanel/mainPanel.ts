@@ -26,7 +26,7 @@ export function mainPanel(params: {
     left: WidgetBuildingInfo[];
     right: WidgetBuildingInfo[];
   };
-  windowListBuilder: (panelParams: {
+  windowButtonsPanelBuilder: (panelParams: {
     coords: { x: number; y: number };
     dimensions: { height: number; width: number };
   }) => Widget;
@@ -169,7 +169,7 @@ export function mainPanel(params: {
     widgets.reduce((acc, widget) => acc + widget.width, 0);
 
   widgets.push(
-    params.windowListBuilder({
+    params.windowButtonsPanelBuilder({
       coords: {
         x: endOfLeftWidgets,
         y: params.coords.y,
