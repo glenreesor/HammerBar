@@ -15,66 +15,157 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { expect, test } from 'vitest';
-
+import { describe, expect, test } from 'vitest';
 import { validateParams } from './validateParams';
 
-test('fails when params is a number', () => {
-  const testParams = 1;
+describe('invalid params types', () => {
+  const tests = [
+    { description: 'fails when params is a number', testParams: 1 },
+    { description: 'fails when params is an array', testParams: ['bob'] },
+    { description: 'fails when params is an string', testParams: 'bob' },
+  ];
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
+  test.each(tests)('$description', ({ testParams }) => {
+    const { isValid, validParams, expectedArgument } =
+      validateParams(testParams);
+
+    expect(isValid).toBe(false);
+    expect(validParams).toBeUndefined();
+    expect(expectedArgument?.length).toBeGreaterThan(0);
+  });
 });
 
-test('fails when params is a string', () => {
-  const testParams = 'bob';
+describe('interval', () => {
+  describe('invalid types', () => {
+    const tests = [
+      { description: 'fails when interval is absent', interval: undefined },
+      { description: 'fails when interval is a string', interval: '1' },
+      { description: 'fails when interval is an array', interval: ['bob'] },
+      { description: 'fails when interval is an object', interval: {} },
+    ];
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
+    test.each(tests)('$description', ({ interval }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        interval,
+        maxValues: 1,
+      });
+
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('invalid values', () => {
+    const tests = [
+      { description: 'fails when interval is negative', interval: -1 },
+      { description: 'fails when interval is zero', interval: 0 },
+    ];
+
+    test.each(tests)('$description', ({ interval }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        interval,
+        maxValues: 1,
+      });
+
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
 });
 
-test('fails when params is an array', () => {
-  const testParams: unknown = [];
+describe('maxValues', () => {
+  describe('invalid types', () => {
+    const tests = [
+      { description: 'fails when maxValues is absent', maxValues: undefined },
+      { description: 'fails when maxValues is a string', maxValues: '1' },
+      { description: 'fails when maxValues is an array', maxValues: ['bob'] },
+      { description: 'fails when maxValues is an object', maxValues: {} },
+    ];
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
+    test.each(tests)('$description', ({ maxValues }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        interval: 1,
+        maxValues,
+      });
+
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('invalid values', () => {
+    const tests = [
+      { description: 'fails when maxValues is negative', maxValues: -1 },
+      { description: 'fails when maxValues is zero', maxValues: 0 },
+    ];
+
+    test.each(tests)('$description', ({ maxValues }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        interval: 1,
+        maxValues,
+      });
+
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
 });
 
-test('fails when params is an empty object', () => {
-  const testParams = {};
+describe('maxGraphValue', () => {
+  describe('invalid types', () => {
+    const tests = [
+      {
+        description: 'fails when maxGraphValue is a string',
+        maxGraphValue: '1',
+      },
+      {
+        description: 'fails when maxGraphValue is an array',
+        maxGraphValue: ['bob'],
+      },
+      {
+        description: 'fails when maxGraphValue is an object',
+        maxGraphValue: {},
+      },
+    ];
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
-});
+    test.each(tests)('$description', ({ maxGraphValue }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        interval: 1,
+        maxValues: 1,
+        maxGraphValue,
+      });
 
-test('fails when interval is missing', () => {
-  const testParams = {
-    maxValues: 5,
-  };
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
-});
+  describe('invalid values', () => {
+    const tests = [
+      {
+        description: 'fails when maxGraphValue is negative',
+        maxGraphValue: -1,
+      },
+      { description: 'fails when maxGraphValue is zero', maxGraphValue: 0 },
+    ];
 
-test('fails when maxValues is missing', () => {
-  const testParams = {
-    interval: 5,
-  };
+    test.each(tests)('$description', ({ maxGraphValue }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        interval: 1,
+        maxValues: 1,
+        maxGraphValue,
+      });
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
 });
 
 test('passes when interval and maxValues are correct', () => {

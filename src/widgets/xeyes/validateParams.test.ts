@@ -15,75 +15,126 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { expect, test } from 'vitest';
-
+import { describe, expect, test } from 'vitest';
+import type { ConfigParams } from './types';
 import { validateParams } from './validateParams';
 
-test('fails when params is a number', () => {
-  const testParams = 1;
+const goodParams: ConfigParams = {
+  minInterval: 1,
+  maxInterval: 2,
+};
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
+describe('invalid params types', () => {
+  const tests = [
+    { description: 'fails when params is a number', testParams: 1 },
+    { description: 'fails when params is an array', testParams: ['bob'] },
+    { description: 'fails when params is an string', testParams: 'bob' },
+  ];
+
+  test.each(tests)('$description', ({ testParams }) => {
+    const { isValid, validParams, expectedArgument } =
+      validateParams(testParams);
+
+    expect(isValid).toBe(false);
+    expect(validParams).toBeUndefined();
+    expect(expectedArgument?.length).toBeGreaterThan(0);
+  });
 });
 
-test('fails when params is a string', () => {
-  const testParams = 'bob';
+describe('minInterval', () => {
+  describe('invalid types', () => {
+    const tests = [
+      {
+        description: 'fails when minInterval is absent',
+        minInterval: undefined,
+      },
+      { description: 'fails when minInterval is a string', minInterval: '1' },
+      {
+        description: 'fails when minInterval is an array',
+        minInterval: ['bob'],
+      },
+      { description: 'fails when minInterval is an object', minInterval: {} },
+    ];
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
+    test.each(tests)('$description', ({ minInterval }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        ...goodParams,
+        minInterval,
+      });
+
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('invalid values', () => {
+    const tests = [
+      { description: 'fails when minInterval is negative', minInterval: -1 },
+      { description: 'fails when minInterval is zero', minInterval: 0 },
+    ];
+
+    test.each(tests)('$description', ({ minInterval }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        ...goodParams,
+        minInterval,
+      });
+
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
 });
 
-test('fails when params is an array', () => {
-  const testParams: unknown = [];
+describe('maxInterval', () => {
+  describe('invalid types', () => {
+    const tests = [
+      {
+        description: 'fails when maxInterval is absent',
+        maxInterval: undefined,
+      },
+      { description: 'fails when maxInterval is a string', maxInterval: '1' },
+      {
+        description: 'fails when maxInterval is an array',
+        maxInterval: ['bob'],
+      },
+      { description: 'fails when maxInterval is an object', maxInterval: {} },
+    ];
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
+    test.each(tests)('$description', ({ maxInterval }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        ...goodParams,
+        maxInterval,
+      });
+
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('invalid values', () => {
+    const tests = [
+      { description: 'fails when maxInterval is negative', maxInterval: -1 },
+      { description: 'fails when maxInterval is zero', maxInterval: 0 },
+    ];
+
+    test.each(tests)('$description', ({ maxInterval }) => {
+      const { isValid, validParams, expectedArgument } = validateParams({
+        ...goodParams,
+        maxInterval,
+      });
+
+      expect(isValid).toBe(false);
+      expect(validParams).toBeUndefined();
+      expect(expectedArgument?.length).toBeGreaterThan(0);
+    });
+  });
 });
 
-test('fails when params is an empty object', () => {
-  const testParams = {};
-
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
-});
-
-test('fails when minInterval is missing', () => {
-  const testParams = {
-    maxInterval: 5,
-  };
-
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
-});
-
-test('fails when maxInterval is missing', () => {
-  const testParams = {
-    minInterval: 5,
-  };
-
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
-});
-
-test('passes when all keys are correct', () => {
-  const testParams = {
-    minInterval: 5,
-    maxInterval: 5,
-  };
-
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+test('passes when minInterval and maxInterval are valid', () => {
+  const { isValid, validParams, expectedArgument } = validateParams(goodParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
   expect(validParams).toBeDefined();

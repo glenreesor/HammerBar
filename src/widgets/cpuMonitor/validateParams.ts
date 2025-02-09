@@ -55,8 +55,11 @@ function isConfigParams(obj: unknown): obj is ConfigParams {
   return (
     typeof obj === 'object' &&
     typeof (obj as ConfigParams).interval === 'number' &&
+    (obj as ConfigParams).interval > 0 &&
     typeof (obj as ConfigParams).maxValues === 'number' &&
-    (typeof (obj as ConfigParams).maxGraphValue === 'number' ||
+    (obj as ConfigParams).maxValues > 0 &&
+    ((typeof (obj as ConfigParams).maxGraphValue === 'number' &&
+      ((obj as ConfigParams).maxGraphValue as number) > 0) ||
       typeof (obj as ConfigParams).maxGraphValue === 'undefined') &&
     (Object.keys(obj as ConfigParams).length === 2 ||
       Object.keys(obj as ConfigParams).length === 3)

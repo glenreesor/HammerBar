@@ -56,6 +56,7 @@ function isConfigParams(obj: unknown): obj is ConfigParams {
     typeof obj === 'object' &&
     typeof (obj as ConfigParams).title === 'string' &&
     typeof (obj as ConfigParams).interval === 'number' &&
+    (obj as ConfigParams).interval > 0 &&
     typeof (obj as ConfigParams).cmd === 'function' &&
     Object.keys(obj as ConfigParams).length === 3
   );

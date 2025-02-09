@@ -54,6 +54,8 @@ function isConfigParams(obj: unknown): obj is ConfigParams {
   return (
     typeof obj === 'object' &&
     typeof (obj as ConfigParams).minInterval === 'number' &&
-    typeof (obj as ConfigParams).maxInterval === 'number'
+    (obj as ConfigParams).minInterval > 0 &&
+    typeof (obj as ConfigParams).maxInterval === 'number' &&
+    (obj as ConfigParams).maxInterval > 0
   );
 }
