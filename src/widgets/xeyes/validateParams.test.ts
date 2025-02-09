@@ -24,21 +24,30 @@ const goodParams: ConfigParams = {
   maxInterval: 2,
 };
 
+function expectPass(testParams: any) {
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(true);
+  expect(expectedArgument).toBeUndefined();
+  expect(validParams).toBe(testParams);
+}
+
+function expectFail(testParams: any) {
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+
+  expect(isValid).toBe(false);
+  expect(validParams).toBeUndefined();
+  expect(expectedArgument?.length).toBeGreaterThan(0);
+}
+
 describe('invalid params types', () => {
   const tests = [
     { description: 'fails when params is a number', testParams: 1 },
     { description: 'fails when params is an array', testParams: ['bob'] },
     { description: 'fails when params is an string', testParams: 'bob' },
+    { description: 'fails when params is a function', testParams: () => 1 },
   ];
 
-  test.each(tests)('$description', ({ testParams }) => {
-    const { isValid, validParams, expectedArgument } =
-      validateParams(testParams);
-
-    expect(isValid).toBe(false);
-    expect(validParams).toBeUndefined();
-    expect(expectedArgument?.length).toBeGreaterThan(0);
-  });
+  test.each(tests)('$description', ({ testParams }) => expectFail(testParams));
 });
 
 describe('minInterval', () => {
@@ -54,17 +63,18 @@ describe('minInterval', () => {
         minInterval: ['bob'],
       },
       { description: 'fails when minInterval is an object', minInterval: {} },
+      {
+        description: 'fails when minInterval is a function',
+        minInterval: () => 1,
+      },
     ];
 
     test.each(tests)('$description', ({ minInterval }) => {
-      const { isValid, validParams, expectedArgument } = validateParams({
+      const testParams = {
         ...goodParams,
         minInterval,
-      });
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
+      };
+      expectFail(testParams);
     });
   });
 
@@ -75,14 +85,11 @@ describe('minInterval', () => {
     ];
 
     test.each(tests)('$description', ({ minInterval }) => {
-      const { isValid, validParams, expectedArgument } = validateParams({
+      const testParams = {
         ...goodParams,
         minInterval,
-      });
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
+      };
+      expectFail(testParams);
     });
   });
 });
@@ -100,17 +107,18 @@ describe('maxInterval', () => {
         maxInterval: ['bob'],
       },
       { description: 'fails when maxInterval is an object', maxInterval: {} },
+      {
+        description: 'fails when maxInterval is a function',
+        maxInterval: () => 1,
+      },
     ];
 
     test.each(tests)('$description', ({ maxInterval }) => {
-      const { isValid, validParams, expectedArgument } = validateParams({
+      const testParams = {
         ...goodParams,
         maxInterval,
-      });
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
+      };
+      expectFail(testParams);
     });
   });
 
@@ -121,21 +129,15 @@ describe('maxInterval', () => {
     ];
 
     test.each(tests)('$description', ({ maxInterval }) => {
-      const { isValid, validParams, expectedArgument } = validateParams({
+      const testParams = {
         ...goodParams,
         maxInterval,
-      });
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
+      };
+      expectFail(testParams);
     });
   });
 });
 
 test('passes when minInterval and maxInterval are valid', () => {
-  const { isValid, validParams, expectedArgument } = validateParams(goodParams);
-  expect(isValid).toBe(true);
-  expect(expectedArgument).toBeUndefined();
-  expect(validParams).toBeDefined();
+  expectPass(goodParams);
 });

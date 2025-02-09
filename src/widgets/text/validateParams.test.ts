@@ -17,28 +17,38 @@
 
 import { describe, expect, test } from 'vitest';
 import { validateParams } from './validateParams';
+import type { ConfigParams } from './types';
 
-const goodParams = {
+const goodParams: ConfigParams = {
   title: 'title',
   interval: 1,
-  cmd: () => 1,
+  cmd: () => '1',
 };
+
+function expectPass(testParams: any) {
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(true);
+  expect(expectedArgument).toBeUndefined();
+  expect(validParams).toBe(testParams);
+}
+
+function expectFail(testParams: any) {
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+
+  expect(isValid).toBe(false);
+  expect(validParams).toBeUndefined();
+  expect(expectedArgument?.length).toBeGreaterThan(0);
+}
 
 describe('invalid params types', () => {
   const tests = [
     { description: 'fails when params is a number', testParams: 1 },
     { description: 'fails when params is an array', testParams: ['bob'] },
     { description: 'fails when params is an string', testParams: 'bob' },
+    { description: 'fails when params is a function', testParams: () => 1 },
   ];
 
-  test.each(tests)('$description', ({ testParams }) => {
-    const { isValid, validParams, expectedArgument } =
-      validateParams(testParams);
-
-    expect(isValid).toBe(false);
-    expect(validParams).toBeUndefined();
-    expect(expectedArgument?.length).toBeGreaterThan(0);
-  });
+  test.each(tests)('$description', ({ testParams }) => expectFail(testParams));
 });
 
 describe('title', () => {
@@ -48,17 +58,15 @@ describe('title', () => {
       { description: 'fails when title is a number', title: 1 },
       { description: 'fails when title is an array', title: ['bob'] },
       { description: 'fails when title is an object', title: {} },
+      { description: 'fails when title is a function', title: () => 1 },
     ];
 
     test.each(tests)('$description', ({ title }) => {
-      const { isValid, validParams, expectedArgument } = validateParams({
+      const testParams = {
         ...goodParams,
         title,
-      });
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
+      };
+      expectFail(testParams);
     });
   });
 });
@@ -73,14 +81,11 @@ describe('cmd', () => {
     ];
 
     test.each(tests)('$description', ({ title }) => {
-      const { isValid, validParams, expectedArgument } = validateParams({
+      const testParams = {
         ...goodParams,
         title,
-      });
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
+      };
+      expectFail(testParams);
     });
   });
 });
@@ -92,17 +97,15 @@ describe('interval', () => {
       { description: 'fails when interval is a string', interval: '1' },
       { description: 'fails when interval is an array', interval: ['bob'] },
       { description: 'fails when interval is an object', interval: {} },
+      { description: 'fails when interval is a function', interval: () => 1 },
     ];
 
     test.each(tests)('$description', ({ interval }) => {
-      const { isValid, validParams, expectedArgument } = validateParams({
+      const testParams = {
         ...goodParams,
         interval,
-      });
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
+      };
+      expectFail(testParams);
     });
   });
 
@@ -113,21 +116,15 @@ describe('interval', () => {
     ];
 
     test.each(tests)('$description', ({ interval }) => {
-      const { isValid, validParams, expectedArgument } = validateParams({
+      const testParams = {
         ...goodParams,
         interval,
-      });
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
+      };
+      expectFail(testParams);
     });
   });
 });
 
 test('passes when title, interval and cmd are valid', () => {
-  const { isValid, validParams, expectedArgument } = validateParams(goodParams);
-  expect(isValid).toBe(true);
-  expect(expectedArgument).toBeUndefined();
-  expect(validParams).toBeDefined();
+  expectPass(goodParams);
 });

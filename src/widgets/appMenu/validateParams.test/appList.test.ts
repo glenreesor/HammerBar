@@ -15,34 +15,28 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { describe, expect, test } from 'vitest';
-import { validateParams } from '../validateParams';
+import { describe, test } from 'vitest';
+import type { ConfigParams } from '../types';
+import { expectFail, expectPass } from './util';
 
-const goodAppEntry = { bundleId: 'bundle ID', label: 'my label' };
+const goodAppEntry: ConfigParams['appList'][number] = {
+  bundleId: 'bundle ID',
+  label: 'my label',
+};
 
 describe('valid appList', () => {
   test('passes when appList has one element', () => {
     const testParams = {
       appList: [goodAppEntry],
     };
-    const { isValid, validParams, expectedArgument } =
-      validateParams(testParams);
-
-    expect(isValid).toBe(true);
-    expect(validParams).toBe(testParams);
-    expect(expectedArgument?.length).toBeUndefined;
+    expectPass(testParams);
   });
 
   test('passes when appList has multiple elements', () => {
     const testParams = {
       appList: [goodAppEntry, goodAppEntry],
     };
-    const { isValid, validParams, expectedArgument } =
-      validateParams(testParams);
-
-    expect(isValid).toBe(true);
-    expect(validParams).toBe(testParams);
-    expect(expectedArgument?.length).toBeUndefined;
+    expectPass(testParams);
   });
 });
 
@@ -51,6 +45,10 @@ describe('invalid appList', () => {
     { description: 'fails when missing', testParams: {} },
     { description: 'fails when is a number', testParams: { appList: 1 } },
     { description: 'fails when is a string', testParams: { appList: '1' } },
+    {
+      description: 'fails when is a function',
+      testParams: { appList: () => 1 },
+    },
     {
       description: 'fails when is an empty array',
       testParams: { appList: [] },
@@ -86,6 +84,12 @@ describe('invalid appList', () => {
       },
     },
     {
+      description: 'fails when bundleId is a function',
+      testParams: {
+        appList: [goodAppEntry, { bundleId: () => 1, label: 'my label' }],
+      },
+    },
+    {
       description: 'fails when bundleId missing in some entries',
       testParams: { appList: [goodAppEntry, { label: 'my label' }] },
     },
@@ -107,7 +111,13 @@ describe('invalid appList', () => {
     {
       description: 'fails when label is an object',
       testParams: {
-        appList: [goodAppEntry, { bundleId: 'bundle ID', label: [] }],
+        appList: [goodAppEntry, { bundleId: 'bundle ID', label: {} }],
+      },
+    },
+    {
+      description: 'fails when label is a function',
+      testParams: {
+        appList: [goodAppEntry, { bundleId: 'bundle ID', label: () => 1 }],
       },
     },
     {
@@ -118,13 +128,6 @@ describe('invalid appList', () => {
 
   test.each([...tests, ...bundleIdTests, ...labelTests])(
     '$description',
-    ({ testParams }) => {
-      const { isValid, validParams, expectedArgument } =
-        validateParams(testParams);
-
-      expect(isValid).toBe(false);
-      expect(validParams).toBeUndefined();
-      expect(expectedArgument?.length).toBeGreaterThan(0);
-    },
+    ({ testParams }) => expectFail(testParams),
   );
 });

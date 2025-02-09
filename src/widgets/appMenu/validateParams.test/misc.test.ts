@@ -15,37 +15,25 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { describe, expect, test } from 'vitest';
-import { validateParams } from '../validateParams';
-
-const goodAppEntry = { bundleId: 'bundle ID', label: 'my label' };
+import { describe, test } from 'vitest';
+import { expectFail, expectPass } from './util';
 
 describe('invalid params types', () => {
   const tests = [
     { description: 'fails when params is a number', testParams: 1 },
     { description: 'fails when params is an array', testParams: ['bob'] },
     { description: 'fails when params is a string', testParams: '' },
+    { description: 'fails when params is a function', testParams: () => 1 },
   ];
 
-  test.each(tests)('$description', ({ testParams }) => {
-    const { isValid, validParams, expectedArgument } =
-      validateParams(testParams);
-
-    expect(isValid).toBe(false);
-    expect(validParams).toBeUndefined();
-    expect(expectedArgument?.length).toBeGreaterThan(0);
-  });
+  test.each(tests)('$description', ({ testParams }) => expectFail(testParams));
 });
 
 test('passes when appList correct and icon missing', () => {
   const testParams = {
     appList: [{ bundleId: 'bundleId', label: 'myLabel' }],
   };
-
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(true);
-  expect(expectedArgument).toBeUndefined();
-  expect(validParams).toBeDefined();
+  expectPass(testParams);
 });
 
 test('passes when appList and icon correct', () => {
@@ -55,9 +43,5 @@ test('passes when appList and icon correct', () => {
       bundleId: 'bundleId',
     },
   };
-
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(true);
-  expect(expectedArgument).toBeUndefined();
-  expect(validParams).toBeDefined();
+  expectPass(testParams);
 });

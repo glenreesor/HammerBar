@@ -7,7 +7,7 @@
     "strict": true,
     "baseUrl": "./"
   },
-  "exclude": ["src/**/*.test.ts"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test/*"],
   "tstl": {
     "luaBundle": "build/init.lua",
     "luaBundleEntry": "src/init.ts",

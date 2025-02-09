@@ -15,19 +15,18 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { describe, expect, test } from 'vitest';
-import { validateParams } from '../validateParams';
+import { describe, test } from 'vitest';
+import type { ConfigParams } from '../types';
+import { expectFail, expectPass } from './util';
 
-const goodAppEntry = { bundleId: 'bundle ID', label: 'my label' };
+const goodAppEntry: ConfigParams['appList'][number] = {
+  bundleId: 'bundle ID',
+  label: 'my label',
+};
 
 test('passes when icon is missing', () => {
   const testParams = { appList: [goodAppEntry] };
-
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-
-  expect(isValid).toBe(true);
-  expect(expectedArgument).toBeUndefined();
-  expect(validParams).toBe(testParams);
+  expectPass(testParams);
 });
 
 describe('invalid icon type', () => {
@@ -35,17 +34,15 @@ describe('invalid icon type', () => {
     { description: 'fails when icon is a number', icon: 1 },
     { description: 'fails when icon is an array', icon: ['bob'] },
     { description: 'fails when icon is a string', icon: '' },
+    { description: 'fails when icon is a function', icon: () => 1 },
   ];
 
   test.each(tests)('$description', ({ icon }) => {
-    const { isValid, validParams, expectedArgument } = validateParams({
+    const testParams = {
       appList: [goodAppEntry],
       icon,
-    });
-
-    expect(isValid).toBe(false);
-    expect(validParams).toBeUndefined();
-    expect(expectedArgument?.length).toBeGreaterThan(0);
+    };
+    expectFail(testParams);
   });
 });
 
@@ -54,20 +51,18 @@ describe('invalid bundleId', () => {
     { description: 'fails when bundleId is a number', bundleId: 1 },
     { description: 'fails when bundleId is an array', bundleId: ['bob'] },
     { description: 'fails when bundleId is an object', bundleId: {} },
+    { description: 'fails when bundleId is a function', bundleId: () => 1 },
   ];
 
   test.each(tests)('$description', ({ bundleId }) => {
-    const { isValid, validParams, expectedArgument } = validateParams({
+    const testParams = {
       appList: [goodAppEntry],
       icon: {
         bundleId,
         imagePath: undefined,
       },
-    });
-
-    expect(isValid).toBe(false);
-    expect(validParams).toBeUndefined();
-    expect(expectedArgument?.length).toBeGreaterThan(0);
+    };
+    expectFail(testParams);
   });
 });
 
@@ -76,33 +71,28 @@ describe('invalid imagePath', () => {
     { description: 'fails when imagePath is a number', imagePath: 1 },
     { description: 'fails when imagePath is an array', imagePath: ['bob'] },
     { description: 'fails when imagePath is an object', imagePath: {} },
+    { description: 'fails when imagePath is a function', imagePath: () => 1 },
   ];
 
   test.each(tests)('$description', ({ imagePath }) => {
-    const { isValid, validParams, expectedArgument } = validateParams({
+    const testParams = {
       appList: [goodAppEntry],
       icon: {
         bundleId: undefined,
         imagePath,
       },
-    });
-
-    expect(isValid).toBe(false);
-    expect(validParams).toBeUndefined();
-    expect(expectedArgument?.length).toBeGreaterThan(0);
+    };
+    expectFail(testParams);
   });
 });
 
 test('fails when bundleId and imagePath are both present', () => {
-  const { isValid, validParams, expectedArgument } = validateParams({
+  const testParams = {
     appList: [goodAppEntry],
     icon: {
       bundleId: 'bundleId',
       imagePath: 'imagePath',
     },
-  });
-
-  expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
-  expect(expectedArgument?.length).toBeGreaterThan(0);
+  };
+  expectFail(testParams);
 });
