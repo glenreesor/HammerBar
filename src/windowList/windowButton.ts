@@ -151,6 +151,7 @@ export function getWindowButton({
     let fgColor;
     let bgColor;
     let borderColor;
+    let iconAlpha;
 
     if (state.mouseButtonIsDown) {
       fgColor =
@@ -159,6 +160,8 @@ export function getWindowButton({
         DEFAULT_THEME.windowButtonsPanel.windowButton.mouseDown.background;
       borderColor =
         DEFAULT_THEME.windowButtonsPanel.windowButton.mouseDown.border;
+      iconAlpha =
+        DEFAULT_THEME.windowButtonsPanel.windowButton.mouseDown.iconAlpha;
     } else {
       if (state.isMinimized) {
         if (state.mouseIsInsideButton) {
@@ -170,6 +173,9 @@ export function getWindowButton({
               .background;
           borderColor =
             DEFAULT_THEME.windowButtonsPanel.windowButton.minimizedHover.border;
+          iconAlpha =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.minimizedHover
+              .iconAlpha;
         } else {
           fgColor =
             DEFAULT_THEME.windowButtonsPanel.windowButton.minimized.foreground;
@@ -177,6 +183,8 @@ export function getWindowButton({
             DEFAULT_THEME.windowButtonsPanel.windowButton.minimized.background;
           borderColor =
             DEFAULT_THEME.windowButtonsPanel.windowButton.minimized.border;
+          iconAlpha =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.minimized.iconAlpha;
         }
       } else {
         if (state.mouseIsInsideButton) {
@@ -188,6 +196,8 @@ export function getWindowButton({
               .background;
           borderColor =
             DEFAULT_THEME.windowButtonsPanel.windowButton.normalHover.border;
+          iconAlpha =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.normalHover.iconAlpha;
         } else {
           fgColor =
             DEFAULT_THEME.windowButtonsPanel.windowButton.normal.foreground;
@@ -195,6 +205,8 @@ export function getWindowButton({
             DEFAULT_THEME.windowButtonsPanel.windowButton.normal.background;
           borderColor =
             DEFAULT_THEME.windowButtonsPanel.windowButton.normal.border;
+          iconAlpha =
+            DEFAULT_THEME.windowButtonsPanel.windowButton.normal.iconAlpha;
         }
       }
     }
@@ -242,6 +254,7 @@ export function getWindowButton({
           h: iconWidth,
         },
         image: hs.image.imageFromAppBundle(bundleId),
+        imageAlpha: iconAlpha,
       },
       {
         type: 'text',
