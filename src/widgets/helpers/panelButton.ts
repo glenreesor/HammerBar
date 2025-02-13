@@ -70,6 +70,12 @@ export function getPanelButton({
         ? DEFAULT_THEME.widget.hover.background
         : DEFAULT_THEME.widget.normal.background;
 
+    const iconAlpha = state.mouseButtonIsDown
+      ? DEFAULT_THEME.widget.mouseDown.iconAlpha
+      : state.mouseIsInsideButton
+        ? DEFAULT_THEME.widget.hover.iconAlpha
+        : DEFAULT_THEME.widget.normal.iconAlpha;
+
     const imageWidth = state.mouseButtonIsDown
       ? 0.8 * normalImageWidth
       : normalImageWidth;
@@ -102,6 +108,7 @@ export function getPanelButton({
           h: imageWidth,
         },
         image,
+        imageAlpha: iconAlpha,
         trackMouseEnterExit: true,
         trackMouseDown: true,
         trackMouseUp: true,

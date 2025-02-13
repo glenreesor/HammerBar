@@ -76,18 +76,21 @@ export const DEFAULT_THEME = {
       foregroundSecondary: { red: 0, green: 0, blue: 1 },
       foregroundTertiary: { red: 0, green: 1, blue: 0 },
       background: { red: 0.5, green: 0.5, blue: 0.5 },
+      iconAlpha: 1,
     },
     hover: {
       foreground: { red: 1, green: 1, blue: 1 },
       foregroundSecondary: { red: 0, green: 1, blue: 0 },
       foregroundTertiary: { red: 1, green: 0, blue: 0 },
       background: { red: 0, green: 0, blue: 0 },
+      iconAlpha: 0.5,
     },
     mouseDown: {
       foreground: { red: 1, green: 0, blue: 0 },
       foregroundSecondary: { red: 0, green: 0, blue: 0 },
       foregroundTertiary: { red: 0, green: 0, blue: 1 },
       background: { red: 1, green: 1, blue: 1 },
+      iconAlpha: 1,
     },
   },
 
