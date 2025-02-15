@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { VERSION, BUILD_DATE, GIT_HASH } from './version';
-
 import type { ScreenInfoType } from './hammerspoonUtils';
 import { getScreenInfo } from './hammerspoonUtils';
 
@@ -212,10 +210,6 @@ export function setWindowStatusUpdateInterval(newInterval: number) {
 }
 
 export function start() {
-  printDiagnostic(`Version   : ${VERSION}`);
-  printDiagnostic(`Build Date: ${BUILD_DATE}`);
-  printDiagnostic(`Git Hash  : ${GIT_HASH}`);
-
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
   createPanelsForAllScreens();
   state.screenWatcher = hs.screen.watcher.new(watchForScreenChanges);

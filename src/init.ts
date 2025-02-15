@@ -16,6 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuildingInfo } from './mainPanel';
+import { VERSION, BUILD_DATE, GIT_HASH } from './version';
 import { setWindowListWatcherUpdateInterval as applyWindowListWatcherUpdateInterval } from './windowButtonsPanel';
 
 import {
@@ -38,98 +39,86 @@ import { getLineGraphBuilder } from './widgets/lineGraph';
 import { getTextBuilder } from './widgets/text';
 import { getXeyesBuilder } from './widgets/xeyes';
 
-function isStringArray(obj: unknown): obj is string[] {
-  return (
-    Array.isArray(obj) &&
-    obj.reduce((accum, curr) => accum && typeof curr === 'string', true)
-  );
-}
-
-function isWidgetBuildingInfoArray(obj: unknown): obj is WidgetBuildingInfo[] {
-  return (
-    Array.isArray(obj) &&
-    obj.reduce(
-      (accum, curr) =>
-        accum &&
-        isStringArray(curr.widgetParamErrors) &&
-        typeof curr.widgetName === 'string' &&
-        typeof curr.buildWidget === 'function',
-      true,
-    )
-  );
-}
-
-function printValidationError(functionName: string, buildingInfo: unknown) {
-  const sampleAddWidgetsArgsUsingWidgets = [
-    '  {',
-    '    spoon.HammerBar.widgets:appMenu({',
-    '        appList = {',
-    '          { bundleId = "org.mozilla.firefox", label = "Firefox" },',
-    '          { bundleId = "com.google.Chrome", label = "Chrome" },',
-    '        },',
-    '    }),',
-    '    spoon.HammerBar.widgets:appLauncher("com.apple.finder"),',
-    '  }',
-  ];
-
-  const sampleAddWidgetsArgsExact = [
-    '  {',
-    '    {',
-    '      buildWidget = <function>',
-    '      widgetName = "Widget Name",',
-    '      widgetParamErrors = {},',
-    '    }',
-    '  }',
-  ];
-
-  printDiagnostic([
-    `Unexpected argument to ${functionName}`,
-    'Expecting an argument like this:',
-    ...sampleAddWidgetsArgsExact,
-    '',
-    `This would be the result of calling ${functionName} with widget generators like this:`,
-    ...sampleAddWidgetsArgsUsingWidgets,
-    '',
-    'But instead this was received:',
-    '',
-    hs.inspect.inspect(buildingInfo),
-  ]);
-}
+import { validateWidgetBuildingInfoArray } from './init/validateWidgetBuildingInfo';
 
 function validateAndAddWidgetsPrimaryScreenLeft(buildingInfo: unknown) {
-  if (!isWidgetBuildingInfoArray(buildingInfo)) {
-    printValidationError('addWidgetsPrimaryScreenLeft', buildingInfo);
-    return;
-  }
-
-  addWidgetsPrimaryScreenLeft(buildingInfo);
+  validateWidgetAndAdd(
+    'addWidgetsPrimaryScreenLeft',
+    addWidgetsPrimaryScreenLeft,
+    buildingInfo,
+  );
 }
 
 function validateAndAddWidgetsPrimaryScreenRight(buildingInfo: unknown) {
-  if (!isWidgetBuildingInfoArray(buildingInfo)) {
-    printValidationError('addWidgetsPrimaryScreenRight', buildingInfo);
-    return;
-  }
-
-  addWidgetsPrimaryScreenRight(buildingInfo);
+  validateWidgetAndAdd(
+    'addWidgetsPrimaryScreenRight',
+    addWidgetsPrimaryScreenRight,
+    buildingInfo,
+  );
 }
 
 function validateAndAddWidgetsSecondaryScreenLeft(buildingInfo: unknown) {
-  if (!isWidgetBuildingInfoArray(buildingInfo)) {
-    printValidationError('addWidgetsSecondaryScreenLeft', buildingInfo);
-    return;
-  }
-
-  addWidgetsSecondaryScreenLeft(buildingInfo);
+  validateWidgetAndAdd(
+    'addWidgetsSecondaryScreenLeft',
+    addWidgetsSecondaryScreenLeft,
+    buildingInfo,
+  );
 }
 
 function validateAndAddWidgetsSecondaryScreenRight(buildingInfo: unknown) {
-  if (!isWidgetBuildingInfoArray(buildingInfo)) {
-    printValidationError('addWidgetsSecondaryScreenRight', buildingInfo);
-    return;
-  }
+  validateWidgetAndAdd(
+    'addWidgetsSecondaryScreenRight',
+    addWidgetsSecondaryScreenRight,
+    buildingInfo,
+  );
+}
 
-  addWidgetsSecondaryScreenRight(buildingInfo);
+function validateWidgetAndAdd(
+  functionName: string,
+  adder: (widgetBuildingInfoArray: WidgetBuildingInfo[]) => void,
+  buildingInfo: unknown,
+) {
+  const { isValid, validWidgetBuildingInfoArray } =
+    validateWidgetBuildingInfoArray(buildingInfo);
+
+  if (isValid) {
+    adder(validWidgetBuildingInfoArray);
+  } else {
+    const sampleAddWidgetsArgsUsingWidgets = [
+      '  {',
+      '    spoon.HammerBar.widgets:appMenu({',
+      '        appList = {',
+      '          { bundleId = "org.mozilla.firefox", label = "Firefox" },',
+      '          { bundleId = "com.google.Chrome", label = "Chrome" },',
+      '        },',
+      '    }),',
+      '    spoon.HammerBar.widgets:appLauncher("com.apple.finder"),',
+      '  }',
+    ];
+
+    const sampleAddWidgetsArgsExact = [
+      '  {',
+      '    {',
+      '      buildWidget = <function>',
+      '      widgetName = "Widget Name",',
+      '      widgetParamErrors = {},',
+      '    }',
+      '  }',
+    ];
+
+    printDiagnostic([
+      `Unexpected argument to ${functionName}`,
+      'Expecting an argument like this:',
+      ...sampleAddWidgetsArgsExact,
+      '',
+      `This would be the result of calling ${functionName} with widget generators like this:`,
+      ...sampleAddWidgetsArgsUsingWidgets,
+      '',
+      'But instead this was received:',
+      '',
+      hs.inspect.inspect(buildingInfo),
+    ]);
+  }
 }
 
 function validateAndSetWindowListUpdateInterval(newInterval: unknown) {
@@ -155,6 +144,11 @@ function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
   }
   setWindowStatusUpdateInterval(newInterval);
 }
+
+// Print version info here so it's the first the thing seen in the console
+printDiagnostic(`Version   : ${VERSION}`);
+printDiagnostic(`Build Date: ${BUILD_DATE}`);
+printDiagnostic(`Git Hash  : ${GIT_HASH}`);
 
 // Users don't need to be burdened with understanding that they're getting a
 // builder, so rename on export
