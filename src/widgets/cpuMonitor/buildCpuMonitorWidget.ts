@@ -16,18 +16,27 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuilderParams } from 'src/mainPanel';
-import { getLineGraphBuilder } from '../lineGraph';
+import { getLineGraphCurrentValueBuilder } from '../lineGraphCurrentValue';
+import { getTextBuilder } from '../text';
 import type { ConfigParams } from './types';
 
 export function buildCpuMonitorWidget(
   configParams: ConfigParams,
   builderParams: WidgetBuilderParams,
 ) {
-  return getLineGraphBuilder({
+  if (configParams.type === 'text') {
+    return getTextBuilder({
+      title: 'CPU',
+      interval: configParams.interval,
+      cmd: () => `${getCpuUsage()}%`,
+    }).buildWidget(builderParams);
+  }
+
+  return getLineGraphCurrentValueBuilder({
     title: 'CPU',
     interval: configParams.interval,
     maxValues: configParams.maxValues,
-    maxGraphValue: configParams.maxGraphValue,
+    graphYMax: 100,
     cmd: getCpuUsage,
   }).buildWidget(builderParams);
 }
@@ -55,5 +64,5 @@ function getCpuUsage() {
   const sysValue = output.substring(sysValueStart, sysValueEnd);
 
   const totalCpu = Number.parseFloat(userValue) + Number.parseFloat(sysValue);
-  return totalCpu;
+  return Math.round(totalCpu);
 }

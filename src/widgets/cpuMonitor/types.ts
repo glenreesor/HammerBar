@@ -15,8 +15,13 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type ConfigParams = {
-  interval: number;
-  maxValues: number;
-  maxGraphValue: number | undefined;
-};
+export type ConfigParams =
+  | {
+      type: 'graph';
+      interval: number;
+      maxValues: number;
+    }
+  | {
+      type: 'text';
+      interval: number;
+    };

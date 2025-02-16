@@ -19,10 +19,15 @@ import { describe, expect, test } from 'vitest';
 import { validateParams } from './validateParams';
 import type { ConfigParams } from './types';
 
-const goodParams: ConfigParams = {
+const goodParamsGraph: ConfigParams = {
+  type: 'graph',
   interval: 1,
   maxValues: 2,
-  maxGraphValue: 3,
+};
+
+const goodParamsText: ConfigParams = {
+  type: 'text',
+  interval: 1,
 };
 
 function expectPass(testParams: any) {
@@ -51,6 +56,40 @@ describe('invalid params types', () => {
   test.each(tests)('$description', ({ testParams }) => expectFail(testParams));
 });
 
+describe('type', () => {
+  describe('invalid types', () => {
+    const tests = [
+      { description: 'fails when type is absent', type: undefined },
+      { description: 'fails when type is a number', type: 1 },
+      { description: 'fails when type is an array', type: ['bob'] },
+      { description: 'fails when type is an object', type: {} },
+      { description: 'fails when type is a function', type: () => 1 },
+    ];
+
+    test.each(tests)('$description', ({ type }) => {
+      const testParams = {
+        ...goodParamsGraph,
+        type,
+      };
+      expectFail(testParams);
+    });
+  });
+
+  describe('invalid values', () => {
+    const tests = [
+      { description: 'fails when type is a non-valid value', type: 'blarp' },
+    ];
+
+    test.each(tests)('$description', ({ type }) => {
+      const testParams = {
+        ...goodParamsGraph,
+        type,
+      };
+      expectFail(testParams);
+    });
+  });
+});
+
 describe('interval', () => {
   describe('invalid types', () => {
     const tests = [
@@ -63,7 +102,7 @@ describe('interval', () => {
 
     test.each(tests)('$description', ({ interval }) => {
       const testParams = {
-        ...goodParams,
+        ...goodParamsGraph,
         interval,
       };
       expectFail(testParams);
@@ -78,7 +117,7 @@ describe('interval', () => {
 
     test.each(tests)('$description', ({ interval }) => {
       const testParams = {
-        ...goodParams,
+        ...goodParamsGraph,
         interval,
       };
       expectFail(testParams);
@@ -98,7 +137,8 @@ describe('maxValues', () => {
 
     test.each(tests)('$description', ({ maxValues }) => {
       const testParams = {
-        ...goodParams,
+        ...goodParamsGraph,
+        type: 'graph',
         maxValues,
       };
       expectFail(testParams);
@@ -113,7 +153,7 @@ describe('maxValues', () => {
 
     test.each(tests)('$description', ({ maxValues }) => {
       const testParams = {
-        ...goodParams,
+        ...goodParamsGraph,
         maxValues,
       };
       expectFail(testParams);
@@ -121,68 +161,12 @@ describe('maxValues', () => {
   });
 });
 
-describe('maxGraphValue', () => {
-  describe('invalid types', () => {
-    const tests = [
-      {
-        description: 'fails when maxGraphValue is a string',
-        maxGraphValue: '1',
-      },
-      {
-        description: 'fails when maxGraphValue is an array',
-        maxGraphValue: ['bob'],
-      },
-      {
-        description: 'fails when maxGraphValue is an object',
-        maxGraphValue: {},
-      },
-      {
-        description: 'fails when maxGraphValue is a function',
-        maxGraphValue: () => 1,
-      },
-    ];
-
-    test.each(tests)('$description', ({ maxGraphValue }) => {
-      const testParams = {
-        ...goodParams,
-        maxGraphValue,
-      };
-      expectFail(testParams);
-    });
-  });
-
-  describe('invalid values', () => {
-    const tests = [
-      {
-        description: 'fails when maxGraphValue is negative',
-        maxGraphValue: -1,
-      },
-      { description: 'fails when maxGraphValue is zero', maxGraphValue: 0 },
-    ];
-
-    test.each(tests)('$description', ({ maxGraphValue }) => {
-      const testParams = {
-        ...goodParams,
-        maxGraphValue,
-      };
-      expectFail(testParams);
-    });
-  });
-});
-
-test('passes when interval and maxValues are correct', () => {
-  const testParams = {
-    interval: 5,
-    maxValues: 6,
-  };
+test('passes when type is graph and interval and maxValues are correct', () => {
+  const testParams = goodParamsGraph;
   expectPass(testParams);
 });
 
-test('passes when interval, maxValues and maxGraphValue are correct', () => {
-  const testParams = {
-    interval: 5,
-    maxValues: 6,
-    maxGraphValue: 100,
-  };
+test('passes when type is text and interval is correct', () => {
+  const testParams = goodParamsText;
   expectPass(testParams);
 });

@@ -43,25 +43,50 @@ export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
     validParams: undefined,
     expectedArgument: [
       '  {',
+      '    type = "graph"',
       '    interval = <a number>,',
       '    maxValues: <a number>,',
-      '    maxGraphValue: <a number or nil>,',
+      '  }',
+      '  or',
+      '  {',
+      '    type = "text"',
+      '    interval = <a number>,',
       '  }',
     ],
   };
 }
 
 function isConfigParams(obj: unknown): obj is ConfigParams {
+  return isGraphMonitor(obj) || isTextMonitor(obj);
+}
+
+function isGraphMonitor(obj: unknown): obj is ConfigParams {
+  if (typeof obj !== 'object') {
+    return false;
+  }
+
+  const typedObj = obj as ConfigParams;
+
+  if (typedObj.type !== 'graph') {
+    return false;
+  }
+
+  if (typeof typedObj.interval !== 'number' || typedObj.interval <= 0) {
+    return false;
+  }
+
+  if (typeof typedObj.maxValues !== 'number' || typedObj.maxValues <= 0) {
+    return false;
+  }
+
+  return true;
+}
+
+function isTextMonitor(obj: unknown): obj is ConfigParams {
   return (
     typeof obj === 'object' &&
+    (obj as ConfigParams).type === 'text' &&
     typeof (obj as ConfigParams).interval === 'number' &&
-    (obj as ConfigParams).interval > 0 &&
-    typeof (obj as ConfigParams).maxValues === 'number' &&
-    (obj as ConfigParams).maxValues > 0 &&
-    ((typeof (obj as ConfigParams).maxGraphValue === 'number' &&
-      ((obj as ConfigParams).maxGraphValue as number) > 0) ||
-      typeof (obj as ConfigParams).maxGraphValue === 'undefined') &&
-    (Object.keys(obj as ConfigParams).length === 2 ||
-      Object.keys(obj as ConfigParams).length === 3)
+    (obj as ConfigParams).interval > 0
   );
 }
