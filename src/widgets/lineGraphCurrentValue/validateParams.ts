@@ -46,7 +46,7 @@ export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
       '    title = "The title",',
       '    interval = <a number>,',
       '    maxValues: <a number>,',
-      '    maxGraphValue: <a number or nil>,',
+      '    graphYMax: <a number or nil>,',
       '    cmd = <a function that returns a number>,',
       '  }',
     ],
