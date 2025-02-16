@@ -21,7 +21,7 @@ export function getGraphLineSegments(args: {
   graphTopLeft: { x: number; y: number };
   scale: { x: number; y: number };
   strokeColor: hs.canvas.ColorType;
-  stateValues: number[];
+  yValues: number[];
 }): hs.canvas.CanvasElementType[] {
   const {
     bgColor,
@@ -29,13 +29,13 @@ export function getGraphLineSegments(args: {
     graphTopLeft,
     scale,
     strokeColor,
-    stateValues,
+    yValues,
   } = args;
 
   return [
     {
       type: 'segments',
-      coordinates: stateValues.map((value, i) => ({
+      coordinates: yValues.map((value, i) => ({
         x: graphTopLeft.x + i * scale.x,
         y: graphTopLeft.y + graphDimensions.h - value * scale.y,
       })),

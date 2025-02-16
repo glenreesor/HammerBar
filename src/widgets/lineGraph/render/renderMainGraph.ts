@@ -56,7 +56,7 @@ export function renderMainGraph(args: {
 
   const max =
     configParams.maxGraphValue ??
-    state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
+    state.yValues.reduce((acc, v) => (v > acc ? v : acc), 0);
 
   const graphTopLeft = {
     x: 0,
@@ -134,7 +134,7 @@ export function renderMainGraph(args: {
     graphTopLeft,
     scale,
     strokeColor: { red: 0, green: 1, blue: 1 },
-    stateValues: state.values,
+    yValues: state.yValues,
   });
 
   state.canvases.mainGraphCanvas?.replaceElements([

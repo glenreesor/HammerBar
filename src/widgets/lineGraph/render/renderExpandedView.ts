@@ -48,19 +48,19 @@ export function renderExpandedView(args: {
   const fontSize = 12;
   const titleY = fontSize;
 
-  const max =
+  const yMax =
     configParams.maxGraphValue ??
-    state.values.reduce((acc, v) => (v > acc ? v : acc), 0);
+    state.yValues.reduce((acc, v) => (v > acc ? v : acc), 0);
 
-  const currentValue = state.values[state.values.length - 1];
+  const currentValue = state.yValues[state.yValues.length - 1];
 
   const graphTopLeft = {
-    x: fontSize * `${Math.round(max)}`.length,
+    x: fontSize * `${Math.round(yMax)}`.length,
     y: titleY + fontSize * 2,
   };
 
   const indicatorBarHeight = 2;
-  const indicatorBarPadding = 2;
+  const indicatorBarPadding = 6;
 
   const graphDimensions = {
     w: expandedViewWidth - graphTopLeft.x,
@@ -73,7 +73,7 @@ export function renderExpandedView(args: {
 
   const scale = getGraphScaleFactors({
     graphDimensions,
-    maxYValue: max,
+    maxYValue: yMax,
     numValues: configParams.maxValues,
     shrinkIfMouseButtonDown: false,
     mouseButtonIsDown: state.mouseButtonIsDown,
@@ -133,7 +133,7 @@ export function renderExpandedView(args: {
       frame: {
         x: 0,
         y: titleY,
-        w: expandedViewWidth / 2,
+        w: expandedViewWidth - 4,
         h: fontSize * 1.2,
       },
     },
@@ -145,7 +145,7 @@ export function renderExpandedView(args: {
     graphTopLeft,
     scale,
     strokeColor: { red: 0, green: 1, blue: 1 },
-    stateValues: state.values,
+    yValues: state.yValues,
   });
 
   const horizontalScaleLinesWithLabels = [0, 0.25, 0.5, 0.75, 1].flatMap(
@@ -154,7 +154,7 @@ export function renderExpandedView(args: {
         graphDimensions,
         graphTopLeft,
         scale,
-        value: fractionOfMax * max,
+        value: fractionOfMax * yMax,
       });
     },
   );

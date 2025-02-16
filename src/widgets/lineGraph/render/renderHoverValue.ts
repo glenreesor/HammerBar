@@ -27,7 +27,7 @@ export function renderHoverValue(args: {
   const { builderParams, state, widgetWidth } = args;
 
   const fontSize = 10;
-  const value = state.values[state.values.length - 1];
+  const value = state.yValues[state.yValues.length - 1];
   const canvasX =
     builderParams.coords.leftX ?? builderParams.coords.rightX - widgetWidth;
   const hoverWidth = fontSize * (value.toString().length + 1);

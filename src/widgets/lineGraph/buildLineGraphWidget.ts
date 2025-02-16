@@ -123,8 +123,8 @@ export function buildLineGraphWidget(
   }
 
   function runCmdAndRender() {
-    state.values.push(configParams.cmd());
-    state.values = state.values.slice(-1 * configParams.maxValues);
+    state.yValues.push(configParams.cmd());
+    state.yValues = state.yValues.slice(-1 * configParams.maxValues);
     renderMainGraphWithArgs();
 
     if (state.renderHoverValue) {
@@ -154,7 +154,7 @@ export function buildLineGraphWidget(
     mouseIsInside: false,
     renderExpandedView: false,
     renderHoverValue: false,
-    values: [],
+    yValues: [],
   };
 
   const widgetWidth = builderParams.widgetHeight * 1.5;

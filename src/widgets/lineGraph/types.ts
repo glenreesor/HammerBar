@@ -36,5 +36,5 @@ export type State = {
   mouseIsInside: boolean;
   renderExpandedView: boolean;
   renderHoverValue: boolean;
-  values: number[];
+  yValues: number[];
 };
