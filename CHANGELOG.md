@@ -1,8 +1,18 @@
 ## Unreleased
 
+#### Enhancements
+
+- `LineGraph` widget expanded view:
+  - Current value is right aligned
+  - More padding below the 0 line
+
 #### Added
 
 - `CpuMonitor` widget
+- `LineGraphCurrentValue` widget
+  - Similar to `LineGraph`, but:
+    - Shows current value (in white) instead of max value
+    - Doesn't show anything on hover, due to the current value always being shown
 
 #### Fixed
 
