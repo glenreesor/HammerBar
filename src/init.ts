@@ -31,13 +31,16 @@ import {
 
 import { printDiagnostic } from './utils';
 
-import { getAppLauncherBuilder } from './widgets/appLauncher';
-import { getAppMenuBuilder } from './widgets/appMenu';
-import { getClockBuilder } from './widgets/clock';
-import { getCpuMonitorBuilder } from './widgets/cpuMonitor';
-import { getLineGraphBuilder } from './widgets/lineGraph';
-import { getTextBuilder } from './widgets/text';
-import { getXeyesBuilder } from './widgets/xeyes';
+import {
+  getAppLauncherBuilder,
+  getAppMenuBuilder,
+  getClockBuilder,
+  getCpuMonitorBuilder,
+  getLineGraphBuilder,
+  getLineGraphCurrentValueBuilder,
+  getTextBuilder,
+  getXeyesBuilder,
+} from './widgets';
 
 import { validateWidgetBuildingInfoArray } from './init/validateWidgetBuildingInfo';
 
@@ -158,6 +161,7 @@ export const widgets = {
   clock: getClockBuilder,
   cpuMonitor: getCpuMonitorBuilder,
   lineGraph: getLineGraphBuilder,
+  lineGraphCurrentValue: getLineGraphCurrentValueBuilder,
   text: getTextBuilder,
   xeyes: getXeyesBuilder,
 };
