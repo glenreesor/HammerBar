@@ -15,26 +15,8 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type ConfigParams = {
-  title: string;
-  interval: number;
-  maxValues: number;
-  maxGraphValue: number | undefined;
-  cmd: () => number;
-};
+import { renderMainGraph } from './renderMainGraph';
+import { renderExpandedView } from './renderExpandedView';
+import { renderHoverValue } from './renderHoverValue';
 
-export type State = {
-  canvases: {
-    expandedViewCanvas: hs.canvas.CanvasType | undefined;
-    mainGraphCanvas: hs.canvas.CanvasType | undefined;
-    hoverCanvas: hs.canvas.CanvasType | undefined;
-  };
-  timers: {
-    timer: hs.timer.TimerType | undefined;
-  };
-  mouseButtonIsDown: boolean;
-  mouseIsInside: boolean;
-  renderExpandedView: boolean;
-  renderHoverValue: boolean;
-  values: number[];
-};
+export { renderMainGraph, renderExpandedView, renderHoverValue };

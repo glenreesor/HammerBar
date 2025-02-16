@@ -15,26 +15,32 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type ConfigParams = {
-  title: string;
-  interval: number;
-  maxValues: number;
-  maxGraphValue: number | undefined;
-  cmd: () => number;
-};
+export function getGraphLineSegments(args: {
+  bgColor: hs.canvas.ColorType;
+  graphDimensions: { w: number; h: number };
+  graphTopLeft: { x: number; y: number };
+  scale: { x: number; y: number };
+  strokeColor: hs.canvas.ColorType;
+  stateValues: number[];
+}): hs.canvas.CanvasElementType[] {
+  const {
+    bgColor,
+    graphDimensions,
+    graphTopLeft,
+    scale,
+    strokeColor,
+    stateValues,
+  } = args;
 
-export type State = {
-  canvases: {
-    expandedViewCanvas: hs.canvas.CanvasType | undefined;
-    mainGraphCanvas: hs.canvas.CanvasType | undefined;
-    hoverCanvas: hs.canvas.CanvasType | undefined;
-  };
-  timers: {
-    timer: hs.timer.TimerType | undefined;
-  };
-  mouseButtonIsDown: boolean;
-  mouseIsInside: boolean;
-  renderExpandedView: boolean;
-  renderHoverValue: boolean;
-  values: number[];
-};
+  return [
+    {
+      type: 'segments',
+      coordinates: stateValues.map((value, i) => ({
+        x: graphTopLeft.x + i * scale.x,
+        y: graphTopLeft.y + graphDimensions.h - value * scale.y,
+      })),
+      fillColor: bgColor,
+      strokeColor,
+    },
+  ];
+}

@@ -15,26 +15,32 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type ConfigParams = {
-  title: string;
-  interval: number;
-  maxValues: number;
-  maxGraphValue: number | undefined;
-  cmd: () => number;
-};
-
-export type State = {
-  canvases: {
-    expandedViewCanvas: hs.canvas.CanvasType | undefined;
-    mainGraphCanvas: hs.canvas.CanvasType | undefined;
-    hoverCanvas: hs.canvas.CanvasType | undefined;
-  };
-  timers: {
-    timer: hs.timer.TimerType | undefined;
-  };
+export function getGraphScaleFactors(args: {
+  graphDimensions: { w: number; h: number };
+  maxYValue: number;
+  numValues: number;
+  shrinkIfMouseButtonDown: boolean;
   mouseButtonIsDown: boolean;
-  mouseIsInside: boolean;
-  renderExpandedView: boolean;
-  renderHoverValue: boolean;
-  values: number[];
-};
+}): { x: number; y: number } {
+  const {
+    graphDimensions,
+    maxYValue,
+    numValues,
+    shrinkIfMouseButtonDown,
+    mouseButtonIsDown,
+  } = args;
+
+  const baseXScale = graphDimensions.w / numValues;
+  const xScale =
+    shrinkIfMouseButtonDown && mouseButtonIsDown
+      ? baseXScale * 0.8
+      : baseXScale;
+
+  const baseYScale = graphDimensions.h / maxYValue;
+  const yScale =
+    shrinkIfMouseButtonDown && mouseButtonIsDown
+      ? baseYScale * 0.8
+      : baseYScale;
+
+  return { x: xScale, y: yScale };
+}
