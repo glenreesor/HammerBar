@@ -1,4 +1,4 @@
-// Copyright 2023-2025 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,13 +15,12 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { WidgetBuildingInfo } from 'src/mainPanel';
+import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/utils';
-import { getDefaultClockBuilder } from './variants/defaultClock/getDefaultClockBuilder';
-import { getAnalogCirclesClockBuilder } from './variants/analogCirclesClock';
+import { buildAnalogCirclesClockWidget } from './buildAnalogCirclesClockWidget';
 import { validateParams } from './validateParams';
 
-export function getClockBuilder(
+export function getAnalogCirclesClockBuilder(
   unvalidatedConfigParams: unknown,
 ): WidgetBuildingInfo {
   const { isValid, validParams, expectedArgument } = validateParams(
@@ -36,12 +35,13 @@ export function getClockBuilder(
       hs.inspect.inspect(unvalidatedConfigParams),
     ];
 
-    return getNoopWidgetBuildingInfo('Clock', errorDetails);
+    return getNoopWidgetBuildingInfo('Analog Circles Clock', errorDetails);
   }
 
-  if (validParams === undefined) {
-    return getDefaultClockBuilder();
-  }
-
-  return getAnalogCirclesClockBuilder(validParams);
+  return {
+    widgetName: 'Clock',
+    widgetParamErrors: [],
+    buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
+      buildAnalogCirclesClockWidget(validParams, widgetBuilderParams),
+  };
 }

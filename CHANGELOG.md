@@ -8,11 +8,13 @@
 
 #### Added
 
-- `CpuMonitor` widget
-- `LineGraphCurrentValue` widget
-  - Similar to `LineGraph`, but:
-    - Shows current value (in white) instead of max value
-    - Doesn't show anything on hover, due to the current value always being shown
+- New widgets:
+  - Clock variant: `analog-circles-clock`
+  - `cpuMonitor`
+  - `lineGraphCurrentValue`
+    - Similar to `LineGraph`, but:
+      - Shows current value (in white) instead of max value
+      - Doesn't show anything on hover, due to the current value always being shown
 
 #### Fixed
 
