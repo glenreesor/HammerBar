@@ -16,6 +16,11 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 export const DEFAULT_THEME = {
+  panelBorder: {
+    alpha: 0.5,
+    width: 5,
+    color: { red: 0.5, green: 0, blue: 0.5 },
+  },
   toggleButtons: {
     alpha: 1,
     normal: {
