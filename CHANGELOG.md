@@ -9,7 +9,7 @@
 #### Added
 
 - New widgets:
-  - Clock variant: `analog-circles-clock`
+  - Clock variants: `analog-clock`, `analog-circles-clock`
   - `cpuMonitor`
   - `lineGraphCurrentValue`
     - Similar to `LineGraph`, but:

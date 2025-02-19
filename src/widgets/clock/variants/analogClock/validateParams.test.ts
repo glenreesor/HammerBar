@@ -18,12 +18,14 @@
 import { describe, expect, test } from 'vitest';
 import { validateParams } from './validateParams';
 
-function expectPass(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
-  expect(isValid).toBe(true);
-  expect(expectedArgument).toBeUndefined();
-  expect(validParams).toBe(testParams);
-}
+const GOOD_TYPE = 'analog-clock';
+
+// The root clock validator has validated that we're getting an object
+// like this:
+//    {
+//      type: 'analog-circles-clock',
+//    }
+// So we just have to validate `showSeconds`
 
 function expectFail(testParams: any) {
   const { isValid, validParams, expectedArgument } = validateParams(testParams);
@@ -33,63 +35,38 @@ function expectFail(testParams: any) {
   expect(expectedArgument?.length).toBeGreaterThan(0);
 }
 
-describe('invalid params types', () => {
-  test('fails when params is a number', () => {
+describe('invalid showSeconds types', () => {
+  test('fails when showSeconds is a number', () => {
     expect(true).toBe(true); // Keep vitest happy -- at least one test present
-    expectFail(1);
+    expectFail({ type: GOOD_TYPE, showSeconds: 1 });
   });
 
-  test('fails when params is a string', () => {
+  test('fails when showSeconds is a string', () => {
     expect(true).toBe(true); // Keep vitest happy -- at least one test present
-    expectFail('1');
+    expectFail({ type: GOOD_TYPE, showSeconds: '1' });
   });
 
-  test('fails when params is an array', () => {
+  test('fails when showSeconds is an array', () => {
     expect(true).toBe(true); // Keep vitest happy -- at least one test present
-    expectFail([]);
+    expectFail({ type: GOOD_TYPE, showSeconds: [] });
   });
 
-  test('fails when params is a function', () => {
+  test('fails when showSeconds is a function', () => {
     expect(true).toBe(true); // Keep vitest happy -- at least one test present
-    expectFail(() => 'blarp');
-  });
-
-  test('fails when params is a boolean', () => {
-    expect(true).toBe(true);
-    expectFail(true);
+    expectFail({ type: GOOD_TYPE, showSeconds: () => 'blarp' });
   });
 });
 
-describe('invalid "type" type', () => {
-  test('fails when type is absent', () => {
-    expect(true).toBe(true);
-    expectFail({});
-  });
-
-  test('fails when type is a number', () => {
-    expect(true).toBe(true);
-    expectFail({ type: 1 });
-  });
-
-  test('fails when type is an array', () => {
-    expect(true).toBe(true);
-    expectFail({ type: [] });
-  });
-
-  test('fails when type is a function', () => {
-    expect(true).toBe(true);
-    expectFail({ type: () => 'blarp' });
-  });
-});
-
-test('fails when type is an incorrect value', () => {
+test('fails when showSeconds is absent', () => {
   expect(true).toBe(true);
-  expectFail({ type: 'blarp' });
+  expectFail({ type: GOOD_TYPE });
 });
 
-test('valid params', () => {
-  expect(true).toBe(true);
-  expectPass(undefined);
-  expectPass({ type: 'analog-clock' });
-  expectPass({ type: 'analog-circles-clock' });
+test('passes when showSeconds is a boolean', () => {
+  const testParams = { type: GOOD_TYPE, showSeconds: true };
+
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(true);
+  expect(expectedArgument).toBeUndefined();
+  expect(validParams).toBe(testParams);
 });

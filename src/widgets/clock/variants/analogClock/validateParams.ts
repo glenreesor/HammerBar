@@ -42,13 +42,6 @@ export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
     isValid: false,
     validParams: undefined,
     expectedArgument: [
-      '  nil',
-      '    or',
-      '  {',
-      '    type = "analog-clock"',
-      '    showSeconds = true or false',
-      '  }',
-      '    or',
       '  {',
       '    type = "analog-circles-clock"',
       '    showSeconds = true or false',
@@ -58,14 +51,12 @@ export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
 }
 
 function isConfigParams(obj: unknown): obj is ConfigParams {
-  if (obj === undefined) {
-    return true;
-  }
-
   return (
     typeof obj === 'object' &&
     obj !== null &&
     'type' in obj &&
-    (obj.type === 'analog-circles-clock' || obj.type === 'analog-clock')
+    obj.type === 'analog-clock' &&
+    'showSeconds' in obj &&
+    typeof obj.showSeconds === 'boolean'
   );
 }

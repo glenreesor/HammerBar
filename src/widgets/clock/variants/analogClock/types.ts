@@ -15,14 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-// We only need to validate enough to determine which clock variant to render,
-// so no need to include other keys in the config object
-
-export type DefaultClockParams = undefined;
-export type AnalogClockParams = { type: 'analog-clock' };
-export type AnalogCirclesClockParams = { type: 'analog-circles-clock' };
-
-export type ConfigParams =
-  | DefaultClockParams
-  | AnalogClockParams
-  | AnalogCirclesClockParams;
+export type ConfigParams = {
+  type: 'analog-clock';
+  showSeconds: boolean;
+};
