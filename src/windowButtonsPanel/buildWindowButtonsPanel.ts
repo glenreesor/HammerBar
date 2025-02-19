@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { Widget } from 'src/mainPanel';
-import { getWindowButton } from './windowButton';
+import { buildWindowButton } from './windowButton';
 import { subscribeToWindowListUpdates } from './windowListWatcher';
 
 type WindowButtonsInfoById = Map<
@@ -37,6 +37,7 @@ type WindowButtonsInfoById = Map<
 export function buildWindowButtonsPanel(args: {
   screenId: number;
   windowStatusUpdateInterval: number;
+  showWindowPreviewOnHover: boolean;
   coords: { x: number; y: number };
   dimensions: { height: number; width: number };
 }): Widget {
@@ -150,13 +151,14 @@ export function buildWindowButtonsPanel(args: {
     newWindowsListMap.forEach((w) => {
       newWindowButtonsInfoById.set(w.id(), {
         w,
-        actions: getWindowButton({
+        actions: buildWindowButton({
           x: windowButtonX,
           y: args.coords.y + 4,
           buttonWidth,
           buttonHeight: 35,
           windowObject: w,
           isInitiallyVisible: state.isVisible,
+          showWindowPreviewOnHover: args.showWindowPreviewOnHover,
         }),
       });
       windowButtonX += buttonWidth + BUTTON_PADDING;

@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,24 +15,18 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { buildWindowButtonsPanel } from './buildWindowButtonsPanel';
+import { renderHoverWindowTitle } from './renderHoverWindowTitle';
+import { renderHoverWindowPreview } from './renderHoverWindowPreview';
+import type { State } from './types';
 
-export function getWindowButtonsPanelBuilder(args: {
-  screenId: number;
-  windowStatusUpdateInterval: number;
+export function renderHover(args: {
+  state: State;
+  y: number;
   showWindowPreviewOnHover: boolean;
 }) {
-  const { screenId, windowStatusUpdateInterval, showWindowPreviewOnHover } =
-    args;
-
-  return (args: {
-    coords: { x: number; y: number };
-    dimensions: { height: number; width: number };
-  }) =>
-    buildWindowButtonsPanel({
-      screenId,
-      windowStatusUpdateInterval,
-      showWindowPreviewOnHover,
-      ...args,
-    });
+  if (args.showWindowPreviewOnHover) {
+    renderHoverWindowPreview(args);
+  } else {
+    renderHoverWindowTitle(args);
+  }
 }

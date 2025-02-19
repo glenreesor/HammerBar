@@ -15,29 +15,35 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import { printWindowInfo } from 'src/utils';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
-} from '../widgets/_helpers/util';
+} from '../../widgets/_helpers/util';
+import { renderHover } from './renderHover';
+import { renderWindowButton } from './renderWindowButton';
+import type { State } from './types';
 
-export function getWindowButton({
-  x,
-  y,
-  buttonWidth,
-  buttonHeight,
-  windowObject,
-  isInitiallyVisible,
-}: {
+export function buildWindowButton(args: {
   x: number;
   y: number;
   buttonWidth: number;
   buttonHeight: number;
   windowObject: hs.window.WindowType;
   isInitiallyVisible: boolean;
+  showWindowPreviewOnHover: boolean;
 }) {
+  const {
+    x: windowButtonX,
+    y: windowButtonY,
+    buttonWidth,
+    buttonHeight,
+    windowObject,
+    isInitiallyVisible,
+    showWindowPreviewOnHover,
+  } = args;
+
   function cleanupPriorToDelete() {
     deleteCanvasesAndStopTimers(Object.values(state.canvases), []);
   }
@@ -58,10 +64,20 @@ export function getWindowButton({
     if (msg === 'mouseEnter') {
       state.mouseIsInsideButton = true;
       render();
+      renderHover({
+        state,
+        y: windowButtonY,
+        showWindowPreviewOnHover,
+      });
     } else if (msg === 'mouseExit') {
       state.mouseIsInsideButton = false;
       state.mouseButtonIsDown = false;
       render();
+
+      if (state.canvases.hoverCanvas !== undefined) {
+        state.canvases.hoverCanvas.hide();
+        state.canvases.hoverCanvas = undefined;
+      }
     } else if (msg === 'mouseDown') {
       state.mouseButtonIsDown = true;
       render();
@@ -72,139 +88,12 @@ export function getWindowButton({
     }
   };
 
-  function renderHoveredTitle() {
-    const fontSize = 12;
-    const width = state.windowTitle.length * fontSize * 0.75;
-    const height = fontSize * 2;
-
-    if (state.canvases.hoverCanvas === undefined) {
-      state.canvases.hoverCanvas = hs.canvas.new({
-        x: state.x,
-        y: y - fontSize * 2,
-        w: width,
-        h: height,
-      });
-    }
-    state.canvases.hoverCanvas.replaceElements([
-      {
-        type: 'rectangle',
-        fillColor: { red: 1, green: 1, blue: 1 },
-        frame: {
-          x: 0,
-          y: 0,
-          w: width,
-          h: height,
-        },
-        roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
-      },
-      {
-        type: 'text',
-        text: state.windowTitle,
-        textColor: BLACK,
-        textSize: fontSize,
-        frame: {
-          x: 10,
-          y: 5,
-          w: width,
-          h: height,
-        },
-      },
-    ]);
-    state.canvases.hoverCanvas.show();
-  }
-
   function render() {
-    let borderWidth;
-    let fontSize;
-    let iconHeight;
-    let iconWidth;
-    let iconY;
-    let paddingLeft;
-    let paddingRight;
-
-    if (state.mouseIsInsideButton) {
-      borderWidth = 4;
-    } else {
-      borderWidth = 0;
-    }
-
-    if (state.mouseButtonIsDown) {
-      fontSize = 10;
-      iconWidth = 0.8 * buttonHeight;
-      iconHeight = iconWidth;
-      iconY = 0.1 * buttonHeight;
-      paddingLeft = 2 + 0.2 * buttonHeight;
-      paddingRight = 5;
-    } else {
-      fontSize = 12;
-      iconWidth = buttonHeight;
-      iconHeight = iconWidth;
-      iconY = 0;
-      paddingLeft = 2;
-      paddingRight = 5;
-    }
-
-    const borderColor = { red: 0.5, green: 0.5, blue: 0.5 };
-
-    const bgColor = state.isMinimized
-      ? { red: 0.7, green: 0.7, blue: 0.7 }
-      : { red: 1, green: 1, blue: 1 };
-
-    const textX = paddingLeft + iconWidth;
-
-    const textY = 2;
-
-    const maxTextWidth = state.width - paddingLeft - iconWidth - paddingRight;
-
-    state.canvases.mainCanvas?.replaceElements([
-      {
-        type: 'rectangle',
-        fillColor: bgColor,
-        strokeColor: borderColor,
-        strokeWidth: borderWidth,
-        frame: {
-          x: 0,
-          y: 0,
-          w: state.width,
-          h: buttonHeight,
-        },
-        roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
-        trackMouseDown: true,
-        trackMouseEnterExit: true,
-        trackMouseUp: true,
-      },
-      {
-        type: 'image',
-        frame: {
-          x: paddingLeft,
-          y: iconY,
-          w: iconWidth,
-          h: iconWidth,
-        },
-        image: hs.image.imageFromAppBundle(bundleId),
-      },
-      {
-        type: 'text',
-        text: state.windowTitle,
-        textColor: BLACK,
-        textSize: fontSize,
-        frame: {
-          x: textX,
-          y: textY,
-          w: maxTextWidth,
-          h: buttonHeight,
-        },
-      },
-    ]);
-
-    if (state.mouseIsInsideButton) {
-      renderHoveredTitle();
-    } else {
-      if (state.canvases.hoverCanvas !== undefined) {
-        state.canvases.hoverCanvas.hide();
-        state.canvases.hoverCanvas = undefined;
-      }
-    }
+    renderWindowButton({
+      state,
+      bundleId,
+      buttonHeight,
+    });
   }
 
   function handleClick() {
@@ -229,6 +118,10 @@ export function getWindowButton({
         .map((w) => w.id());
 
       if (!windowIdsFrontToBack.includes(w.id())) {
+        // Hammerspoon returns an empty image for snapshots of minimized windows,
+        // so grab an updated snapshot now before minimizing
+        state.windowSnapshot = state.windowObject.snapshot();
+
         // This is a special case corresponding to the Hammerspoon console.
         // Since it doesn't show up in the window list we don't know it's stacking
         // position.
@@ -236,6 +129,9 @@ export function getWindowButton({
       }
 
       if (windowIdsFrontToBack[0] === w.id()) {
+        // Hammerspoon returns an empty image for snapshots of minimized windows,
+        // so grab an updated snapshot now before minimizing
+        state.windowSnapshot = state.windowObject.snapshot();
         w.minimize();
       } else {
         w.raise();
@@ -253,6 +149,13 @@ export function getWindowButton({
 
     const newIsMinimized = state.windowObject.isMinimized();
 
+    if (!newIsMinimized) {
+      // Hammerspoon returns an empty image for snapshots of minimized windows.
+      // (Have I mentioned that before?)
+      // We're not minimized, so update our snapshot to keep it fresh
+      state.windowSnapshot = state.windowObject.snapshot();
+    }
+
     if (
       newWindowTitle !== state.windowTitle ||
       newIsMinimized !== state.isMinimized
@@ -267,7 +170,7 @@ export function getWindowButton({
     if (x !== state.x || width !== state.width) {
       state.canvases.mainCanvas?.frame({
         x: x,
-        y: y,
+        y: windowButtonY,
         w: width,
         h: buttonHeight,
       });
@@ -282,35 +185,24 @@ export function getWindowButton({
   // hammerspoon if the corresponding app is hung
   const bundleId = windowObject.application()?.bundleID() || '';
 
-  const state: {
-    canvases: {
-      mainCanvas: hs.canvas.CanvasType | undefined;
-      hoverCanvas: hs.canvas.CanvasType | undefined;
-    };
-    mouseButtonIsDown: boolean;
-    mouseIsInsideButton: boolean;
-    x: number;
-    width: number;
-    windowObject: hs.window.WindowType;
-    windowTitle: string;
-    isMinimized: boolean;
-  } = {
+  const state: State = {
     canvases: {
       mainCanvas: undefined,
       hoverCanvas: undefined,
     },
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
-    x,
+    x: windowButtonX,
     width: buttonWidth,
     windowObject,
     windowTitle: windowObject.title(),
+    windowSnapshot: undefined,
     isMinimized: windowObject.isMinimized(),
   };
 
   state.canvases.mainCanvas = hs.canvas.new({
-    x,
-    y,
+    x: windowButtonX,
+    y: windowButtonY,
     w: buttonWidth,
     h: buttonHeight,
   });

@@ -8,6 +8,18 @@
 
 #### Added
 
+- Experimental support for window previews when hovering a window button
+
+  - Enable by adding to your `init.lua`:
+
+    setShowWindowPreviewOnHover(true);
+
+  - Known issues:
+    - No previews are available for windows that are minimized on HammberBar
+      start
+    - Adding or removing screens trigger HammerBar restarts, and thus minimized
+      windows won't have any previews :-(
+
 - New widgets:
   - Clock variants: `analog-clock`, `analog-circles-clock`
   - `cpuMonitor`

@@ -25,6 +25,7 @@ import {
   addWidgetsSecondaryScreenLeft,
   addWidgetsSecondaryScreenRight,
   setWindowStatusUpdateInterval,
+  setShowWindowPreviewOnHover,
   start,
   stop,
 } from './main';
@@ -148,6 +149,18 @@ function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
   setWindowStatusUpdateInterval(newInterval);
 }
 
+function validateAndSetShowWindowPreviewOnHover(show: unknown) {
+  if (typeof show !== 'boolean') {
+    printDiagnostic([
+      'Unexpected argument to showWindowPreviewOnHover',
+      'Expected a boolean, but instead received this:',
+      hs.inspect.inspect(show),
+    ]);
+    return;
+  }
+  setShowWindowPreviewOnHover(show);
+}
+
 // Print version info here so it's the first the thing seen in the console
 printDiagnostic(`Version   : ${VERSION}`);
 printDiagnostic(`Build Date: ${BUILD_DATE}`);
@@ -178,4 +191,6 @@ export {
   //
   validateAndSetWindowListUpdateInterval as setWindowListUpdateInterval,
   validateAndSetWindowStatusUpdateInterval as setWindowStatusUpdateInterval,
+  //
+  validateAndSetShowWindowPreviewOnHover as setShowWindowPreviewOnHover,
 };

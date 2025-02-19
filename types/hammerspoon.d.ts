@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -259,6 +259,7 @@ declare namespace hs.window {
     role: () => string;
     screen: () => hs.screen.ScreenType;
     setFrame: ({ x, y, w, h }: hs.FrameType) => void;
+    snapshot: () => hs.image.ImageType;
     subrole: () => string;
     title: () => string;
     unminimize: () => void;

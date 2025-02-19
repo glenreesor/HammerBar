@@ -26,11 +26,13 @@ import { getWindowButtonsPanelBuilder } from './windowButtonsPanel';
 type Config = {
   panelHeight: number;
   windowStatusUpdateInterval: number;
+  showWindowPreviewOnHover: boolean;
 };
 
 const config: Config = {
   panelHeight: 45,
   windowStatusUpdateInterval: 1,
+  showWindowPreviewOnHover: false,
 };
 
 type State = {
@@ -111,10 +113,11 @@ function createPanelsForAllScreens() {
           left: leftWidgets,
           right: rightWidgets,
         },
-        windowButtonsPanelBuilder: getWindowButtonsPanelBuilder(
-          screenInfo.id,
-          config.windowStatusUpdateInterval,
-        ),
+        windowButtonsPanelBuilder: getWindowButtonsPanelBuilder({
+          screenId: screenInfo.id,
+          windowStatusUpdateInterval: config.windowStatusUpdateInterval,
+          showWindowPreviewOnHover: config.showWindowPreviewOnHover,
+        }),
       }),
     );
   });
@@ -207,6 +210,10 @@ export function addWidgetsSecondaryScreenRight(
 
 export function setWindowStatusUpdateInterval(newInterval: number) {
   config.windowStatusUpdateInterval = newInterval;
+}
+
+export function setShowWindowPreviewOnHover(show: boolean) {
+  config.showWindowPreviewOnHover = show;
 }
 
 export function start() {

@@ -7,7 +7,8 @@
     "lint-staged": "lint-staged",
     "prettier": "prettier --write",
     "test": "vitest run",
-    "test-watch": "vitest watch"
+    "test-watch": "vitest watch",
+    "typecheck": "tstl --noEmit"
   },
   "devDependencies": {
     "lint-staged": "^15.2.2",
