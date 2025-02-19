@@ -12,7 +12,7 @@
 
   - Enable by adding to your `init.lua`:
 
-    setShowWindowPreviewOnHover(true);
+        setShowWindowPreviewOnHover(true);
 
   - Known issues:
     - No previews are available for windows that are minimized on HammberBar
