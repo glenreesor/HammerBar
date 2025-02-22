@@ -17,6 +17,7 @@
 
 import { DEFAULT_THEME } from '../theme';
 import ToggleButton from './toggleButton';
+import PanelBorders from './panelBorders';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 import type {
   WidgetBuilder,
@@ -51,6 +52,7 @@ export default function panel(params: {
   function cleanupPriorToDelete() {
     toggleButtons.forEach((button) => button.cleanupPriorToDelete());
     widgets.forEach((widget) => widget.cleanupPriorToDelete());
+    panelBorders.cleanupPriorToDelete();
   }
 
   function toggleVisibility() {
@@ -77,19 +79,17 @@ export default function panel(params: {
 
   const state: {
     isVisible: boolean;
-    topBorderCanvas: hs.canvas.CanvasType | undefined;
-    bottomBorderCanvas: hs.canvas.CanvasType | undefined;
-    leftBorderCanvas: hs.canvas.CanvasType | undefined;
-    rightBorderCanvas: hs.canvas.CanvasType | undefined;
   } = {
     isVisible: true,
-    topBorderCanvas: undefined,
-    bottomBorderCanvas: undefined,
-    leftBorderCanvas: undefined,
-    rightBorderCanvas: undefined,
   };
 
   const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
+  const panelBorders = PanelBorders({
+    panelX: panelCoords.x,
+    panelY: panelCoords.y,
+    panelWidth: panelDimensions.w,
+    panelHeight: panelDimensions.h,
+  });
 
   // Left Toggle Button
   toggleButtons.push(
@@ -167,111 +167,7 @@ export default function panel(params: {
     }),
   );
 
-  state.leftBorderCanvas = hs.canvas.new({
-    x: params.coords.x,
-    y: panelCoords.y,
-    w: panelBorderWidth,
-    h: panelDimensions.h,
-  });
-
-  state.leftBorderCanvas.alpha(DEFAULT_THEME.panelBorder.alpha);
-  state.leftBorderCanvas.show();
-
-  state.rightBorderCanvas = hs.canvas.new({
-    x: params.dimensions.w - panelBorderWidth,
-    y: panelCoords.y,
-    w: panelBorderWidth,
-    h: panelDimensions.h,
-  });
-
-  state.rightBorderCanvas.alpha(DEFAULT_THEME.panelBorder.alpha);
-  state.rightBorderCanvas.show();
-
-  state.topBorderCanvas = hs.canvas.new({
-    x: 0,
-    y: params.coords.y - 2 * panelBorderWidth,
-    w: params.dimensions.w,
-    h: panelBorderWidth,
-  });
-
-  state.topBorderCanvas.alpha(DEFAULT_THEME.panelBorder.alpha);
-  state.topBorderCanvas.show();
-
-  state.bottomBorderCanvas = hs.canvas.new({
-    x: 0,
-    y: params.coords.y + panelDimensions.h - panelBorderWidth,
-    w: params.dimensions.w,
-    h: panelBorderWidth,
-  });
-
-  state.bottomBorderCanvas.alpha(DEFAULT_THEME.panelBorder.alpha);
-  state.bottomBorderCanvas.show();
-
-  addSideBorderElements(
-    state.leftBorderCanvas,
-    panelBorderWidth,
-    params.dimensions.h,
-  );
-
-  addSideBorderElements(
-    state.rightBorderCanvas,
-    panelBorderWidth,
-    params.dimensions.h,
-  );
-
-  addHorizontalBorderElements(
-    state.topBorderCanvas,
-    params.dimensions.w,
-    panelBorderWidth,
-  );
-
-  addHorizontalBorderElements(
-    state.bottomBorderCanvas,
-    params.dimensions.w,
-    panelBorderWidth,
-  );
-
   return {
     cleanupPriorToDelete,
   };
-}
-
-function addSideBorderElements(
-  canvas: hs.canvas.CanvasType,
-  panelBorderWidth: number,
-  panelBorderHeight: number,
-) {
-  canvas.replaceElements([
-    {
-      type: 'rectangle',
-      fillColor: DEFAULT_THEME.panelBorder.color,
-      strokeColor: DEFAULT_THEME.panelBorder.color,
-      frame: {
-        x: 0,
-        y: 0,
-        w: panelBorderWidth,
-        h: panelBorderHeight,
-      },
-    },
-  ]);
-}
-
-function addHorizontalBorderElements(
-  canvas: hs.canvas.CanvasType,
-  screenWidth: number,
-  panelBorderHeight: number,
-) {
-  canvas.replaceElements([
-    {
-      type: 'rectangle',
-      fillColor: DEFAULT_THEME.panelBorder.color,
-      strokeColor: DEFAULT_THEME.panelBorder.color,
-      frame: {
-        x: 0,
-        y: 0,
-        w: screenWidth,
-        h: panelBorderHeight,
-      },
-    },
-  ]);
 }
