@@ -37,6 +37,9 @@ export default function PanelBorders(args: {
     state.rightBorderCanvas?.hide();
     state.rightBorderCanvas = undefined;
 
+    state.rightInnerBorderCanvas?.hide();
+    state.rightInnerBorderCanvas = undefined;
+
     state.topBorderCanvas?.hide();
     state.topBorderCanvas = undefined;
 
@@ -45,6 +48,9 @@ export default function PanelBorders(args: {
   }
 
   function render() {
+    // ---
+    // Left Borders
+    // ---
     if (state.leftBorderCanvas) {
       state.leftBorderCanvas.replaceElements();
       addSideBorderElements(state.leftBorderCanvas, borderWidth, panelHeight);
@@ -59,16 +65,36 @@ export default function PanelBorders(args: {
           panelHeight,
         );
       }
+      state.leftInnerBorderCanvas?.show();
     } else {
       state.leftInnerBorderCanvas?.hide();
-      state.leftInnerBorderCanvas?.show();
     }
 
+    // ---
+    // Right Borders
+    // ---
     if (state.rightBorderCanvas) {
       state.rightBorderCanvas.replaceElements();
       addSideBorderElements(state.rightBorderCanvas, borderWidth, panelHeight);
     }
 
+    if (!state.panelIsVisible) {
+      if (state.rightInnerBorderCanvas) {
+        state.rightInnerBorderCanvas.replaceElements();
+        addSideBorderElements(
+          state.rightInnerBorderCanvas,
+          borderWidth,
+          panelHeight,
+        );
+      }
+      state.rightInnerBorderCanvas?.show();
+    } else {
+      state.rightInnerBorderCanvas?.hide();
+    }
+
+    // ---
+    // Top Border
+    // ---
     if (state.topBorderCanvas) {
       state.topBorderCanvas.replaceElements();
 
@@ -96,6 +122,9 @@ export default function PanelBorders(args: {
       }
     }
 
+    // ---
+    // Bottom Border
+    // ---
     if (state.bottomBorderCanvas) {
       state.bottomBorderCanvas.replaceElements();
 
@@ -134,6 +163,8 @@ export default function PanelBorders(args: {
     leftInnerBorderCanvas: hs.canvas.CanvasType | undefined;
 
     rightBorderCanvas: hs.canvas.CanvasType | undefined;
+    rightInnerBorderCanvas: hs.canvas.CanvasType | undefined;
+
     topBorderCanvas: hs.canvas.CanvasType | undefined;
     bottomBorderCanvas: hs.canvas.CanvasType | undefined;
     panelIsVisible: boolean;
@@ -142,6 +173,8 @@ export default function PanelBorders(args: {
     leftInnerBorderCanvas: undefined,
 
     rightBorderCanvas: undefined,
+    rightInnerBorderCanvas: undefined,
+
     topBorderCanvas: undefined,
     bottomBorderCanvas: undefined,
     panelIsVisible: true,
@@ -179,12 +212,25 @@ export default function PanelBorders(args: {
   state.rightBorderCanvas = hs.canvas.new({
     x: panelX + panelWidth,
     y: panelY,
-    w: panelWidth,
+    w: borderWidth,
     h: panelHeight,
   });
 
   state.rightBorderCanvas.alpha(DEFAULT_THEME.panelBorder.alpha);
   state.rightBorderCanvas.show();
+
+  //---------------------------------------------------------------------------
+  // Right inner border
+  //---------------------------------------------------------------------------
+  state.rightInnerBorderCanvas = hs.canvas.new({
+    x: panelX + panelWidth - TOGGLE_BUTTON_WIDTH - borderWidth,
+    y: panelY,
+    w: borderWidth,
+    h: panelHeight,
+  });
+
+  state.rightInnerBorderCanvas.alpha(DEFAULT_THEME.panelBorder.alpha);
+  state.rightInnerBorderCanvas.show();
 
   //---------------------------------------------------------------------------
   // Top border
