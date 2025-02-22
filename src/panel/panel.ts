@@ -66,6 +66,7 @@ export default function panel(params: {
         widget.show();
         widget.bringToFront();
       });
+      panelBorders.setPanelVisibility(true);
     } else {
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(false);
@@ -74,6 +75,7 @@ export default function panel(params: {
       widgets.forEach((widget) => {
         widget.hide();
       });
+      panelBorders.setPanelVisibility(false);
     }
   }
 

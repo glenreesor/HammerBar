@@ -16,6 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { DEFAULT_THEME } from 'src/theme';
+import { TOGGLE_BUTTON_WIDTH } from './constants';
 
 export default function PanelBorders(args: {
   panelX: number;
@@ -42,27 +43,67 @@ export default function PanelBorders(args: {
 
   function render() {
     if (state.leftBorderCanvas) {
+      state.leftBorderCanvas.replaceElements();
       addSideBorderElements(state.leftBorderCanvas, borderWidth, panelHeight);
     }
 
     if (state.rightBorderCanvas) {
+      state.rightBorderCanvas.replaceElements();
       addSideBorderElements(state.rightBorderCanvas, borderWidth, panelHeight);
     }
 
     if (state.topBorderCanvas) {
-      addHorizontalBorderElements(
-        state.topBorderCanvas,
-        panelWidth,
-        borderWidth,
-      );
+      state.topBorderCanvas.replaceElements();
+
+      if (state.panelIsVisible) {
+        addHorizontalBorderElements(
+          state.topBorderCanvas,
+          0,
+          panelWidth,
+          borderWidth,
+        );
+      } else {
+        addHorizontalBorderElements(
+          state.topBorderCanvas,
+          0,
+          TOGGLE_BUTTON_WIDTH,
+          borderWidth,
+        );
+
+        addHorizontalBorderElements(
+          state.topBorderCanvas,
+          panelWidth - TOGGLE_BUTTON_WIDTH,
+          TOGGLE_BUTTON_WIDTH,
+          borderWidth,
+        );
+      }
     }
 
     if (state.bottomBorderCanvas) {
-      addHorizontalBorderElements(
-        state.bottomBorderCanvas,
-        panelWidth,
-        borderWidth,
-      );
+      state.bottomBorderCanvas.replaceElements();
+
+      if (state.panelIsVisible) {
+        addHorizontalBorderElements(
+          state.bottomBorderCanvas,
+          0,
+          panelWidth,
+          borderWidth,
+        );
+      } else {
+        addHorizontalBorderElements(
+          state.bottomBorderCanvas,
+          0,
+          TOGGLE_BUTTON_WIDTH,
+          borderWidth,
+        );
+
+        addHorizontalBorderElements(
+          state.bottomBorderCanvas,
+          panelWidth - TOGGLE_BUTTON_WIDTH,
+          TOGGLE_BUTTON_WIDTH,
+          borderWidth,
+        );
+      }
     }
   }
 
@@ -157,7 +198,7 @@ function addSideBorderElements(
   panelBorderWidth: number,
   panelBorderHeight: number,
 ) {
-  canvas.replaceElements([
+  canvas.appendElements([
     {
       type: 'rectangle',
       fillColor: DEFAULT_THEME.panelBorder.color,
@@ -174,18 +215,19 @@ function addSideBorderElements(
 
 function addHorizontalBorderElements(
   canvas: hs.canvas.CanvasType,
-  panelWidth: number,
+  x: number,
+  width: number,
   panelBorderHeight: number,
 ) {
-  canvas.replaceElements([
+  canvas.appendElements([
     {
       type: 'rectangle',
       fillColor: DEFAULT_THEME.panelBorder.color,
       strokeColor: DEFAULT_THEME.panelBorder.color,
       frame: {
-        x: 0,
+        x,
         y: 0,
-        w: panelWidth + 2 * panelBorderHeight,
+        w: width + 2 * panelBorderHeight,
         h: panelBorderHeight,
       },
     },
