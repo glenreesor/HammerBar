@@ -18,7 +18,7 @@
 export const DEFAULT_THEME = {
   panelBorder: {
     alpha: 0.5,
-    width: 5,
+    width: 0,
     color: { red: 0.5, green: 0, blue: 0.5 },
   },
   toggleButtons: {
