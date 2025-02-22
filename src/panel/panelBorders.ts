@@ -31,6 +31,9 @@ export default function PanelBorders(args: {
     state.leftBorderCanvas?.hide();
     state.leftBorderCanvas = undefined;
 
+    state.leftInnerBorderCanvas?.hide();
+    state.leftInnerBorderCanvas = undefined;
+
     state.rightBorderCanvas?.hide();
     state.rightBorderCanvas = undefined;
 
@@ -45,6 +48,20 @@ export default function PanelBorders(args: {
     if (state.leftBorderCanvas) {
       state.leftBorderCanvas.replaceElements();
       addSideBorderElements(state.leftBorderCanvas, borderWidth, panelHeight);
+    }
+
+    if (!state.panelIsVisible) {
+      if (state.leftInnerBorderCanvas) {
+        state.leftInnerBorderCanvas.replaceElements();
+        addSideBorderElements(
+          state.leftInnerBorderCanvas,
+          borderWidth,
+          panelHeight,
+        );
+      }
+    } else {
+      state.leftInnerBorderCanvas?.hide();
+      state.leftInnerBorderCanvas?.show();
     }
 
     if (state.rightBorderCanvas) {
@@ -114,12 +131,16 @@ export default function PanelBorders(args: {
 
   const state: {
     leftBorderCanvas: hs.canvas.CanvasType | undefined;
+    leftInnerBorderCanvas: hs.canvas.CanvasType | undefined;
+
     rightBorderCanvas: hs.canvas.CanvasType | undefined;
     topBorderCanvas: hs.canvas.CanvasType | undefined;
     bottomBorderCanvas: hs.canvas.CanvasType | undefined;
     panelIsVisible: boolean;
   } = {
     leftBorderCanvas: undefined,
+    leftInnerBorderCanvas: undefined,
+
     rightBorderCanvas: undefined,
     topBorderCanvas: undefined,
     bottomBorderCanvas: undefined,
@@ -132,12 +153,25 @@ export default function PanelBorders(args: {
   state.leftBorderCanvas = hs.canvas.new({
     x: panelX - borderWidth,
     y: panelY,
-    w: panelWidth,
+    w: borderWidth,
     h: panelHeight,
   });
 
   state.leftBorderCanvas.alpha(DEFAULT_THEME.panelBorder.alpha);
   state.leftBorderCanvas.show();
+
+  //---------------------------------------------------------------------------
+  // Left innerborder
+  //---------------------------------------------------------------------------
+  state.leftInnerBorderCanvas = hs.canvas.new({
+    x: panelX + TOGGLE_BUTTON_WIDTH,
+    y: panelY,
+    w: borderWidth,
+    h: panelHeight,
+  });
+
+  state.leftInnerBorderCanvas.alpha(DEFAULT_THEME.panelBorder.alpha);
+  state.leftInnerBorderCanvas.show();
 
   //---------------------------------------------------------------------------
   // Right border
