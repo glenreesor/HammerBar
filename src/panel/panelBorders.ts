@@ -297,7 +297,7 @@ function addHorizontalBorderElements(
   canvas: hs.canvas.CanvasType,
   x: number,
   width: number,
-  panelBorderHeight: number,
+  borderWidth: number,
 ) {
   canvas.appendElements([
     {
@@ -307,8 +307,8 @@ function addHorizontalBorderElements(
       frame: {
         x,
         y: 0,
-        w: width + 2 * panelBorderHeight,
-        h: panelBorderHeight,
+        w: width + 2 * borderWidth,
+        h: borderWidth,
       },
     },
   ]);
