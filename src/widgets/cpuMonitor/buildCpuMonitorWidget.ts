@@ -32,6 +32,13 @@ export function buildCpuMonitorWidget(
     | ReturnType<typeof hs.host.cpuUsage>
     | undefined;
 
+  function cleanupPriorToDelete() {
+    if (!hammerspoonCpuUsageHandle?.finished()) {
+      hammerspoonCpuUsageHandle?.stop();
+    }
+    hammerspoonCpuUsageHandle = undefined;
+  }
+
   function scheduleNextCpuUsageCallback() {
     hammerspoonCpuUsageHandle = hs.host.cpuUsage(
       configParams.interval,
@@ -74,8 +81,7 @@ export function buildCpuMonitorWidget(
   return {
     ...widget,
     cleanupPriorToDelete: () => {
-      hammerspoonCpuUsageHandle?.stop();
-      hammerspoonCpuUsageHandle = undefined;
+      cleanupPriorToDelete();
       widget.cleanupPriorToDelete();
     },
   };
