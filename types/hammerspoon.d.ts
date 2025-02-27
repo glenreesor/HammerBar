@@ -149,8 +149,8 @@ declare namespace hs.host {
     period?: number,
     callback?: (this: void, result: CpuUsageReturnStats) => void,
   ): {
-    finished: (this: void) => boolean;
-    stop: (this: void) => void;
+    finished: () => boolean;
+    stop: () => void;
   };
 }
 
