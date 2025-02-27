@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { Widget, WidgetBuilderParams } from 'src/mainPanel';
 import { getLineGraphCurrentValueBuilder } from '../lineGraphCurrentValue';
 import { getTextBuilder } from '../text';
 import type { ConfigParams } from './types';
@@ -24,45 +24,59 @@ export function buildCpuMonitorWidget(
   configParams: ConfigParams,
   builderParams: WidgetBuilderParams,
 ) {
+  // We don't want to block the thread each time `cmd` is called, so:
+  // - update a local value using hammerspoon's native async cpuUsage function
+  // - return that value each time `cmd` is called
+  let cpuUsageFromHammerspoon = 0;
+  let hammerspoonCpuUsageHandle:
+    | ReturnType<typeof hs.host.cpuUsage>
+    | undefined;
+
+  function scheduleNextCpuUsageCallback() {
+    hammerspoonCpuUsageHandle = hs.host.cpuUsage(
+      configParams.interval,
+      updateLocalCpuUsage,
+    );
+  }
+
+  function updateLocalCpuUsage(
+    this: void,
+    result: hs.host.CpuUsageReturnStats,
+  ) {
+    cpuUsageFromHammerspoon = Math.round(result.overall.active);
+    scheduleNextCpuUsageCallback();
+  }
+
+  function getHammerspoonProvidedCpuUsage() {
+    return cpuUsageFromHammerspoon;
+  }
+
+  scheduleNextCpuUsageCallback();
+
+  let widget: Widget;
+
   if (configParams.type === 'text') {
-    return getTextBuilder({
+    widget = getTextBuilder({
       title: 'CPU',
       interval: configParams.interval,
-      cmd: () => `${getCpuUsage()}%`,
+      cmd: () => `${getHammerspoonProvidedCpuUsage()}%`,
+    }).buildWidget(builderParams);
+  } else {
+    widget = getLineGraphCurrentValueBuilder({
+      title: 'CPU',
+      interval: configParams.interval,
+      maxValues: configParams.maxValues,
+      graphYMax: 100,
+      cmd: getHammerspoonProvidedCpuUsage,
     }).buildWidget(builderParams);
   }
 
-  return getLineGraphCurrentValueBuilder({
-    title: 'CPU',
-    interval: configParams.interval,
-    maxValues: configParams.maxValues,
-    graphYMax: 100,
-    cmd: getCpuUsage,
-  }).buildWidget(builderParams);
-}
-
-function getCpuUsage() {
-  const handle = io.popen('top -l 1');
-  const output = handle.read('a');
-  handle.close();
-
-  // We're looking for a line of the form:
-  //     CPU usage: x.x% user, x.x% sys
-  //
-  // Unfortunately tstl doesn't support TS regular expressions so this isn't
-  // the prettiest :-(
-  const cpuUsageString = 'CPU usage: ';
-  const percentUserString = '% user, ';
-  const lineStart = output.indexOf(cpuUsageString);
-
-  const userValueStart = lineStart + cpuUsageString.length;
-  const userValueEnd = output.indexOf(percentUserString, userValueStart);
-  const userValue = output.substring(userValueStart, userValueEnd);
-
-  const sysValueStart = userValueEnd + percentUserString.length;
-  const sysValueEnd = output.indexOf('% sys', sysValueStart);
-  const sysValue = output.substring(sysValueStart, sysValueEnd);
-
-  const totalCpu = Number.parseFloat(userValue) + Number.parseFloat(sysValue);
-  return Math.round(totalCpu);
+  return {
+    ...widget,
+    cleanupPriorToDelete: () => {
+      hammerspoonCpuUsageHandle?.stop();
+      hammerspoonCpuUsageHandle = undefined;
+      widget.cleanupPriorToDelete();
+    },
+  };
 }

@@ -125,6 +125,36 @@ declare namespace hs.eventtap {
 }
 
 //-----------------------------------------------------------------------------
+declare namespace hs.host {
+  // Yes this is the actual return type. Wow.
+  type CpuUsageReturnStats = {
+    user: number;
+    system: number;
+    nice: number;
+    active: number;
+    idle: number;
+  }[] & {
+    n: number;
+    overall: {
+      user: number;
+      system: number;
+      nice: number;
+      active: number;
+      idle: number;
+    };
+  };
+
+  function cpuUsage(
+    this: void,
+    period?: number,
+    callback?: (this: void, result: CpuUsageReturnStats) => void,
+  ): {
+    finished: (this: void) => boolean;
+    stop: (this: void) => void;
+  };
+}
+
+//-----------------------------------------------------------------------------
 declare namespace hs.hotkey {
   // There are a bazillion overrides that hammerspoon accepts. Just create
   // the one I need
