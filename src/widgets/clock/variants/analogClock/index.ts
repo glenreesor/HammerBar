@@ -16,5 +16,6 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { getAnalogClockBuilder } from './getAnalogClockBuilder';
+import { validateParams } from './validateParams';
 
-export { getAnalogClockBuilder };
+export { getAnalogClockBuilder, validateParams };

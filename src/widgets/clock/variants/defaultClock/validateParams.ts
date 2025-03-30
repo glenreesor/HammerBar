@@ -15,14 +15,26 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-// We only need to validate enough to determine which clock variant to render,
-// so no need to include other keys in the config object
+type ReturnType =
+  | {
+      isValid: true;
+      expectedArgument: undefined;
+    }
+  | {
+      isValid: false;
+      expectedArgument: string[];
+    };
 
-export type DefaultClockParams = undefined;
-export type AnalogClockParams = { type: 'analog-clock' };
-export type AnalogCirclesClockParams = { type: 'analog-circles-clock' };
+export function validateParams(unvalidateConfigParams?: unknown): ReturnType {
+  if (unvalidateConfigParams === undefined) {
+    return {
+      isValid: true,
+      expectedArgument: undefined,
+    };
+  }
 
-export type ConfigParams =
-  | DefaultClockParams
-  | AnalogClockParams
-  | AnalogCirclesClockParams;
+  return {
+    isValid: false,
+    expectedArgument: ['nil'],
+  };
+}
