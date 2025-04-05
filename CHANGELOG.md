@@ -5,6 +5,21 @@
 - `LineGraph` widget expanded view:
   - Current value is right aligned
   - More padding below the 0 line
+- Default clock:
+
+  - Now uses the system's locale for formatting the date
+    (the underlying toolkits don't change time formtas based on locale)
+  - Supports specifying format strings for date and time, example:
+
+          spoon.HammerBar:addWidgetsPrimaryScreenLeft({
+            spoon.HammerBar.widgets:clock({
+              dateFormat = 'YYYY-MM-DD',
+              timeFormat = 'h:mm:aa',
+            }),
+          })
+
+    - See `src/widgets/clock/variants/defaultClock/util.ts` until
+      docs are updated with the next release
 
 #### Added
 

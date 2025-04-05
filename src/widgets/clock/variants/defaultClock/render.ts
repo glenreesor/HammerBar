@@ -16,16 +16,22 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
+import { ConfigParams } from './types';
+import { getFormattedDate, getFormattedTime } from './util';
 
 export function render(args: {
+  configParams: ConfigParams;
   canvas: hs.canvas.CanvasType;
   width: number;
   height: number;
 }) {
-  const { canvas, width, height } = args;
+  const { configParams, canvas, width, height } = args;
 
   const bgColor = { red: 1, green: 1, blue: 1 };
-  const { formattedTime, formattedDate } = getFormattedCurrentDateTime();
+  const { formattedTime, formattedDate } = getFormattedCurrentDateTime({
+    dateFormatString: configParams ? configParams.dateFormat : undefined,
+    timeFormatString: configParams ? configParams.timeFormat : undefined,
+  });
   const fontSize = 12;
   const timeY = height / 2 - fontSize - fontSize / 2;
   const dateY = timeY + fontSize * 1.6;
@@ -71,22 +77,59 @@ export function render(args: {
   ]);
 }
 
-function getFormattedCurrentDateTime(): {
+function getFormattedCurrentDateTime(args: {
+  dateFormatString?: string;
+  timeFormatString?: string;
+}): {
   formattedTime: string;
   formattedDate: string;
 } {
-  const now = os.date('*t') as os.DateTable;
-
-  const hour = now.hour < 13 ? now.hour : now.hour - 12;
-  const minute = `${now.min < 10 ? '0' : ''}${now.min}`;
-  const ampm = now.hour < 12 ? 'am' : 'pm';
-
-  const year = now.year;
-  const month = `${now.month < 10 ? '0' : ''}${now.month}`;
-  const day = `${now.day < 10 ? '0' : ''}${now.day}`;
+  const { dateFormatString, timeFormatString } = args;
 
   return {
-    formattedTime: `${hour}:${minute} ${ampm}`,
-    formattedDate: `${year}-${month}-${day}`,
+    formattedTime: getTimeString(timeFormatString),
+    formattedDate: getDateString(dateFormatString),
   };
+}
+
+function getTimeString(timeFormatString: string | undefined): string {
+  const now = os.date('*t') as os.DateTable;
+
+  if (timeFormatString === undefined) {
+    const hour = now.hour < 13 ? now.hour : now.hour - 12;
+    const minute = `${now.min < 10 ? '0' : ''}${now.min}`;
+    const ampm = now.hour < 12 ? 'am' : 'pm';
+
+    return `${hour}:${minute} ${ampm}`;
+  }
+
+  return getFormattedTime({
+    time: {
+      hour: now.hour,
+      minute: now.min,
+      second: now.sec,
+    },
+    timeFormat: timeFormatString,
+  });
+}
+
+function getDateString(dateFormatString: string | undefined): string {
+  if (dateFormatString === undefined) {
+    return os.date('%x');
+  }
+
+  const now = os.date('*t') as os.DateTable;
+  return getFormattedDate({
+    date: {
+      year: now.year,
+      month: now.month,
+      day: now.day,
+      weekDayNum: now.wday,
+    },
+    dateFormat: dateFormatString,
+    localeInfo: {
+      monthAbbrevs: hs.host.locale.details().calendar.shortMonthSymbols,
+      dayAbbrevs: hs.host.locale.details().calendar.shortWeekdaySymbols,
+    },
+  });
 }

@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -25,13 +25,15 @@ declare namespace os {
     hour: number;
     min: number;
     sec: number;
-    wkday: number;
+    wday: number;
     yday: number;
     isdst?: number;
   };
 
-  function date(this: void, format: string, time?: number): string | DateTable;
+  function date(this: void, format: '*t', time?: number): DateTable;
+  function date(this: void, format: string, time?: number): string;
   function getenv(this: void, envVariable: string): string;
+  function setlocale(this: void, localeName?: string): string | undefined;
 }
 
 declare namespace io {

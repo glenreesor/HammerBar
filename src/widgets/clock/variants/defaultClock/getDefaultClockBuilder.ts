@@ -15,13 +15,33 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuildingInfo } from 'src/mainPanel';
+import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
+import { getNoopWidgetBuildingInfo } from 'src/utils';
 import { buildDefaultClockWidget } from './buildDefaultClockWidget';
+import { validateParams } from './validateParams';
 
-export function getDefaultClockBuilder(): WidgetBuildingInfo {
+export function getDefaultClockBuilder(
+  unvalidatedConfigParams: unknown,
+): WidgetBuildingInfo {
+  const { isValid, validParams, expectedArgument } = validateParams(
+    unvalidatedConfigParams,
+  );
+
+  if (!isValid) {
+    const errorDetails = [
+      'Unexpected argument. Expecting an argument like this:',
+      ...expectedArgument,
+      'But instead this was received:',
+      hs.inspect.inspect(unvalidatedConfigParams),
+    ];
+
+    return getNoopWidgetBuildingInfo('Default Clock', errorDetails);
+  }
+
   return {
     widgetName: 'Clock',
     widgetParamErrors: [],
-    buildWidget: buildDefaultClockWidget,
+    buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
+      buildDefaultClockWidget(validParams, widgetBuilderParams),
   };
 }

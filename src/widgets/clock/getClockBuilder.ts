@@ -39,7 +39,7 @@ export function getClockBuilder(
   }
 
   if (type === 'default') {
-    return getDefaultClockBuilder();
+    return getDefaultClockBuilder(unvalidatedConfigParams);
   }
 
   if (type === 'analog-clock') {

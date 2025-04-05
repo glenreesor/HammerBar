@@ -22,10 +22,14 @@ import {
   showCanvases,
 } from '../../../_helpers/util';
 import { render } from './render';
+import { ConfigParams } from './types';
 
 const CLOCK_WIDTH = 100;
 
-export function buildDefaultClockWidget(builderParams: WidgetBuilderParams) {
+export function buildDefaultClockWidget(
+  configParams: ConfigParams,
+  builderParams: WidgetBuilderParams,
+) {
   const { coords, widgetHeight } = builderParams;
 
   function cleanupPriorToDelete() {
@@ -54,10 +58,19 @@ export function buildDefaultClockWidget(builderParams: WidgetBuilderParams) {
     }
 
     render({
+      configParams,
       canvas: state.canvas,
       width: CLOCK_WIDTH,
       height: widgetHeight,
     });
+  }
+
+  // The embedded lua runtime uses 'C' for the locale, which won't
+  // give us nicely formatted dates. So set the locale to match
+  // the system's. But only if the lua one isn't already set,
+  // on the off chance user has already set it to something else.
+  if (!os.setlocale()) {
+    os.setlocale(hs.host.locale.current());
   }
 
   const canvasX = coords.leftX ?? coords.rightX - CLOCK_WIDTH;
@@ -72,11 +85,19 @@ export function buildDefaultClockWidget(builderParams: WidgetBuilderParams) {
 
   state.canvas.show();
 
+  const updateInterval =
+    configParams?.timeFormat && configParams.timeFormat.includes('ss') ? 1 : 60;
+
   const now = os.date('*t') as os.DateTable;
-  state.timer = hs.timer.doAfter(60 - now.sec, () => {
-    renderWithArgs();
-    state.timer = hs.timer.doEvery(60, renderWithArgs);
-  });
+
+  if (updateInterval === 1) {
+    state.timer = hs.timer.doEvery(1, renderWithArgs);
+  } else {
+    state.timer = hs.timer.doAfter(60 - now.sec, () => {
+      renderWithArgs();
+      state.timer = hs.timer.doEvery(updateInterval, renderWithArgs);
+    });
+  }
 
   return {
     width: CLOCK_WIDTH,

@@ -15,26 +15,66 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import type { ConfigParams } from './types';
+
 type ReturnType =
   | {
       isValid: true;
+      validParams: ConfigParams;
       expectedArgument: undefined;
     }
   | {
       isValid: false;
+      validParams: undefined;
       expectedArgument: string[];
     };
 
-export function validateParams(unvalidateConfigParams?: unknown): ReturnType {
-  if (unvalidateConfigParams === undefined) {
+export function validateParams(unvalidatedConfigParams?: unknown): ReturnType {
+  if (isConfigParams(unvalidatedConfigParams)) {
     return {
       isValid: true,
+      validParams: unvalidatedConfigParams,
       expectedArgument: undefined,
     };
   }
 
   return {
     isValid: false,
-    expectedArgument: ['nil'],
+    validParams: undefined,
+    expectedArgument: [
+      'nil',
+      'or',
+      '{',
+      '    dateFormat: <format string>, (optional)',
+      '    timeFormat: <format string>. (optional)',
+    ],
   };
+}
+
+function isConfigParams(obj?: unknown): obj is ConfigParams {
+  if (obj === undefined) {
+    return true;
+  }
+
+  if (typeof obj === 'object' && obj !== null) {
+    let isValid = true;
+
+    Object.keys(obj).forEach((k) => {
+      if (!['dateFormat', 'timeFormat'].includes(k)) {
+        isValid = false;
+      }
+    });
+
+    if ('dateFormat' in obj && typeof obj.dateFormat !== 'string') {
+      isValid = false;
+    }
+
+    if ('timeFormat' in obj && typeof obj.timeFormat !== 'string') {
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  return false;
 }

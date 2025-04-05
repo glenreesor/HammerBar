@@ -152,6 +152,23 @@ declare namespace hs.host {
     finished: () => boolean;
     stop: () => void;
   };
+
+  namespace locale {
+    function current(this: void): string;
+    function details(
+      this: void,
+      identifier?: string,
+    ): {
+      // Lots of other keys are returned. Only listing the ones I need
+      calendar: {
+        AMSymbol: string;
+        PMSymbol: string;
+        shortMonthSymbols: string[];
+        shortWeekdaySymbols: string[];
+      };
+      timeFormatIs24Hour: boolean;
+    };
+  }
 }
 
 //-----------------------------------------------------------------------------
