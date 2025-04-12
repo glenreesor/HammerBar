@@ -18,12 +18,8 @@
 import { BLACK } from 'src/constants';
 import type { State } from './types';
 
-export function renderWindowButton(args: {
-  state: State;
-  bundleId: string;
-  buttonHeight: number;
-}) {
-  const { state, bundleId, buttonHeight } = args;
+export function renderWindowButton(args: { state: State; bundleId: string }) {
+  const { state, bundleId } = args;
 
   let borderWidth;
   let fontSize;
@@ -41,14 +37,14 @@ export function renderWindowButton(args: {
 
   if (state.mouseButtonIsDown) {
     fontSize = 10;
-    iconWidth = 0.8 * buttonHeight;
+    iconWidth = 0.8 * state.buttonGeometry.height;
     iconHeight = iconWidth;
-    iconY = 0.1 * buttonHeight;
-    paddingLeft = 2 + 0.2 * buttonHeight;
+    iconY = 0.1 * state.buttonGeometry.height;
+    paddingLeft = 2 + 0.2 * state.buttonGeometry.height;
     paddingRight = 5;
   } else {
     fontSize = 12;
-    iconWidth = buttonHeight;
+    iconWidth = state.buttonGeometry.height;
     iconHeight = iconWidth;
     iconY = 0;
     paddingLeft = 2;
@@ -57,7 +53,7 @@ export function renderWindowButton(args: {
 
   const borderColor = { red: 0.5, green: 0.5, blue: 0.5 };
 
-  const bgColor = state.isMinimized
+  const bgColor = state.windowState.isMinimized
     ? { red: 0.7, green: 0.7, blue: 0.7 }
     : { red: 1, green: 1, blue: 1 };
 
@@ -65,7 +61,8 @@ export function renderWindowButton(args: {
 
   const textY = 2;
 
-  const maxTextWidth = state.width - paddingLeft - iconWidth - paddingRight;
+  const maxTextWidth =
+    state.buttonGeometry.width - paddingLeft - iconWidth - paddingRight;
 
   state.canvases.mainCanvas?.replaceElements([
     {
@@ -76,8 +73,8 @@ export function renderWindowButton(args: {
       frame: {
         x: 0,
         y: 0,
-        w: state.width,
-        h: buttonHeight,
+        w: state.buttonGeometry.width,
+        h: state.buttonGeometry.height,
       },
       roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
       trackMouseDown: true,
@@ -96,14 +93,14 @@ export function renderWindowButton(args: {
     },
     {
       type: 'text',
-      text: state.windowTitle,
+      text: state.windowState.title,
       textColor: BLACK,
       textSize: fontSize,
       frame: {
         x: textX,
         y: textY,
         w: maxTextWidth,
-        h: buttonHeight,
+        h: state.buttonGeometry.height,
       },
     },
   ]);

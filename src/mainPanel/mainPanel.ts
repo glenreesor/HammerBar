@@ -27,8 +27,10 @@ export function mainPanel(params: {
     right: WidgetBuildingInfo[];
   };
   windowButtonsPanelBuilder: (panelParams: {
-    coords: { x: number; y: number };
-    dimensions: { height: number; width: number };
+    x: number;
+    y: number;
+    height: number;
+    width: number;
   }) => Widget;
 }) {
   function cleanupPriorToDelete() {
@@ -170,14 +172,10 @@ export function mainPanel(params: {
 
   widgets.push(
     params.windowButtonsPanelBuilder({
-      coords: {
-        x: endOfLeftWidgets,
-        y: params.coords.y,
-      },
-      dimensions: {
-        height: params.dimensions.h,
-        width: params.dimensions.w - totalWidgetWidth,
-      },
+      x: endOfLeftWidgets,
+      y: params.coords.y,
+      height: params.dimensions.h,
+      width: params.dimensions.w - totalWidgetWidth,
     }),
   );
 

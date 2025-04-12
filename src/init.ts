@@ -17,7 +17,7 @@
 
 import type { WidgetBuildingInfo } from './mainPanel';
 import { VERSION, BUILD_DATE, GIT_HASH } from './version';
-import { setWindowListWatcherUpdateInterval as applyWindowListWatcherUpdateInterval } from './windowButtonsPanel';
+import { setUpdateInterval as applyWindowListWatcherUpdateInterval } from './windowListWatcher';
 
 import {
   addWidgetsPrimaryScreenLeft,

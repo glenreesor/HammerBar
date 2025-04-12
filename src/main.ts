@@ -22,6 +22,7 @@ import { mainPanel } from './mainPanel';
 import type { WidgetBuildingInfo } from './mainPanel';
 import { printDiagnostic } from './utils';
 import { getWindowButtonsPanelBuilder } from './windowButtonsPanel';
+import { subscribeToWindowListUpdates } from './windowListWatcher';
 
 type Config = {
   panelHeight: number;
@@ -117,6 +118,7 @@ function createPanelsForAllScreens() {
           screenId: screenInfo.id,
           windowStatusUpdateInterval: config.windowStatusUpdateInterval,
           showWindowPreviewOnHover: config.showWindowPreviewOnHover,
+          subscribeToWindowListUpdates,
         }),
       }),
     );

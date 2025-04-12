@@ -21,18 +21,24 @@ export function getWindowButtonsPanelBuilder(args: {
   screenId: number;
   windowStatusUpdateInterval: number;
   showWindowPreviewOnHover: boolean;
+  subscribeToWindowListUpdates: (
+    screenId: number,
+    callback: (windows: hs.window.WindowType[]) => void,
+  ) => () => void;
 }) {
-  const { screenId, windowStatusUpdateInterval, showWindowPreviewOnHover } =
-    args;
+  const {
+    screenId,
+    windowStatusUpdateInterval,
+    showWindowPreviewOnHover,
+    subscribeToWindowListUpdates,
+  } = args;
 
-  return (args: {
-    coords: { x: number; y: number };
-    dimensions: { height: number; width: number };
-  }) =>
+  return (geometry: { x: number; y: number; height: number; width: number }) =>
     buildWindowButtonsPanel({
       screenId,
       windowStatusUpdateInterval,
       showWindowPreviewOnHover,
-      ...args,
+      geometry,
+      subscribeToWindowListUpdates,
     });
 }

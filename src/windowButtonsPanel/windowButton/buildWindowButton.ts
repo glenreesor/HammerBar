@@ -23,22 +23,18 @@ import {
 } from '../../widgets/_helpers/util';
 import { renderHover } from './renderHover';
 import { renderWindowButton } from './renderWindowButton';
-import type { State } from './types';
+import type { ButtonGeometry, State, WindowState } from './types';
 
 export function buildWindowButton(args: {
-  x: number;
-  y: number;
-  buttonWidth: number;
-  buttonHeight: number;
+  buttonGeometry: ButtonGeometry;
+  windowState: WindowState;
   windowObject: hs.window.WindowType;
   isInitiallyVisible: boolean;
   showWindowPreviewOnHover: boolean;
 }) {
   const {
-    x: windowButtonX,
-    y: windowButtonY,
-    buttonWidth,
-    buttonHeight,
+    buttonGeometry: initialButtonGeometry,
+    windowState: initialWindowState,
     windowObject,
     isInitiallyVisible,
     showWindowPreviewOnHover,
@@ -66,7 +62,6 @@ export function buildWindowButton(args: {
       render();
       renderHover({
         state,
-        y: windowButtonY,
         showWindowPreviewOnHover,
       });
     } else if (msg === 'mouseExit') {
@@ -92,7 +87,6 @@ export function buildWindowButton(args: {
     renderWindowButton({
       state,
       bundleId,
-      buttonHeight,
     });
   }
 
@@ -140,42 +134,39 @@ export function buildWindowButton(args: {
     }
   }
 
-  function update() {
-    const windowObjectTitle = state.windowObject.title();
-    const applicationName = state.windowObject.application()?.name() || '';
+  function setCurrentButtonGeometry(newGeometry: ButtonGeometry) {
+    const geomIsDifferent =
+      state.buttonGeometry.x !== newGeometry.x ||
+      state.buttonGeometry.y !== newGeometry.y ||
+      state.buttonGeometry.width !== newGeometry.width ||
+      state.buttonGeometry.height !== newGeometry.height;
 
-    const newWindowTitle =
-      windowObjectTitle !== '' ? windowObjectTitle : applicationName;
+    if (geomIsDifferent) {
+      state.buttonGeometry = newGeometry;
 
-    const newIsMinimized = state.windowObject.isMinimized();
+      state.canvases.mainCanvas?.frame({
+        x: state.buttonGeometry.x,
+        y: state.buttonGeometry.y,
+        w: state.buttonGeometry.width,
+        h: state.buttonGeometry.height,
+      });
 
-    if (!newIsMinimized) {
-      // Hammerspoon returns an empty image for snapshots of minimized windows.
-      // (Have I mentioned that before?)
-      // We're not minimized, so update our snapshot to keep it fresh
-      state.windowSnapshot = state.windowObject.snapshot();
-    }
-
-    if (
-      newWindowTitle !== state.windowTitle ||
-      newIsMinimized !== state.isMinimized
-    ) {
-      state.windowTitle = newWindowTitle;
-      state.isMinimized = newIsMinimized;
       render();
     }
   }
 
-  function updatePositionAndWidth(x: number, width: number) {
-    if (x !== state.x || width !== state.width) {
-      state.canvases.mainCanvas?.frame({
-        x: x,
-        y: windowButtonY,
-        w: width,
-        h: buttonHeight,
-      });
-      state.width = width;
-      state.x = x;
+  function setCurrentWindowState(newState: WindowState) {
+    const stateIsDifferent =
+      state.windowState.title !== newState.title ||
+      state.windowState.isMinimized !== newState.isMinimized;
+
+    if (stateIsDifferent) {
+      if (!newState.isMinimized) {
+        // We're not minimized, so update our cached snapshot, which gets
+        // used when we *are* minimized
+        state.windowSnapshot = state.windowObject.snapshot();
+      }
+      state.windowState = newState;
       render();
     }
   }
@@ -190,21 +181,21 @@ export function buildWindowButton(args: {
       mainCanvas: undefined,
       hoverCanvas: undefined,
     },
+    buttonGeometry: initialButtonGeometry,
+    windowState: initialWindowState,
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
-    x: windowButtonX,
-    width: buttonWidth,
     windowObject,
-    windowTitle: windowObject.title(),
-    windowSnapshot: undefined,
-    isMinimized: windowObject.isMinimized(),
+
+    // Save a snapshot so if it gets minimized, we'll have something to show
+    windowSnapshot: windowObject.snapshot(),
   };
 
   state.canvases.mainCanvas = hs.canvas.new({
-    x: windowButtonX,
-    y: windowButtonY,
-    w: buttonWidth,
-    h: buttonHeight,
+    x: initialButtonGeometry.x,
+    y: initialButtonGeometry.y,
+    w: initialButtonGeometry.width,
+    h: initialButtonGeometry.height,
   });
 
   render();
@@ -219,7 +210,7 @@ export function buildWindowButton(args: {
     cleanupPriorToDelete,
     hide,
     show,
-    update,
-    updatePositionAndWidth,
+    setCurrentButtonGeometry,
+    setCurrentWindowState,
   };
 }

@@ -18,9 +18,7 @@
 import { BLACK } from 'src/constants';
 import type { State } from './types';
 
-export function renderHoverWindowPreview(args: { state: State; y: number }) {
-  const { state, y: windowButtonTopY } = args;
-
+export function renderHoverWindowPreview(state: State) {
   const fontSize = 12;
   const canvasWidth = 300;
   const canvasHeight = 300;
@@ -29,12 +27,24 @@ export function renderHoverWindowPreview(args: { state: State; y: number }) {
 
   if (state.canvases.hoverCanvas === undefined) {
     state.canvases.hoverCanvas = hs.canvas.new({
-      x: state.x,
-      y: windowButtonTopY - canvasHeight,
+      x: state.buttonGeometry.x,
+      y: state.buttonGeometry.y - canvasHeight,
       w: canvasWidth,
       h: canvasHeight,
     });
   }
+
+  let windowSnapshot: hs.image.ImageType;
+  if (state.windowState.isMinimized) {
+    // If we're minimized, MacOS returns an empty image for the snapshot, so
+    // use our cached one instead
+    windowSnapshot = state.windowSnapshot;
+  } else {
+    // Use a fresh one and save it to be after next time we're minimized
+    windowSnapshot = state.windowObject.snapshot();
+    state.windowSnapshot = windowSnapshot;
+  }
+
   state.canvases.hoverCanvas.replaceElements([
     {
       type: 'rectangle',
@@ -49,7 +59,7 @@ export function renderHoverWindowPreview(args: { state: State; y: number }) {
     },
     {
       type: 'text',
-      text: state.windowTitle,
+      text: state.windowState.title,
       textColor: BLACK,
       textSize: fontSize,
       frame: {
@@ -67,7 +77,7 @@ export function renderHoverWindowPreview(args: { state: State; y: number }) {
         w: canvasWidth - 2 * padding,
         h: canvasHeight - previewY - padding,
       },
-      image: state.windowSnapshot ?? state.windowObject.snapshot(),
+      image: windowSnapshot,
     },
   ]);
   state.canvases.hoverCanvas.show();

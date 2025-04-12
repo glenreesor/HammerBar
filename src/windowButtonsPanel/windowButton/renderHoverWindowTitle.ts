@@ -18,17 +18,15 @@
 import { BLACK } from 'src/constants';
 import type { State } from './types';
 
-export function renderHoverWindowTitle(args: { state: State; y: number }) {
-  const { state, y } = args;
-
+export function renderHoverWindowTitle(state: State) {
   const fontSize = 12;
-  const width = state.windowTitle.length * fontSize * 0.75;
+  const width = state.windowState.title.length * fontSize * 0.75;
   const height = fontSize * 2;
 
   if (state.canvases.hoverCanvas === undefined) {
     state.canvases.hoverCanvas = hs.canvas.new({
-      x: state.x,
-      y: y - fontSize * 2,
+      x: state.buttonGeometry.x,
+      y: state.buttonGeometry.y - fontSize * 2,
       w: width,
       h: height,
     });
@@ -47,7 +45,7 @@ export function renderHoverWindowTitle(args: { state: State; y: number }) {
     },
     {
       type: 'text',
-      text: state.windowTitle,
+      text: state.windowState.title,
       textColor: BLACK,
       textSize: fontSize,
       frame: {

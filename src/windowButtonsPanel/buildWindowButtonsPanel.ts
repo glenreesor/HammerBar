@@ -16,30 +16,23 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { Widget } from 'src/mainPanel';
-import { buildWindowButton } from './windowButton';
-import { subscribeToWindowListUpdates } from './windowListWatcher';
-
-type WindowButtonsInfoById = Map<
-  number,
-  {
-    w: hs.window.WindowType;
-    actions: {
-      bringToFront: () => void;
-      cleanupPriorToDelete: () => void;
-      hide: () => void;
-      show: () => void;
-      update: () => void;
-      updatePositionAndWidth: (x: number, width: number) => void;
-    };
-  }
->;
+import type { WindowButtonsInfoById } from './types';
+import { createMoveOrDeleteWindowButtons } from './createMoveOrDeleteWindowButtons';
 
 export function buildWindowButtonsPanel(args: {
   screenId: number;
   windowStatusUpdateInterval: number;
   showWindowPreviewOnHover: boolean;
-  coords: { x: number; y: number };
-  dimensions: { height: number; width: number };
+  geometry: {
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+  };
+  subscribeToWindowListUpdates: (
+    screenId: number,
+    callback: (windows: hs.window.WindowType[]) => void,
+  ) => () => void;
 }): Widget {
   function bringToFront() {
     state.canvas?.show();
@@ -83,8 +76,8 @@ export function buildWindowButtonsPanel(args: {
         frame: {
           x: 0,
           y: 0,
-          w: args.dimensions.width,
-          h: args.dimensions.height,
+          w: args.geometry.width,
+          h: args.geometry.height,
         },
       },
     ]);
@@ -93,115 +86,50 @@ export function buildWindowButtonsPanel(args: {
 
   //--------------------------------------------------------------------------
 
-  function getButtonWidth(totalWidth: number, numButtons: number) {
-    const MAX_BUTTON_WIDTH = 120;
-
-    // Layout looks like this:
-    //    [leftEdge] [padding] [button] [padding] [button] [padding] [rightEdge]
-    const buttonWidth =
-      (totalWidth - (numButtons + 1) * BUTTON_PADDING) / numButtons;
-
-    return Math.min(buttonWidth, MAX_BUTTON_WIDTH);
-  }
-
-  function updateWindowButtonsList(newWindowsList: hs.window.WindowType[]) {
-    const windowListIds = newWindowsList.reduce(
-      (acc, w) => `${acc}_${w.id()}`,
-      '',
-    );
-
-    if (windowListIds === state.previousWindowListIds) {
-      // List of windows hasn't changed so nothing to update
-      return;
-    }
-
-    state.previousWindowListIds = windowListIds;
-
-    // Build up a new object containing window buttons for windows that
-    // still exist
-    const newWindowsListMap = new Map(newWindowsList.map((w) => [w.id(), w]));
-    const newWindowButtonsInfoById: WindowButtonsInfoById = new Map();
-
-    const buttonWidth = getButtonWidth(
-      args.dimensions.width,
-      newWindowsList.length,
-    );
-
-    let windowButtonX = args.coords.x + BUTTON_PADDING;
-    state.windowButtonsInfoById.forEach((windowButtonInfo, id) => {
-      if (newWindowsListMap.has(id)) {
-        // Window for this button still exists so add it to our new list
-        // and remove from newWindowsListMap so eventually what's remaining
-        // will be just newly added windows
-        newWindowButtonsInfoById.set(id, windowButtonInfo);
-        windowButtonInfo.actions.updatePositionAndWidth(
-          windowButtonX,
-          buttonWidth,
-        );
-        windowButtonX += buttonWidth + BUTTON_PADDING;
-
-        newWindowsListMap.delete(id);
-      } else {
-        windowButtonInfo.actions.cleanupPriorToDelete();
-      }
+  function handleNewWindowList(newWindowsList: hs.window.WindowType[]) {
+    state.windowButtonsInfoById = createMoveOrDeleteWindowButtons({
+      panelGeometry: args.geometry,
+      isPanelVisible: state.isVisible,
+      showWindowPreviewOnHover: args.showWindowPreviewOnHover,
+      previousWindowButtonsInfoById: state.windowButtonsInfoById,
+      newWindowsList,
     });
-
-    // The only windows left in newWindowsListMap correspond to newly added
-    // windows, so create buttons for those
-    newWindowsListMap.forEach((w) => {
-      newWindowButtonsInfoById.set(w.id(), {
-        w,
-        actions: buildWindowButton({
-          x: windowButtonX,
-          y: args.coords.y + 4,
-          buttonWidth,
-          buttonHeight: 35,
-          windowObject: w,
-          isInitiallyVisible: state.isVisible,
-          showWindowPreviewOnHover: args.showWindowPreviewOnHover,
-        }),
-      });
-      windowButtonX += buttonWidth + BUTTON_PADDING;
-    });
-
-    state.windowButtonsInfoById = newWindowButtonsInfoById;
   }
 
   function updateWindowButtonsTitleAndMinimized() {
     state.windowButtonsInfoById.forEach((wb) => {
-      wb.actions.update();
+      wb.actions.setCurrentWindowState({
+        title: wb.w.title(),
+        isMinimized: wb.w.isMinimized(),
+      });
     });
   }
-
-  const BUTTON_PADDING = 5;
 
   const state: {
     canvas: hs.canvas.CanvasType | undefined;
     isVisible: boolean;
     titlesAndMinimizedStateTimer: hs.timer.TimerType | undefined;
-    previousWindowListIds: string;
     windowButtonsInfoById: WindowButtonsInfoById;
     windowListUnsubscriber: (() => void) | undefined;
   } = {
     canvas: undefined,
     isVisible: true,
     titlesAndMinimizedStateTimer: undefined,
-    previousWindowListIds: '',
     windowButtonsInfoById: new Map(),
     windowListUnsubscriber: undefined,
   };
 
   state.canvas = hs.canvas.new({
-    x: args.coords.x,
-    y: args.coords.y,
-    w: args.dimensions.width,
-    h: args.dimensions.height,
+    x: args.geometry.x,
+    y: args.geometry.y,
+    w: args.geometry.width,
+    h: args.geometry.height,
   });
   render();
 
-  state.windowListUnsubscriber = subscribeToWindowListUpdates(
+  state.windowListUnsubscriber = args.subscribeToWindowListUpdates(
     args.screenId,
-    updateWindowButtonsList,
+    handleNewWindowList,
   );
 
   state.titlesAndMinimizedStateTimer = hs.timer.doEvery(

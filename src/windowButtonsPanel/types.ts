@@ -15,17 +15,19 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { renderHoverWindowTitle } from './renderHoverWindowTitle';
-import { renderHoverWindowPreview } from './renderHoverWindowPreview';
-import type { State } from './types';
+import type { ButtonGeometry, WindowState } from './windowButton/types';
 
-export function renderHover(args: {
-  state: State;
-  showWindowPreviewOnHover: boolean;
-}) {
-  if (args.showWindowPreviewOnHover) {
-    renderHoverWindowPreview(args.state);
-  } else {
-    renderHoverWindowTitle(args.state);
+export type WindowButtonsInfoById = Map<
+  number,
+  {
+    w: hs.window.WindowType;
+    actions: {
+      bringToFront: () => void;
+      cleanupPriorToDelete: () => void;
+      hide: () => void;
+      show: () => void;
+      setCurrentButtonGeometry: (newGeometry: ButtonGeometry) => void;
+      setCurrentWindowState: (newState: WindowState) => void;
+    };
   }
-}
+>;

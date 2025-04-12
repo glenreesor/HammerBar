@@ -15,7 +15,5 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { setUpdateInterval as setWindowListWatcherUpdateInterval } from './windowListWatcher';
 import { getWindowButtonsPanelBuilder } from './getWindowButtonsPanelBuilder';
-
-export { getWindowButtonsPanelBuilder, setWindowListWatcherUpdateInterval };
+export { getWindowButtonsPanelBuilder };

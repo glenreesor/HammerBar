@@ -15,17 +15,27 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+export type ButtonGeometry = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+export type WindowState = {
+  title: string;
+  isMinimized: boolean;
+};
+
 export type State = {
   canvases: {
     mainCanvas: hs.canvas.CanvasType | undefined;
     hoverCanvas: hs.canvas.CanvasType | undefined;
   };
+  buttonGeometry: ButtonGeometry;
+  windowState: WindowState;
   mouseButtonIsDown: boolean;
   mouseIsInsideButton: boolean;
-  x: number;
-  width: number;
   windowObject: hs.window.WindowType;
-  windowTitle: string;
-  windowSnapshot: hs.image.ImageType | undefined;
-  isMinimized: boolean;
+  windowSnapshot: hs.image.ImageType;
 };
