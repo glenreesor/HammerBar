@@ -18,9 +18,7 @@
 import { BLACK } from 'src/constants';
 import type { State } from './types';
 
-export function renderWindowButton(args: { state: State; bundleId: string }) {
-  const { state, bundleId } = args;
-
+export function renderWindowButton(state: State) {
   let borderWidth;
   let fontSize;
   let iconHeight;
@@ -89,7 +87,7 @@ export function renderWindowButton(args: { state: State; bundleId: string }) {
         w: iconWidth,
         h: iconWidth,
       },
-      image: hs.image.imageFromAppBundle(bundleId),
+      image: state.windowState.getAppIcon(),
     },
     {
       type: 'text',

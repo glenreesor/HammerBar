@@ -16,27 +16,22 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { buildWindowButtonsPanel } from './buildWindowButtonsPanel';
+import type { WindowState } from 'src/windowListAndStateWatcher';
 
 export function getWindowButtonsPanelBuilder(args: {
   screenId: number;
-  windowStatusUpdateInterval: number;
   showWindowPreviewOnHover: boolean;
   subscribeToWindowListUpdates: (
     screenId: number,
-    callback: (windows: hs.window.WindowType[]) => void,
+    callback: (windowStates: WindowState[]) => void,
   ) => () => void;
 }) {
-  const {
-    screenId,
-    windowStatusUpdateInterval,
-    showWindowPreviewOnHover,
-    subscribeToWindowListUpdates,
-  } = args;
+  const { screenId, showWindowPreviewOnHover, subscribeToWindowListUpdates } =
+    args;
 
   return (geometry: { x: number; y: number; height: number; width: number }) =>
     buildWindowButtonsPanel({
       screenId,
-      windowStatusUpdateInterval,
       showWindowPreviewOnHover,
       geometry,
       subscribeToWindowListUpdates,

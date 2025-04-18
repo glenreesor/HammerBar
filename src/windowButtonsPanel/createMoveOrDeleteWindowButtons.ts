@@ -15,9 +15,10 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import type { WindowState } from 'src/windowListAndStateWatcher';
 import { buildWindowButton } from './windowButton';
 import { processNewWindowIdsList } from './processNewWindowIdsList';
-import type { WindowButtonsInfoById } from './types';
+import type { WindowButtonActionsById } from './types';
 
 const BUTTON_PADDING = 5;
 
@@ -29,15 +30,15 @@ export function createMoveOrDeleteWindowButtons(args: {
   };
   isPanelVisible: boolean;
   showWindowPreviewOnHover: boolean;
-  previousWindowButtonsInfoById: WindowButtonsInfoById;
-  newWindowsList: hs.window.WindowType[];
-}): WindowButtonsInfoById {
+  previousWindowButtonActionsById: WindowButtonActionsById;
+  newWindowStates: WindowState[];
+}): WindowButtonActionsById {
   const {
     showWindowPreviewOnHover,
     panelGeometry,
-    previousWindowButtonsInfoById,
+    previousWindowButtonActionsById,
     isPanelVisible,
-    newWindowsList,
+    newWindowStates,
   } = args;
 
   const {
@@ -45,25 +46,27 @@ export function createMoveOrDeleteWindowButtons(args: {
     newWindowIds,
     noLongerExistingWindowIds,
   } = processNewWindowIdsList({
-    orderedPreviousWindowIds: Array.from(previousWindowButtonsInfoById.keys()),
-    newWindowIdsList: newWindowsList.map((w) => w.id()),
+    orderedPreviousWindowIds: Array.from(
+      previousWindowButtonActionsById.keys(),
+    ),
+    newWindowIdsList: newWindowStates.map((w) => w.id),
   });
 
   const buttonWidth = getButtonWidth(
     panelGeometry.width,
-    newWindowsList.length,
+    newWindowStates.length,
   );
 
-  const newWindowButtonsInfoById: WindowButtonsInfoById = new Map();
+  const newWindowButtonActionsById: WindowButtonActionsById = new Map();
 
   // Some pre-existing windows may have been removed, thereby changing
   // position and size of remaining window buttons, so recalculate and tell
   // them to update
   let windowButtonX = panelGeometry.x + BUTTON_PADDING;
   orderedPreExistingWindowIds.forEach((windowId) => {
-    const windowButtonInfo = previousWindowButtonsInfoById.get(windowId);
-    if (windowButtonInfo) {
-      windowButtonInfo.actions.setCurrentButtonGeometry({
+    const windowButtonActions = previousWindowButtonActionsById.get(windowId);
+    if (windowButtonActions) {
+      windowButtonActions.setCurrentButtonGeometry({
         x: windowButtonX,
         y: panelGeometry.y + 5,
         width: buttonWidth,
@@ -71,50 +74,41 @@ export function createMoveOrDeleteWindowButtons(args: {
       });
       windowButtonX += buttonWidth + BUTTON_PADDING;
 
-      newWindowButtonsInfoById.set(windowId, windowButtonInfo);
+      newWindowButtonActionsById.set(windowId, windowButtonActions);
     }
   });
 
   // Create window button objects for all the new windows
   newWindowIds.forEach((windowId) => {
-    const windowObject = newWindowsList.find(
-      (wObject) => wObject.id() === windowId,
-    );
+    const windowState = newWindowStates.find((thing) => thing.id === windowId);
 
-    if (windowObject) {
-      const newWindowButtonInfo = {
-        w: windowObject,
-        actions: buildWindowButton({
-          buttonGeometry: {
-            x: windowButtonX,
-            y: panelGeometry.y + 5,
-            width: buttonWidth,
-            height: 35,
-          },
-          windowState: {
-            title: windowObject.title(),
-            isMinimized: windowObject.isMinimized(),
-          },
-          windowObject,
-          isInitiallyVisible: isPanelVisible,
-          showWindowPreviewOnHover: showWindowPreviewOnHover,
-        }),
-      };
+    if (windowState) {
+      const newWindowButtonActions = buildWindowButton({
+        buttonGeometry: {
+          x: windowButtonX,
+          y: panelGeometry.y + 5,
+          width: buttonWidth,
+          height: 35,
+        },
+        windowState,
+        isInitiallyVisible: isPanelVisible,
+        showWindowPreviewOnHover: showWindowPreviewOnHover,
+      });
 
-      newWindowButtonsInfoById.set(windowId, newWindowButtonInfo);
+      newWindowButtonActionsById.set(windowId, newWindowButtonActions);
       windowButtonX += buttonWidth + BUTTON_PADDING;
     }
   });
 
   // Tell windowButtons corresponding to deleted windows to delete themselves
   noLongerExistingWindowIds.forEach((windowId) => {
-    const windowInfo = previousWindowButtonsInfoById.get(windowId);
-    if (windowInfo) {
-      windowInfo.actions.cleanupPriorToDelete();
+    const windowActions = previousWindowButtonActionsById.get(windowId);
+    if (windowActions) {
+      windowActions.cleanupPriorToDelete();
     }
   });
 
-  return newWindowButtonsInfoById;
+  return newWindowButtonActionsById;
 }
 
 function getButtonWidth(totalWidth: number, numButtons: number) {

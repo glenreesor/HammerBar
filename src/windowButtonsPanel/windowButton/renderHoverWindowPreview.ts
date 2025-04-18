@@ -34,17 +34,6 @@ export function renderHoverWindowPreview(state: State) {
     });
   }
 
-  let windowSnapshot: hs.image.ImageType;
-  if (state.windowState.isMinimized) {
-    // If we're minimized, MacOS returns an empty image for the snapshot, so
-    // use our cached one instead
-    windowSnapshot = state.windowSnapshot;
-  } else {
-    // Use a fresh one and save it to be after next time we're minimized
-    windowSnapshot = state.windowObject.snapshot();
-    state.windowSnapshot = windowSnapshot;
-  }
-
   state.canvases.hoverCanvas.replaceElements([
     {
       type: 'rectangle',
@@ -77,7 +66,7 @@ export function renderHoverWindowPreview(state: State) {
         w: canvasWidth - 2 * padding,
         h: canvasHeight - previewY - padding,
       },
-      image: windowSnapshot,
+      image: state.windowState.getSnapshot(),
     },
   ]);
   state.canvases.hoverCanvas.show();

@@ -22,17 +22,23 @@ import { mainPanel } from './mainPanel';
 import type { WidgetBuildingInfo } from './mainPanel';
 import { printDiagnostic } from './utils';
 import { getWindowButtonsPanelBuilder } from './windowButtonsPanel';
-import { subscribeToWindowListUpdates } from './windowListWatcher';
+import {
+  setWindowListUpdateInterval as applyWindowListUpdateInterval,
+  setWindowStateUpdateInterval as applyWindowStateUpdateInterval,
+  subscribeToWindowListUpdates,
+} from './windowListAndStateWatcher';
 
 type Config = {
   panelHeight: number;
-  windowStatusUpdateInterval: number;
+  windowListUpdateInterval: number;
+  windowStateUpdateInterval: number;
   showWindowPreviewOnHover: boolean;
 };
 
 const config: Config = {
   panelHeight: 45,
-  windowStatusUpdateInterval: 1,
+  windowListUpdateInterval: 1,
+  windowStateUpdateInterval: 1,
   showWindowPreviewOnHover: false,
 };
 
@@ -116,7 +122,6 @@ function createPanelsForAllScreens() {
         },
         windowButtonsPanelBuilder: getWindowButtonsPanelBuilder({
           screenId: screenInfo.id,
-          windowStatusUpdateInterval: config.windowStatusUpdateInterval,
           showWindowPreviewOnHover: config.showWindowPreviewOnHover,
           subscribeToWindowListUpdates,
         }),
@@ -210,8 +215,12 @@ export function addWidgetsSecondaryScreenRight(
   buildingInfo.forEach((b) => state.secondaryScreenWidgets.right.push(b));
 }
 
-export function setWindowStatusUpdateInterval(newInterval: number) {
-  config.windowStatusUpdateInterval = newInterval;
+export function setWindowListUpdateInterval(newInterval: number) {
+  config.windowListUpdateInterval = newInterval;
+}
+
+export function setWindowStateUpdateInterval(newInterval: number) {
+  config.windowStateUpdateInterval = newInterval;
 }
 
 export function setShowWindowPreviewOnHover(show: boolean) {
@@ -220,6 +229,9 @@ export function setShowWindowPreviewOnHover(show: boolean) {
 
 export function start() {
   hs.hotkey.bind('command ctrl', 'up', verticallyMaximizeCurrentWindow);
+  applyWindowListUpdateInterval(config.windowListUpdateInterval);
+  applyWindowStateUpdateInterval(config.windowStateUpdateInterval);
+
   createPanelsForAllScreens();
   state.screenWatcher = hs.screen.watcher.new(watchForScreenChanges);
   state.screenWatcher.start();

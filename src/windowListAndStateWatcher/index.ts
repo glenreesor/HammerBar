@@ -15,22 +15,17 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WindowState } from 'src/windowListAndStateWatcher';
+import {
+  setWindowListUpdateInterval,
+  setWindowStateUpdateInterval,
+  subscribeToWindowListUpdates,
+} from './windowListAndStateWatcher';
 
-export type ButtonGeometry = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+import type { WindowState } from './types';
 
-export type State = {
-  canvases: {
-    mainCanvas: hs.canvas.CanvasType | undefined;
-    hoverCanvas: hs.canvas.CanvasType | undefined;
-  };
-  buttonGeometry: ButtonGeometry;
-  mouseButtonIsDown: boolean;
-  mouseIsInsideButton: boolean;
-  windowState: WindowState;
+export {
+  setWindowListUpdateInterval,
+  setWindowStateUpdateInterval,
+  subscribeToWindowListUpdates,
 };
+export type { WindowState };

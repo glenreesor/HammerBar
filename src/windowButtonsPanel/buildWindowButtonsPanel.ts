@@ -16,12 +16,12 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { Widget } from 'src/mainPanel';
-import type { WindowButtonsInfoById } from './types';
+import type { WindowState } from 'src/windowListAndStateWatcher';
+import type { WindowButtonActionsById } from './types';
 import { createMoveOrDeleteWindowButtons } from './createMoveOrDeleteWindowButtons';
 
 export function buildWindowButtonsPanel(args: {
   screenId: number;
-  windowStatusUpdateInterval: number;
   showWindowPreviewOnHover: boolean;
   geometry: {
     x: number;
@@ -31,22 +31,19 @@ export function buildWindowButtonsPanel(args: {
   };
   subscribeToWindowListUpdates: (
     screenId: number,
-    callback: (windows: hs.window.WindowType[]) => void,
+    callback: (windowStates: WindowState[]) => void,
   ) => () => void;
 }): Widget {
   function bringToFront() {
     state.canvas?.show();
-    state.windowButtonsInfoById.forEach((w) => w.actions.bringToFront());
+    state.windowButtonActionsById.forEach((w) => w.bringToFront());
   }
 
   function cleanupPriorToDelete() {
     state.canvas?.hide();
     state.canvas = undefined;
 
-    state.windowButtonsInfoById.forEach((w) =>
-      w.actions.cleanupPriorToDelete(),
-    );
-    state.titlesAndMinimizedStateTimer?.stop();
+    state.windowButtonActionsById.forEach((w) => w.cleanupPriorToDelete());
 
     if (state.windowListUnsubscriber) {
       state.windowListUnsubscriber();
@@ -55,13 +52,13 @@ export function buildWindowButtonsPanel(args: {
 
   function hide() {
     state.canvas?.hide();
-    state.windowButtonsInfoById.forEach((w) => w.actions.hide());
+    state.windowButtonActionsById.forEach((w) => w.hide());
     state.isVisible = false;
   }
 
   function show() {
     state.canvas?.show();
-    state.windowButtonsInfoById.forEach((w) => w.actions.show());
+    state.windowButtonActionsById.forEach((w) => w.show());
     state.isVisible = true;
   }
 
@@ -86,36 +83,35 @@ export function buildWindowButtonsPanel(args: {
 
   //--------------------------------------------------------------------------
 
-  function handleNewWindowList(newWindowsList: hs.window.WindowType[]) {
-    state.windowButtonsInfoById = createMoveOrDeleteWindowButtons({
+  function handleNewWindowList(newWindowStates: WindowState[]) {
+    const updatedWindowButtonActionsById = createMoveOrDeleteWindowButtons({
       panelGeometry: args.geometry,
       isPanelVisible: state.isVisible,
       showWindowPreviewOnHover: args.showWindowPreviewOnHover,
-      previousWindowButtonsInfoById: state.windowButtonsInfoById,
-      newWindowsList,
+      previousWindowButtonActionsById: state.windowButtonActionsById,
+      newWindowStates,
     });
+
+    state.windowButtonActionsById = updatedWindowButtonActionsById;
+    updateWindowButtonStates(newWindowStates);
   }
 
-  function updateWindowButtonsTitleAndMinimized() {
-    state.windowButtonsInfoById.forEach((wb) => {
-      wb.actions.setCurrentWindowState({
-        title: wb.w.title(),
-        isMinimized: wb.w.isMinimized(),
-      });
+  function updateWindowButtonStates(windowStates: WindowState[]) {
+    windowStates.forEach((ws) => {
+      const windowButtonActions = state.windowButtonActionsById.get(ws.id);
+      windowButtonActions?.setCurrentWindowState(ws);
     });
   }
 
   const state: {
     canvas: hs.canvas.CanvasType | undefined;
     isVisible: boolean;
-    titlesAndMinimizedStateTimer: hs.timer.TimerType | undefined;
-    windowButtonsInfoById: WindowButtonsInfoById;
+    windowButtonActionsById: WindowButtonActionsById;
     windowListUnsubscriber: (() => void) | undefined;
   } = {
     canvas: undefined,
     isVisible: true,
-    titlesAndMinimizedStateTimer: undefined,
-    windowButtonsInfoById: new Map(),
+    windowButtonActionsById: new Map(),
     windowListUnsubscriber: undefined,
   };
 
@@ -130,11 +126,6 @@ export function buildWindowButtonsPanel(args: {
   state.windowListUnsubscriber = args.subscribeToWindowListUpdates(
     args.screenId,
     handleNewWindowList,
-  );
-
-  state.titlesAndMinimizedStateTimer = hs.timer.doEvery(
-    args.windowStatusUpdateInterval,
-    updateWindowButtonsTitleAndMinimized,
   );
 
   return {

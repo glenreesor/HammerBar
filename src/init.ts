@@ -17,14 +17,14 @@
 
 import type { WidgetBuildingInfo } from './mainPanel';
 import { VERSION, BUILD_DATE, GIT_HASH } from './version';
-import { setUpdateInterval as applyWindowListWatcherUpdateInterval } from './windowListWatcher';
 
 import {
   addWidgetsPrimaryScreenLeft,
   addWidgetsPrimaryScreenRight,
   addWidgetsSecondaryScreenLeft,
   addWidgetsSecondaryScreenRight,
-  setWindowStatusUpdateInterval,
+  setWindowListUpdateInterval,
+  setWindowStateUpdateInterval,
   setShowWindowPreviewOnHover,
   start,
   stop,
@@ -134,7 +134,7 @@ function validateAndSetWindowListUpdateInterval(newInterval: unknown) {
     ]);
     return;
   }
-  applyWindowListWatcherUpdateInterval(newInterval);
+  setWindowListUpdateInterval(newInterval);
 }
 
 function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
@@ -146,7 +146,7 @@ function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
     ]);
     return;
   }
-  setWindowStatusUpdateInterval(newInterval);
+  setWindowStateUpdateInterval(newInterval);
 }
 
 function validateAndSetShowWindowPreviewOnHover(show: unknown) {

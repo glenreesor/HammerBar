@@ -15,19 +15,17 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { ButtonGeometry, WindowState } from './windowButton/types';
+import type { WindowState } from 'src/windowListAndStateWatcher';
+import type { ButtonGeometry } from './windowButton/types';
 
-export type WindowButtonsInfoById = Map<
+export type WindowButtonActionsById = Map<
   number,
   {
-    w: hs.window.WindowType;
-    actions: {
-      bringToFront: () => void;
-      cleanupPriorToDelete: () => void;
-      hide: () => void;
-      show: () => void;
-      setCurrentButtonGeometry: (newGeometry: ButtonGeometry) => void;
-      setCurrentWindowState: (newState: WindowState) => void;
-    };
+    bringToFront: () => void;
+    cleanupPriorToDelete: () => void;
+    hide: () => void;
+    show: () => void;
+    setCurrentButtonGeometry: (newGeometry: ButtonGeometry) => void;
+    setCurrentWindowState: (newState: WindowState) => void;
   }
 >;

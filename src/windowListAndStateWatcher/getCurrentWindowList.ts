@@ -15,51 +15,17 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-const DEFAULT_UPDATE_INTERVAL = 3;
-let updateInterval = DEFAULT_UPDATE_INTERVAL;
-
-let windowListListeners: {
-  screenId: number;
-  callback: (windows: hs.window.WindowType[]) => void;
-}[] = [];
-
 let timer: hs.timer.TimerType | undefined;
+let reportWindowListCallback:
+  | ((windowList: hs.window.WindowType[]) => void)
+  | undefined;
 
-export function setUpdateInterval(newInterval: number) {
-  updateInterval = newInterval;
-}
-
-export function subscribeToWindowListUpdates(
-  screenId: number,
-  callback: (windows: hs.window.WindowType[]) => void,
+export function getCurrentWindowList(
+  callback: (windowList: hs.window.WindowType[]) => void,
 ) {
-  windowListListeners.push({ screenId, callback });
-  if (windowListListeners.length === 1) {
-    start();
-  }
-
-  return () => unsubscribe(screenId);
-}
-
-function start() {
-  if (!timer) {
+  if (timer === undefined) {
+    reportWindowListCallback = callback;
     orchestrateWindowListUpdating();
-  }
-}
-
-function stop() {
-  if (timer) {
-    timer.stop();
-    timer = undefined;
-  }
-}
-
-function unsubscribe(screenId: number) {
-  windowListListeners = windowListListeners.filter(
-    (l) => l.screenId !== screenId,
-  );
-  if (windowListListeners.length === 0) {
-    stop();
   }
 }
 
@@ -86,7 +52,7 @@ function orchestrateWindowListUpdating() {
       addNextAppsWindowsToList([], allApplications),
     );
   } else {
-    notifyListeners([]);
+    reportWindowList([]);
   }
 }
 
@@ -121,7 +87,7 @@ function addNextAppsWindowsToList(
 
   remainingApps.splice(0, 1);
   if (remainingApps.length === 0) {
-    notifyListeners(currentWindowList);
+    reportWindowList(currentWindowList);
   } else {
     timer = hs.timer.doAfter(0.01, () =>
       addNextAppsWindowsToList(currentWindowList, remainingApps),
@@ -129,13 +95,9 @@ function addNextAppsWindowsToList(
   }
 }
 
-function notifyListeners(windowList: hs.window.WindowType[]) {
-  windowListListeners.forEach((l) => {
-    const windowsThisScreen = windowList.filter(
-      (w) => w.screen().id() === l.screenId,
-    );
-    l.callback(windowsThisScreen);
-  });
-
-  timer = hs.timer.doAfter(updateInterval, orchestrateWindowListUpdating);
+function reportWindowList(windowList: hs.window.WindowType[]) {
+  if (reportWindowListCallback !== undefined) {
+    reportWindowListCallback(windowList);
+    timer = undefined;
+  }
 }

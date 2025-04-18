@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { printWindowInfo } from 'src/utils';
+import type { WindowState } from 'src/windowListAndStateWatcher';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
@@ -23,19 +23,17 @@ import {
 } from '../../widgets/_helpers/util';
 import { renderHover } from './renderHover';
 import { renderWindowButton } from './renderWindowButton';
-import type { ButtonGeometry, State, WindowState } from './types';
+import type { ButtonGeometry, State } from './types';
 
 export function buildWindowButton(args: {
   buttonGeometry: ButtonGeometry;
   windowState: WindowState;
-  windowObject: hs.window.WindowType;
   isInitiallyVisible: boolean;
   showWindowPreviewOnHover: boolean;
 }) {
   const {
     buttonGeometry: initialButtonGeometry,
-    windowState: initialWindowState,
-    windowObject,
+    windowState,
     isInitiallyVisible,
     showWindowPreviewOnHover,
   } = args;
@@ -79,59 +77,12 @@ export function buildWindowButton(args: {
     } else if (msg === 'mouseUp') {
       state.mouseButtonIsDown = false;
       render();
-      handleClick();
+      state.windowState.onClick();
     }
   };
 
   function render() {
-    renderWindowButton({
-      state,
-      bundleId,
-    });
-  }
-
-  function handleClick() {
-    const w = state.windowObject;
-    const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();
-
-    if (keyboardModifiers.shift) {
-      // User just wants to dump the window info without toggling window visibility
-      printWindowInfo(w);
-      return;
-    }
-
-    if (w.isMinimized()) {
-      // Most apps require just focus(), but some like LibreOffice also require raise()
-      w.raise();
-      w.focus();
-    } else {
-      // If window is already completely visible minimize it, otherwise bring
-      // it to the foreground
-      const windowIdsFrontToBack = hs.window
-        .orderedWindows()
-        .map((w) => w.id());
-
-      if (!windowIdsFrontToBack.includes(w.id())) {
-        // Hammerspoon returns an empty image for snapshots of minimized windows,
-        // so grab an updated snapshot now before minimizing
-        state.windowSnapshot = state.windowObject.snapshot();
-
-        // This is a special case corresponding to the Hammerspoon console.
-        // Since it doesn't show up in the window list we don't know it's stacking
-        // position.
-        w.minimize();
-      }
-
-      if (windowIdsFrontToBack[0] === w.id()) {
-        // Hammerspoon returns an empty image for snapshots of minimized windows,
-        // so grab an updated snapshot now before minimizing
-        state.windowSnapshot = state.windowObject.snapshot();
-        w.minimize();
-      } else {
-        w.raise();
-        w.focus();
-      }
-    }
+    renderWindowButton(state);
   }
 
   function setCurrentButtonGeometry(newGeometry: ButtonGeometry) {
@@ -160,21 +111,12 @@ export function buildWindowButton(args: {
       state.windowState.title !== newState.title ||
       state.windowState.isMinimized !== newState.isMinimized;
 
+    state.windowState = newState;
+
     if (stateIsDifferent) {
-      if (!newState.isMinimized) {
-        // We're not minimized, so update our cached snapshot, which gets
-        // used when we *are* minimized
-        state.windowSnapshot = state.windowObject.snapshot();
-      }
-      state.windowState = newState;
       render();
     }
   }
-
-  // Save bundleId, title, minimized status so we don't have to query a window
-  // object for simple updates like changing position. These calls might hang
-  // hammerspoon if the corresponding app is hung
-  const bundleId = windowObject.application()?.bundleID() || '';
 
   const state: State = {
     canvases: {
@@ -182,13 +124,9 @@ export function buildWindowButton(args: {
       hoverCanvas: undefined,
     },
     buttonGeometry: initialButtonGeometry,
-    windowState: initialWindowState,
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
-    windowObject,
-
-    // Save a snapshot so if it gets minimized, we'll have something to show
-    windowSnapshot: windowObject.snapshot(),
+    windowState,
   };
 
   state.canvases.mainCanvas = hs.canvas.new({
