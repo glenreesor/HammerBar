@@ -87,8 +87,16 @@ function unsubscribe(screenId: number) {
 }
 
 function saveCurrentWindowList(windowList: hs.window.WindowType[]) {
-  currentWindowList = windowList;
-  notifyListeners();
+  const listIsEmpty =
+    windowList.length === 0 ||
+    windowList[0].application()?.name() === 'loginwindow';
+
+  // Don't send useless window lists to listeners because when the screen
+  // is unlocked, the panels will show no window buttons until the next update
+  if (!listIsEmpty) {
+    currentWindowList = windowList;
+    notifyListeners();
+  }
 
   windowListTimer = hs.timer.doAfter(windowListUpdateInterval, () =>
     getCurrentWindowList(saveCurrentWindowList),
