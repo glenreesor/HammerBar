@@ -17,7 +17,11 @@
 
 import type { WindowState } from './types';
 import { getCurrentWindowList } from './getCurrentWindowList';
-import { getWindowState } from './getWindowState';
+import {
+  getWindowState,
+  removeStaleCachedAppIcons,
+  removeStaleCachedWindowSnapshots,
+} from './getWindowState';
 
 const DEFAULT_WINDOW_LIST_UPDATE_INTERVAL = 3;
 const DEFAULT_WINDOW_STATE_UPDATE_INTERVAL = 2;
@@ -57,7 +61,7 @@ export function subscribeToWindowListUpdates(
 
 function start() {
   if (!windowListTimer) {
-    getCurrentWindowList(saveCurrentWindowList);
+    getCurrentWindowList(handleNewWindowList);
   }
 
   if (!windowStateUpdateTimer) {
@@ -86,20 +90,17 @@ function unsubscribe(screenId: number) {
   }
 }
 
-function saveCurrentWindowList(windowList: hs.window.WindowType[]) {
-  const listIsEmpty =
-    windowList.length === 0 ||
-    windowList[0].application()?.name() === 'loginwindow';
-
-  // Don't send useless window lists to listeners because when the screen
-  // is unlocked, the panels will show no window buttons until the next update
-  if (!listIsEmpty) {
+function handleNewWindowList(windowList: hs.window.WindowType[]) {
+  // Don't act on useless window lists
+  if (!windowListIsEmptyOrLoginScreen(windowList)) {
+    removeStaleCachedAppIcons(windowList);
+    removeStaleCachedWindowSnapshots(windowList);
     currentWindowList = windowList;
     notifyListeners();
   }
 
   windowListTimer = hs.timer.doAfter(windowListUpdateInterval, () =>
-    getCurrentWindowList(saveCurrentWindowList),
+    getCurrentWindowList(handleNewWindowList),
   );
 }
 
@@ -118,4 +119,14 @@ function notifyListeners() {
     );
     l.callback(windowsThisScreen.map((w) => getWindowState(w)));
   });
+}
+
+function windowListIsEmptyOrLoginScreen(windowList: hs.window.WindowType[]) {
+  // When the screen is locked, MacOS returns:
+  //    - 1 window (the login prompt) if the login prompt is visible
+  //    - 0 windows if login prompt is not visible
+  return (
+    windowList.length === 0 ||
+    windowList[0].application()?.name() === 'loginwindow'
+  );
 }

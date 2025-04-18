@@ -18,7 +18,7 @@
 import { printWindowInfo } from 'src/utils';
 import type { WindowState } from './types';
 
-const cachedAppIconByBundleId: Map<number, hs.image.ImageType> = new Map();
+const cachedAppIconByBundleId: Map<string, hs.image.ImageType> = new Map();
 const cachedWindowSnapshotsById: Map<number, hs.image.ImageType> = new Map();
 
 export function getWindowState(window: hs.window.WindowType): WindowState {
@@ -39,15 +39,53 @@ export function getWindowState(window: hs.window.WindowType): WindowState {
   };
 }
 
+export function removeStaleCachedAppIcons(windowList: hs.window.WindowType[]) {
+  const staleBundleIds: string[] = [];
+
+  cachedAppIconByBundleId.forEach((_icon, cachedBundleId) => {
+    const applicationStillExists = windowList.some(
+      (window) => window.application()?.bundleID() === cachedBundleId,
+    );
+
+    if (!applicationStillExists) {
+      staleBundleIds.push(cachedBundleId);
+    }
+  });
+
+  staleBundleIds.forEach((bundleId) => {
+    cachedAppIconByBundleId.delete(bundleId);
+  });
+}
+
+export function removeStaleCachedWindowSnapshots(
+  windowList: hs.window.WindowType[],
+) {
+  const staleWindowIds: number[] = [];
+
+  cachedWindowSnapshotsById.forEach((_icon, cachedWindowId) => {
+    const windowStillExists = windowList.some(
+      (window) => window.id() === cachedWindowId,
+    );
+
+    if (!windowStillExists) {
+      staleWindowIds.push(cachedWindowId);
+    }
+
+    staleWindowIds.forEach((windowId) => {
+      cachedWindowSnapshotsById.delete(windowId);
+    });
+  });
+}
+
 function getAppIcon(window: hs.window.WindowType): hs.image.ImageType {
-  const cachedIcon = cachedAppIconByBundleId.get(window.id());
+  const bundleId = window.application()?.bundleID() || '';
+  const cachedIcon = cachedAppIconByBundleId.get(bundleId);
   if (cachedIcon) {
     return cachedIcon;
   }
 
-  const bundleId = window.application()?.bundleID() || '';
   const icon = hs.image.imageFromAppBundle(bundleId);
-  cachedAppIconByBundleId.set(window.id(), icon);
+  cachedAppIconByBundleId.set(bundleId, icon);
 
   return icon;
 }
