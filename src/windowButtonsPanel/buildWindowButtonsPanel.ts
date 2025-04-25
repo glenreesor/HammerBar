@@ -22,7 +22,6 @@ import { createMoveOrDeleteWindowButtons } from './createMoveOrDeleteWindowButto
 
 export function buildWindowButtonsPanel(args: {
   screenId: number;
-  showWindowPreviewOnHover: boolean;
   geometry: {
     x: number;
     y: number;
@@ -87,7 +86,6 @@ export function buildWindowButtonsPanel(args: {
     const updatedWindowButtonActionsById = createMoveOrDeleteWindowButtons({
       panelGeometry: args.geometry,
       isPanelVisible: state.isVisible,
-      showWindowPreviewOnHover: args.showWindowPreviewOnHover,
       previousWindowButtonActionsById: state.windowButtonActionsById,
       newWindowStates,
     });

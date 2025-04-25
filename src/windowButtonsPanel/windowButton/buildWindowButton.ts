@@ -21,7 +21,7 @@ import {
   hideCanvases,
   showCanvases,
 } from '../../widgets/_helpers/util';
-import { renderHover } from './renderHover';
+import { renderHoverWindowPreview } from './renderHoverWindowPreview';
 import { renderWindowButton } from './renderWindowButton';
 import type { ButtonGeometry, State } from './types';
 
@@ -29,13 +29,11 @@ export function buildWindowButton(args: {
   buttonGeometry: ButtonGeometry;
   windowState: WindowState;
   isInitiallyVisible: boolean;
-  showWindowPreviewOnHover: boolean;
 }) {
   const {
     buttonGeometry: initialButtonGeometry,
     windowState,
     isInitiallyVisible,
-    showWindowPreviewOnHover,
   } = args;
 
   function cleanupPriorToDelete() {
@@ -58,10 +56,7 @@ export function buildWindowButton(args: {
     if (msg === 'mouseEnter') {
       state.mouseIsInsideButton = true;
       render();
-      renderHover({
-        state,
-        showWindowPreviewOnHover,
-      });
+      renderHoverWindowPreview(state);
     } else if (msg === 'mouseExit') {
       state.mouseIsInsideButton = false;
       state.mouseButtonIsDown = false;

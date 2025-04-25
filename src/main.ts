@@ -32,14 +32,12 @@ type Config = {
   panelHeight: number;
   windowListUpdateInterval: number;
   windowStateUpdateInterval: number;
-  showWindowPreviewOnHover: boolean;
 };
 
 const config: Config = {
   panelHeight: 45,
   windowListUpdateInterval: 1,
   windowStateUpdateInterval: 1,
-  showWindowPreviewOnHover: false,
 };
 
 type State = {
@@ -122,7 +120,6 @@ function createPanelsForAllScreens() {
         },
         windowButtonsPanelBuilder: getWindowButtonsPanelBuilder({
           screenId: screenInfo.id,
-          showWindowPreviewOnHover: config.showWindowPreviewOnHover,
           subscribeToWindowListUpdates,
         }),
       }),
@@ -221,10 +218,6 @@ export function setWindowListUpdateInterval(newInterval: number) {
 
 export function setWindowStateUpdateInterval(newInterval: number) {
   config.windowStateUpdateInterval = newInterval;
-}
-
-export function setShowWindowPreviewOnHover(show: boolean) {
-  config.showWindowPreviewOnHover = show;
 }
 
 export function start() {

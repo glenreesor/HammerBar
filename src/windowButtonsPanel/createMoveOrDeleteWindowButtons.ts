@@ -29,12 +29,10 @@ export function createMoveOrDeleteWindowButtons(args: {
     width: number;
   };
   isPanelVisible: boolean;
-  showWindowPreviewOnHover: boolean;
   previousWindowButtonActionsById: WindowButtonActionsById;
   newWindowStates: WindowState[];
 }): WindowButtonActionsById {
   const {
-    showWindowPreviewOnHover,
     panelGeometry,
     previousWindowButtonActionsById,
     isPanelVisible,
@@ -92,7 +90,6 @@ export function createMoveOrDeleteWindowButtons(args: {
         },
         windowState,
         isInitiallyVisible: isPanelVisible,
-        showWindowPreviewOnHover: showWindowPreviewOnHover,
       });
 
       newWindowButtonActionsById.set(windowId, newWindowButtonActions);

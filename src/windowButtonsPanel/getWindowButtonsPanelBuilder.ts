@@ -20,19 +20,16 @@ import type { WindowState } from 'src/windowListAndStateWatcher';
 
 export function getWindowButtonsPanelBuilder(args: {
   screenId: number;
-  showWindowPreviewOnHover: boolean;
   subscribeToWindowListUpdates: (
     screenId: number,
     callback: (windowStates: WindowState[]) => void,
   ) => () => void;
 }) {
-  const { screenId, showWindowPreviewOnHover, subscribeToWindowListUpdates } =
-    args;
+  const { screenId, subscribeToWindowListUpdates } = args;
 
   return (geometry: { x: number; y: number; height: number; width: number }) =>
     buildWindowButtonsPanel({
       screenId,
-      showWindowPreviewOnHover,
       geometry,
       subscribeToWindowListUpdates,
     });
