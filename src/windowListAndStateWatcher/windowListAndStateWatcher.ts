@@ -91,8 +91,10 @@ function unsubscribe(screenId: number) {
 }
 
 function handleNewWindowList(windowList: hs.window.WindowType[]) {
-  // Don't act on useless window lists
-  if (!windowListIsEmptyOrLoginScreen(windowList)) {
+  // Don't act on the window list if the screen is locked because MacOS
+  // returns either an empty window list or a single window, the latter being
+  // if the password field is present.
+  if (!hs.caffeinate.sessionProperties().CGSSessionScreenIsLocked) {
     removeStaleCachedAppIcons(windowList);
     removeStaleCachedWindowSnapshots(windowList);
     currentWindowList = windowList;
@@ -119,14 +121,4 @@ function notifyListeners() {
     );
     l.callback(windowsThisScreen.map((w) => getWindowState(w)));
   });
-}
-
-function windowListIsEmptyOrLoginScreen(windowList: hs.window.WindowType[]) {
-  // When the screen is locked, MacOS returns:
-  //    - 1 window (the login prompt) if the login prompt is visible
-  //    - 0 windows if login prompt is not visible
-  return (
-    windowList.length === 0 ||
-    windowList[0].application()?.name() === 'loginwindow'
-  );
 }

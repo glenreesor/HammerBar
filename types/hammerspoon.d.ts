@@ -41,6 +41,15 @@ declare namespace hs.application {
 
 //-----------------------------------------------------------------------------
 
+declare namespace hs.caffeinate {
+  function sessionProperties(this: void): {
+    // Lots possible keys but this is the only one we care about
+    CGSSessionScreenIsLocked?: boolean;
+  };
+}
+
+//-----------------------------------------------------------------------------
+
 // This should be declared like this:
 //   declare namespace hs.canvas {
 //     new: (args) => return Type

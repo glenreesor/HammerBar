@@ -39,11 +39,13 @@ export function getWindowState(window: hs.window.WindowType): WindowState {
   };
 }
 
-export function removeStaleCachedAppIcons(windowList: hs.window.WindowType[]) {
+export function removeStaleCachedAppIcons(
+  currentWindowList: hs.window.WindowType[],
+) {
   const staleBundleIds: string[] = [];
 
   cachedAppIconByBundleId.forEach((_icon, cachedBundleId) => {
-    const applicationStillExists = windowList.some(
+    const applicationStillExists = currentWindowList.some(
       (window) => window.application()?.bundleID() === cachedBundleId,
     );
 
@@ -58,12 +60,12 @@ export function removeStaleCachedAppIcons(windowList: hs.window.WindowType[]) {
 }
 
 export function removeStaleCachedWindowSnapshots(
-  windowList: hs.window.WindowType[],
+  currentWindowList: hs.window.WindowType[],
 ) {
   const staleWindowIds: number[] = [];
 
   cachedWindowSnapshotsById.forEach((_icon, cachedWindowId) => {
-    const windowStillExists = windowList.some(
+    const windowStillExists = currentWindowList.some(
       (window) => window.id() === cachedWindowId,
     );
 
