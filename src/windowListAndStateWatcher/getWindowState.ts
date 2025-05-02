@@ -22,12 +22,7 @@ const cachedAppIconByBundleId: Map<string, hs.image.ImageType> = new Map();
 const cachedWindowSnapshotsById: Map<number, hs.image.ImageType> = new Map();
 
 export function getWindowState(window: hs.window.WindowType): WindowState {
-  // Ensure app icon and window snapshots are cached, in particular snapshot,
-  // since otherwise it only gets updated when user clicks the windowButton.
-  // But if they minimized using the window toolbar button, we won't have a
-  // snapshot to show.
-  getAppIcon(window);
-  getWindowSnapshot(window);
+  potentiallyUpdateWindowSnapshotCache('getWindowState', window);
 
   return {
     id: window.id(),
@@ -72,10 +67,10 @@ export function removeStaleCachedWindowSnapshots(
     if (!windowStillExists) {
       staleWindowIds.push(cachedWindowId);
     }
+  });
 
-    staleWindowIds.forEach((windowId) => {
-      cachedWindowSnapshotsById.delete(windowId);
-    });
+  staleWindowIds.forEach((windowId) => {
+    cachedWindowSnapshotsById.delete(windowId);
   });
 }
 
@@ -92,19 +87,29 @@ function getAppIcon(window: hs.window.WindowType): hs.image.ImageType {
   return icon;
 }
 
-function getWindowSnapshot(window: hs.window.WindowType): hs.image.ImageType {
-  if (window.isMinimized()) {
-    // MacOS returns an empty snapshot images for minimized windows, so
-    // use our cached one instead, falling back to the (empty) snapshot if it's
-    // not cached
-    return cachedWindowSnapshotsById.get(window.id()) || window.snapshot();
-  } else {
-    // We're not minimized so MacOS will return a non-empty image
-    const snapshot = window.snapshot();
-    cachedWindowSnapshotsById.set(window.id(), snapshot);
+function cacheCurrentWindowSnapshotIfValid(window: hs.window.WindowType) {
+  // We know we're not going to get a valid snapshot:
+  //   - if the screen is locked (MacOS returns undefined)
+  //   - if the window is minimized (MacOS returns a 1x1 placeholder image)
+  // So no point trying in those cases. There's probably also a performance
+  // benefit to not trying
+  const screenIsLocked =
+    hs.caffeinate.sessionProperties().CGSSessionScreenIsLocked;
+  if (!screenIsLocked && !window.isMinimized()) {
+    const currentSnapshot = window.snapshot();
 
-    return snapshot;
+    // We've indirectly ruled out the invalid cases above but still need to keep
+    // typescript happy
+    if (currentSnapshot) {
+      cachedWindowSnapshotsById.set(window.id(), currentSnapshot);
+    }
   }
+}
+
+function getWindowSnapshot(window: hs.window.WindowType): hs.image.ImageType {
+  cacheCurrentWindowSnapshotIfValid(window);
+  // If we don't have a cached snapshot, the app's icon is better than nothing
+  return cachedWindowSnapshotsById.get(window.id()) || getAppIcon(window);
 }
 
 function handleWindowButtonClick(window: hs.window.WindowType) {
@@ -143,11 +148,70 @@ function unminimizeWindow(window: hs.window.WindowType) {
   // Most apps require just focus(), but some like LibreOffice also require raise()
   window.raise();
   window.focus();
+  potentiallyUpdateWindowSnapshotCache('unminimize', window);
 }
 
 function minimizeWindow(window: hs.window.WindowType) {
-  // Hammerspoon returns an empty image for snapshots of minimized windows,
-  // so grab an updated snapshot now before minimizing
-  cachedWindowSnapshotsById.set(window.id(), window.snapshot());
+  potentiallyUpdateWindowSnapshotCache('minimize', window);
   window.minimize();
+}
+
+function potentiallyUpdateWindowSnapshotCache(
+  action: 'minimize' | 'unminimize' | 'getWindowState',
+  window: hs.window.WindowType,
+) {
+  // Dealing with window snapshots is tricky because:
+  // - MacOS returns undefined if the screen is locked
+  // - MacOS returns a placeholder 1x1 image if the window is minimized
+  //
+  // We can't guarantee snapshot reflects current window contents...
+  //   Scenarios:
+  //   - Unminimized:
+  //     - Easy because MacOS returns a copy of the current contents
+  //   - Minimized:
+  //     - We need to rely on our cache
+  //     - When should we update our cache?
+  //       - regularly polling would work, but how often, and what will the performance
+  //         impact be?
+  //
+  // Current implementation updates on the following events rather than polling,
+  // which doesn't guarantee always up-to-date snapshot, but should be decent.
+  //       (1) First time window is seen by HammerBar
+  //       (2) Window is minimized by clicking HammerBar windowButton
+  //       (3) Window is unminimized by clicking HammerBar windowButton
+  //
+  // User interaction scenarios:
+  //  - Abbreviations:
+  //      New      : New Window
+  //      MinFrame : User minimizes window using the MacOS window frame button
+  //      MinHB    : User minimizes window by clicking HammberBar button
+  //      UnminDock: User unminimizes by using the dock icon
+  //      UnminHB  : User unminimizes by clicking HammerBar button
+  //      UnminHov : User hovers the HammerBar button when *unminimized*
+  //
+  // ---------------------------------------------------------------------------
+  // User Actions                 Event    Cached Snapshot State Corresponds to
+  //                              Handler
+  // ---------------------------------------------------------------------------
+  // New, MinFrame                (1)      Window on first appearance or last UnminHov
+  // New, MinFrame, UnminDock     (1)      Window on first appearance or last UnminHov
+  // New, MinFrame, UnminHB       (3)      Current state
+  //
+  // New, MinHB                   (2)      State immediately prior to minimize
+  // New, MinHB   , UnminDock     (2)      State immediately prior to minimize
+  // New, MinHB   , UnminHB       (3)      State immediately after unminimize
+  //
+  // So the cases where snapshot may be stale are:
+  //   - New, MinFrame
+  //   - New, MinFrame, UnminDock (but really, who's going to use the dock?)
+  //   - New, MinHB   , UnminDock (ditto)
+
+  if (action === 'minimize' || action === 'unminimize') {
+    cacheCurrentWindowSnapshotIfValid(window);
+  } else if (action === 'getWindowState') {
+    // Only cache it if we've never seen this window before
+    if (!cachedWindowSnapshotsById.has(window.id())) {
+      cacheCurrentWindowSnapshotIfValid(window);
+    }
+  }
 }

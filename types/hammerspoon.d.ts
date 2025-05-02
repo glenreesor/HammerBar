@@ -194,7 +194,10 @@ declare namespace hs.hotkey {
 
 //-----------------------------------------------------------------------------
 declare namespace hs.image {
-  type ImageType = Object;
+  // There's other stuff on here, but this is all we care about
+  type ImageType = {
+    size: () => { w: number; h: number };
+  };
 
   function imageFromAppBundle(this: void, bundleID: string): ImageType;
   function imageFromPath(this: void, path: string): ImageType;
@@ -315,7 +318,7 @@ declare namespace hs.window {
     role: () => string;
     screen: () => hs.screen.ScreenType;
     setFrame: ({ x, y, w, h }: hs.FrameType) => void;
-    snapshot: () => hs.image.ImageType;
+    snapshot: () => hs.image.ImageType | undefined;
     subrole: () => string;
     title: () => string;
     unminimize: () => void;

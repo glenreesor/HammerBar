@@ -90,14 +90,14 @@ function unsubscribe(screenId: number) {
   }
 }
 
-function handleNewWindowList(windowList: hs.window.WindowType[]) {
-  // Don't act on the window list if the screen is locked because MacOS
-  // returns either an empty window list or a single window, the latter being
-  // if the password field is present.
-  if (!hs.caffeinate.sessionProperties().CGSSessionScreenIsLocked) {
-    removeStaleCachedAppIcons(windowList);
-    removeStaleCachedWindowSnapshots(windowList);
-    currentWindowList = windowList;
+function handleNewWindowList(args: {
+  windowListIsValid: boolean;
+  windowList: hs.window.WindowType[];
+}) {
+  if (args.windowListIsValid) {
+    removeStaleCachedAppIcons(args.windowList);
+    removeStaleCachedWindowSnapshots(args.windowList);
+    currentWindowList = args.windowList;
     notifyListeners();
   }
 

@@ -15,15 +15,19 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-let timer: hs.timer.TimerType | undefined;
-let reportWindowListCallback:
-  | ((windowList: hs.window.WindowType[]) => void)
-  | undefined;
+type WindowListCallback = (args: {
+  windowListIsValid: boolean;
+  windowList: hs.window.WindowType[];
+}) => void;
 
-export function getCurrentWindowList(
-  callback: (windowList: hs.window.WindowType[]) => void,
-) {
+let timer: hs.timer.TimerType | undefined;
+let reportWindowListCallback: WindowListCallback | undefined;
+let screenWasLockedDuringWindowRetrieval = false;
+
+export function getCurrentWindowList(callback: WindowListCallback) {
   if (timer === undefined) {
+    screenWasLockedDuringWindowRetrieval = false;
+    updateScreenLockedStatus();
     reportWindowListCallback = callback;
     orchestrateWindowListUpdating();
   }
@@ -60,6 +64,8 @@ function addNextAppsWindowsToList(
   currentWindowList: hs.window.WindowType[],
   remainingApps: hs.application.ApplicationType[],
 ) {
+  updateScreenLockedStatus();
+
   const thisApp = remainingApps[0];
   const allWindowsThisApp = thisApp.allWindows();
 
@@ -96,8 +102,20 @@ function addNextAppsWindowsToList(
 }
 
 function reportWindowList(windowList: hs.window.WindowType[]) {
+  updateScreenLockedStatus();
+  const windowListIsValid = !screenWasLockedDuringWindowRetrieval;
+
   if (reportWindowListCallback !== undefined) {
-    reportWindowListCallback(windowList);
+    reportWindowListCallback({
+      windowListIsValid,
+      windowList,
+    });
     timer = undefined;
   }
+}
+
+function updateScreenLockedStatus() {
+  screenWasLockedDuringWindowRetrieval =
+    screenWasLockedDuringWindowRetrieval ||
+    hs.caffeinate.sessionProperties().CGSSessionScreenIsLocked === true;
 }
