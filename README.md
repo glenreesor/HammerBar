@@ -25,9 +25,10 @@ a clickable taskbar along the bottom of your screen with support for:
 
 - install [Hammerspoon](https://www.hammerspoon.org)
 - create the directory `~/.hammerspoon/Spoons/HammerBar.spoon/`
-- copy `appMenuButton.png` and `init.lua`
-  from the [current release](https://github.com/glenreesor/HammerBar/releases/latest)
-  to `~/.hammerspoon/Spoons/HammerBar.spoon/`
+- copy the following from the [current release](https://github.com/glenreesor/HammerBar/releases/latest)
+  to `~/.hammerspoon/Spoons/HammerBar.spoon/`:
+  - `appMenuButton.png`
+  - `init.[vx.x.x].lua`, renaming it to `init.lua`
 - add the following lines to `~/.hammerspoon/init.lua`:
 
       hs.loadSpoon("HammerBar")
