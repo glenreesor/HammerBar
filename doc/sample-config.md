@@ -6,70 +6,49 @@ configuration to start from.
 ```lua
 hs.loadSpoon("HammerBar")
 
--- Return the number of seconds past current minute
-function getSecondsAfterMinute()
-  local handle = io.popen('date "+%S"')
-  local result = handle:read('*a')
-  handle:close()
+-- Define widgets we want to add
+local appMenu = spoon.HammerBar.widgets:appMenu({
+    appList = {
+      { bundleId = 'com.apple.Terminal', label = 'Term' },
+      { bundleId = 'com.apple.TextEdit', label = 'Editor' },
+      { bundleId = 'com.apple.calculator', label = 'Calculator' },
+      { bundleId = 'com.apple.systempreferences', label = 'Sys Prefs' },
+    },
+});
 
-  return result
-end
+local launchpadLauncher = spoon.HammerBar.widgets:appLauncher('com.apple.launchpad.launcher');
+local finderLauncher = spoon.HammerBar.widgets:appLauncher('com.apple.finder');
+local safariLauncher = spoon.HammerBar.widgets:appLauncher('com.apple.Safari');
+local clock = spoon.HammerBar.widgets.clock();
 
--- Get the total CPU usage as a percent
-function getCpuUsage()
-  local handle = io.popen('top -l 1')
-  local result = handle:read('*a')
-  handle:close()
+local xeyes = spoon.HammerBar.widgets:xeyes({
+  minInterval = 0.1,
+  maxInterval = 3,
+});
 
-  local user, sys = result:match('CPU usage: (%d+%.%d+)%% user, (%d+%.%d+)%% sys')
-  local totalUsage = tonumber(user) + tonumber(sys)
-
-  return totalUsage
-end
+local cpuGraph = spoon.HammerBar.widgets:cpuMonitor({
+  type = 'graph',
+  interval = 1,
+  maxValues = 100,
+});
 
 -- Add widgets to the left side of the primary screen
 spoon.HammerBar:addWidgetsPrimaryScreenLeft({
-    spoon.HammerBar.widgets:appMenu({
-        appList = {
-          { bundleId = 'com.apple.clock', label = 'Clock' },
-          { bundleId = 'com.apple.calculator', label = 'Calculator' },
-          { bundleId = 'com.apple.iCal', label = 'Calendar' },
-        },
-    }),
-    spoon.HammerBar.widgets:appLauncher('com.apple.Safari'),
-    spoon.HammerBar.widgets:appLauncher('com.apple.finder'),
-    spoon.HammerBar.widgets:appLauncher('com.apple.launchpad.launcher'),
+    appMenu,
+    launchpadLauncher,
+    finderLauncher,
+    safariLauncher,
 })
 
 -- Add widgets to the right side of the primary screen
 spoon.HammerBar:addWidgetsPrimaryScreenRight({
-    spoon.HammerBar.widgets.clock(),
-    spoon.HammerBar.widgets:xeyes({
-        minInterval = 0.1,
-        maxInterval = 3,
-    }),
-    spoon.HammerBar.widgets:lineGraph({
-        title = 'CPU',
-        interval = 1,
-        maxValues = 100,
-        cmd = getCpuUsage,
-    }),
-    spoon.HammerBar.widgets:text({
-        title = 'CPU',
-        interval = 1,
-        cmd = function() return getCpuUsage() .. '%' end,
-    }),
-    spoon.HammerBar.widgets:text({
-        title = 'Seconds',
-        interval = 1,
-        cmd = getSecondsAfterMinute,
-    }),
-})
+    clock,
+    xeyes,
+    cpuGraph,
+});
 
 -- No widgets on secondary screens except a clock on the right side
-spoon.HammerBar:addWidgetsSecondaryScreenRight({
-    spoon.HammerBar.widgets.clock(),
-})
+spoon.HammerBar:addWidgetsSecondaryScreenRight({ clock });
 
 spoon.HammerBar:start()
 ```

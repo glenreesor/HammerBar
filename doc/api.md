@@ -12,16 +12,17 @@ Adds one or more widgets to the left side of the primary screen.
 
 - Add a Safari launcher
 
-        spoon.HammerBar:addWidgetsPrimaryScreenLeft({
-          spoon.HammerBar.widgets:appLauncher('com.apple.Safari'),
-        })
+        local safariLauncher = spoon.HammerBar.widgets:appLauncher('com.apple.Safari');
+        spoon.HammerBar:addWidgetsPrimaryScreenLeft({ safariLauncher });
 
 - Add a Safari launcher and a Finder launcher
 
+        local safariLauncher = spoon.HammerBar.widgets:appLauncher('com.apple.Safari');
+        local finderLauncher = spoon.HammerBar.widgets:appLauncher('com.apple.finder');
         spoon.HammerBar:addWidgetsPrimaryScreenLeft({
-          spoon.HammerBar.widgets:appLauncher('com.apple.Safari'),
-          spoon.HammerBar.widgets:appLauncher('com.apple.finder'),
-        })
+          safariLauncher,
+          finderLauncher,
+        });
 
 ## `addWidgetsPrimaryScreenRight()`
 

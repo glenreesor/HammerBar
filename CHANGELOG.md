@@ -1,40 +1,19 @@
-## Unreleased
+## v1.1.0 (2025-05-02)
 
 #### Enhancements
 
 - `LineGraph` widget expanded view:
   - Current value is right aligned
   - More padding below the 0 line
-- Default clock:
-
-  - Now uses the system's locale for formatting the date
-    (the underlying toolkits don't change time formtas based on locale)
-  - Supports specifying format strings for date and time, example:
-
-          spoon.HammerBar:addWidgetsPrimaryScreenLeft({
-            spoon.HammerBar.widgets:clock({
-              dateFormat = 'YYYY-MM-DD',
-              timeFormat = 'h:mm:aa',
-            }),
-          })
-
-    - See `src/widgets/clock/variants/defaultClock/util.ts` until
-      docs are updated with the next release
+- Clock locale support:
+  - Uses system's locale for formatting the date
+  - Config option to specify custom time and or date formats
 
 #### Added
 
-- Experimental support for window previews when hovering a window button
-
-  - Enable by adding to your `init.lua`:
-
-        spoon.HammerBar:setShowWindowPreviewOnHover(true);
-
-  - Known issues:
-    - No previews are available for windows that are minimized on HammberBar
-      start
-    - Adding or removing screens trigger HammerBar restarts, and thus minimized
-      windows won't have any previews :-(
-
+- Hovering over a window button now shows a window preview
+  - The pre-release function `setShowWindowPreviewOnHover()` has been removed, so if
+    you were using that, it'll need to be removed from your `init.lua`
 - New widgets:
   - Clock variants: `analog-clock`, `analog-circles-clock`
   - `cpuMonitor`

@@ -1,8 +1,12 @@
 # HammerBar - A Windows-Like Taskbar for MacOS
 
 HammerBar is a "Spoon" for [HammerSpoon](https://www.hammerspoon.org) that displays
-a clickable taskbar along the bottom of your screen with support for app launchers
-and "widgets" that can show the output of arbitrary lua functions.
+a clickable taskbar along the bottom of your screen with support for:
+
+- application menus
+- individual application launchers
+- widgets like clocks, CPU Monitor, and line graphs
+- multiple monitors (separate taskbars on each monitor)
 
 ![HammerBar example](doc/example.png)
 
@@ -48,13 +52,11 @@ a clock to the right side, change your `~/.hammerspoon/init.lua` to:
 ```lua
 hs.loadSpoon("HammerBar")
 
-spoon.HammerBar:addWidgetsPrimaryScreenLeft({
-  spoon.HammerBar.widgets:appLauncher('com.apple.Safari'),
-});
+local safariLauncher = spoon.HammerBar.widgets:appLauncher('com.apple.Safari');
+local clock = spoon.HammerBar.widgets.clock();
 
-spoon.HammerBar:addWidgetsPrimaryScreenRight({
-  spoon.HammerBar.widgets.clock(),
-})
+spoon.HammerBar:addWidgetsPrimaryScreenLeft({ safariLauncher });
+spoon.HammerBar:addWidgetsPrimaryScreenRight({ clock });
 
 spoon.HammerBar:start()
 ```
@@ -65,17 +67,12 @@ on all your screens:
 ```lua
 hs.loadSpoon("HammerBar")
 
-spoon.HammerBar:addWidgetsPrimaryScreenLeft({
-  spoon.HammerBar.widgets:appLauncher('com.apple.Safari'),
-});
+local safariLauncher = spoon.HammerBar.widgets:appLauncher('com.apple.Safari');
+local clock = spoon.HammerBar.widgets.clock();
 
-spoon.HammerBar:addWidgetsPrimaryScreenRight({
-  spoon.HammerBar.widgets.clock(),
-})
-
-spoon.HammerBar:addWidgetsSecondaryScreenRight({
-  spoon.HammerBar.widgets.clock(),
-})
+spoon.HammerBar:addWidgetsPrimaryScreenLeft({ safariLauncher });
+spoon.HammerBar:addWidgetsPrimaryScreenRight({ clock });
+spoon.HammerBar:addWidgetsSecondaryScreenRight({ clock });
 
 spoon.HammerBar:start()
 ```
@@ -113,7 +110,7 @@ that does the trick (for me, at least).
 Remember that HammerBar is written in an interpreted language (Lua), it has:
 
 - poll Hammerspoon for a list of applications
-- poll every applicatoin for a list of windows
+- poll every application for a list of windows
 - poll every application's window to keep the status (minimized or not as well as window title)
   up to date
 
