@@ -22,23 +22,20 @@ declare namespace hs.screen {
     name(): string;
   }
 
-  // This should be declared like this:
-  //   declare namespace hs.screen.watcher {
-  //     function new(args): ReturnType
-  //  }
-  //
-  // But `new` is a typescript keyword, so use this hack instead
-  type ScreenWatcher = {
-    new: (
-      this: void,
-      watcherFn: () => void,
-    ) => {
-      start(): ScreenWatcher;
-      stop(): ScreenWatcher;
-    };
-  };
-
   function allScreens(this: void): Screen[];
   function primaryScreen(this: void): Screen;
-  const watcher: ScreenWatcher;
+}
+
+declare namespace hs.screen.watcher {
+  interface Watcher {
+    start(): Watcher;
+    stop(): Watcher;
+  }
+
+  // Can't declare "function new" since "new" is a TS
+  // keyword, so use this workaround of declaring as
+  // "new_" then exporting as "new"
+  function new_(this: void, watcherFn: () => void): Watcher;
+
+  export { new_ as new, Watcher };
 }

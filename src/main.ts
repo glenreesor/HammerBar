@@ -53,8 +53,8 @@ type State = {
   screensById: Map<number, ScreenInfoType>;
   screenWatcher:
     | {
-        start: () => hs.screen.ScreenWatcher;
-        stop: () => hs.screen.ScreenWatcher;
+        start: () => hs.screen.watcher.Watcher;
+        stop: () => hs.screen.watcher.Watcher;
       }
     | undefined;
 };

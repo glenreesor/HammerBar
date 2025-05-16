@@ -23,14 +23,6 @@
 // But `new` is a typescript keyword, so use this hack instead. TS won't
 // describe `hs.canvas.new` as a function, but the actual type checking will
 // be correct
-declare namespace hs {
-  const canvas: {
-    new: (
-      this: void,
-      { x, y, w, h }: { x: number; y: number; w: number; h: number },
-    ) => hs.canvas.Canvas;
-  };
-}
 
 declare namespace hs.canvas {
   type CanvasElement = {
@@ -80,4 +72,11 @@ declare namespace hs.canvas {
     green: number;
     blue: number;
   };
+
+  function new_(
+    this: void,
+    { x, y, w, h }: { x: number; y: number; w: number; h: number },
+  ): Canvas;
+
+  export { Canvas, CanvasElement, CanvasMouseCallback, Color, new_ as new };
 }
