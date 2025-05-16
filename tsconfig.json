@@ -3,7 +3,6 @@
     "target": "esnext",
     "lib": ["esnext"],
     "moduleResolution": "node",
-    "typeRoots": ["./types"],
     "strict": true,
     "baseUrl": "./"
   },
