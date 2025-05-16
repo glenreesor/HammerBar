@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-declare function print(this: void, text?: string | number): void;
+declare function print(this: void, ...args: any[]): void;
 
 declare namespace os {
   type DateTable = {
