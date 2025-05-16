@@ -21,7 +21,7 @@ import { getFormattedDate, getFormattedTime } from './util';
 
 export function render(args: {
   configParams: ConfigParams;
-  canvas: hs.canvas.CanvasType;
+  canvas: hs.canvas.Canvas;
   width: number;
   height: number;
 }) {

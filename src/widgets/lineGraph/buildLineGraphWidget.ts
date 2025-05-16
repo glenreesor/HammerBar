@@ -74,9 +74,9 @@ export function buildLineGraphWidget(
     });
   }
 
-  const mouseCallback: hs.canvas.CanvasMouseCallbackType = function (
+  const mouseCallback: hs.canvas.CanvasMouseCallback = function (
     this: void,
-    _canvas: hs.canvas.CanvasType,
+    _canvas: hs.canvas.Canvas,
     msg: 'mouseEnter' | 'mouseExit' | 'mouseDown' | 'mouseUp',
   ) {
     if (msg === 'mouseEnter') {

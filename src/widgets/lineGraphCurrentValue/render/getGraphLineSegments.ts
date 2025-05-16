@@ -16,13 +16,13 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 export function getGraphLineSegments(args: {
-  bgColor: hs.canvas.ColorType;
+  bgColor: hs.canvas.Color;
   graphDimensions: { w: number; h: number };
   graphTopLeft: { x: number; y: number };
   scale: { x: number; y: number };
-  strokeColor: hs.canvas.ColorType;
+  strokeColor: hs.canvas.Color;
   yValues: number[];
-}): hs.canvas.CanvasElementType[] {
+}): hs.canvas.CanvasElement[] {
   const {
     bgColor,
     graphDimensions,

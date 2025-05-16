@@ -45,8 +45,8 @@ export function buildDefaultClockWidget(
   }
 
   const state: {
-    canvas: hs.canvas.CanvasType | undefined;
-    timer: hs.timer.TimerType | undefined;
+    canvas: hs.canvas.Canvas | undefined;
+    timer: hs.timer.Timer | undefined;
   } = {
     canvas: undefined,
     timer: undefined,

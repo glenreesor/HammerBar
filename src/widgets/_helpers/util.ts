@@ -1,4 +1,4 @@
-// Copyright 2024 Glen Reesor
+// Copyright 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -16,8 +16,8 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 export function deleteCanvasesAndStopTimers(
-  canvases: (hs.canvas.CanvasType | undefined)[],
-  timers: (hs.timer.TimerType | undefined)[],
+  canvases: (hs.canvas.Canvas | undefined)[],
+  timers: (hs.timer.Timer | undefined)[],
 ) {
   // Hide canvases then unset them so they'll be garbage collected
   // This approach (garbage collection) is suggested by HammerSpoon docs
@@ -29,10 +29,10 @@ export function deleteCanvasesAndStopTimers(
   timers.forEach((t) => t?.stop());
 }
 
-export function hideCanvases(canvases: (hs.canvas.CanvasType | undefined)[]) {
+export function hideCanvases(canvases: (hs.canvas.Canvas | undefined)[]) {
   canvases.forEach((c) => c?.hide());
 }
 
-export function showCanvases(canvases: (hs.canvas.CanvasType | undefined)[]) {
+export function showCanvases(canvases: (hs.canvas.Canvas | undefined)[]) {
   canvases.forEach((c) => c?.show());
 }

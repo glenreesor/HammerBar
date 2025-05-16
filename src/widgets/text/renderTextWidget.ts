@@ -22,7 +22,7 @@ import type { ConfigParams } from './types';
 export function renderTextWidget(
   configParams: ConfigParams,
   builderParams: WidgetBuilderParams,
-  canvas: hs.canvas.CanvasType,
+  canvas: hs.canvas.Canvas,
 ) {
   const width = builderParams.widgetHeight * 1.5;
   const fontSize = 12;

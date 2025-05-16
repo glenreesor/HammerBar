@@ -32,7 +32,7 @@ const EDGE_TO_SECOND_HAND_PADDING =
 
 export function render(args: {
   configParams: ConfigParams;
-  canvas: hs.canvas.CanvasType;
+  canvas: hs.canvas.Canvas;
   width: number;
   height: number;
 }) {
@@ -119,8 +119,8 @@ function getHandElement(args: {
   clockCenter: { x: number; y: number };
   length: number;
   angle: number;
-  color: hs.canvas.ColorType;
-}): hs.canvas.CanvasElementType {
+  color: hs.canvas.Color;
+}): hs.canvas.CanvasElement {
   const { clockCenter, length, angle, color } = args;
   const endCoords = getCoords({
     origin: clockCenter,

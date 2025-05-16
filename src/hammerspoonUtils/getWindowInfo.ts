@@ -1,4 +1,4 @@
-// Copyright 2022, 2024 Glen Reesor
+// Copyright 2022, 2024, 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -31,7 +31,7 @@ export type WindowInfoType = {
  * Return an object with all the relevant info that Hammerspoon provides about
  * the specified window
  */
-export function getWindowInfo(window: hs.window.WindowType): WindowInfoType {
+export function getWindowInfo(window: hs.window.Window): WindowInfoType {
   const application = window.application();
   let appName;
   let bundleId;

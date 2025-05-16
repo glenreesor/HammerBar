@@ -38,8 +38,8 @@ export type WidgetBuilderParams = {
         y: number;
       };
   widgetHeight: number;
-  panelColor: hs.canvas.ColorType;
-  panelHoverColor: hs.canvas.ColorType;
+  panelColor: hs.canvas.Color;
+  panelHoverColor: hs.canvas.Color;
 };
 
 export type Widget = {

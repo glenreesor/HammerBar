@@ -81,7 +81,7 @@ export function renderExpandedView(args: {
 
   const currentValueString = `${Math.round(currentValue)}`;
 
-  const mainCanvasElements: hs.canvas.CanvasElementType[] = [
+  const mainCanvasElements: hs.canvas.CanvasElement[] = [
     {
       type: 'rectangle',
       fillColor: { red: 0.5, green: 0.5, blue: 0.5 },
@@ -171,7 +171,7 @@ function getHorizontalScaleLineWithLabel(args: {
   graphTopLeft: { x: number; y: number };
   scale: { x: number; y: number };
   value: number;
-}): hs.canvas.CanvasElementType[] {
+}): hs.canvas.CanvasElement[] {
   const { graphDimensions, graphTopLeft, scale, value } = args;
 
   const fontSize = 12;

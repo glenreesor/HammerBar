@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 declare namespace hs {
-  type FrameType = {
+  type Frame = {
     x: number;
     y: number;
     w: number;
@@ -26,24 +26,24 @@ declare namespace hs {
 
 //-----------------------------------------------------------------------------
 declare namespace hs.application {
-  type ApplicationType = {
-    allWindows: () => hs.window.WindowType[];
-    bundleID: () => string | null;
-    name: () => string;
-    hide: () => boolean;
-    unhide: () => boolean;
-  };
+  interface Application {
+    allWindows(): hs.window.Window[];
+    bundleID(): string | null;
+    name(): string;
+    hide(): boolean;
+    unhide(): boolean;
+  }
 
-  function find(this: void, bundleId: string): ApplicationType;
-  function launchOrFocusByBundleID(this: void, name: string): boolean;
-  function runningApplications(this: void): ApplicationType[];
+  function find(this: void, bundleId: string): Application | null;
+  function launchOrFocusByBundleID(this: void, bundleId: string): boolean;
+  function runningApplications(this: void): Application[];
 }
 
 //-----------------------------------------------------------------------------
 
 declare namespace hs.caffeinate {
   function sessionProperties(this: void): {
-    // Lots possible keys but this is the only one we care about
+    // Lots of possible keys but this is the only one we care about
     CGSSessionScreenIsLocked?: boolean;
   };
 }
@@ -52,36 +52,37 @@ declare namespace hs.caffeinate {
 
 // This should be declared like this:
 //   declare namespace hs.canvas {
-//     new: (args) => return Type
+//     function new(args): ReturnType
 //   }
 //
-// But `new` is a typescript keyword, so use this `type` and `const` hack instead
+// But `new` is a typescript keyword, so use this hack instead. TS won't
+// describe `hs.canvas.new` as a function, but the actual type checking will
+// be correct
 declare namespace hs {
-  type Canvas = {
+  const canvas: {
     new: (
       this: void,
       { x, y, w, h }: { x: number; y: number; w: number; h: number },
-    ) => hs.canvas.CanvasType;
+    ) => hs.canvas.Canvas;
   };
-  const canvas: Canvas;
 }
 
 declare namespace hs.canvas {
-  type CanvasElementType = {
+  type CanvasElement = {
     center?: { x: number; y: number };
     coordinates?: { x: number; y: number }[];
-    fillColor?: ColorType;
+    fillColor?: Color;
     frame?: { x: number; y: number; w: number; h: number };
     id?: number;
-    image?: hs.image.ImageType;
+    image?: hs.image.Image;
     imageAlpha?: number;
     radius?: number;
     roundedRectRadii?: { xRadius: number; yRadius: number };
-    strokeColor?: ColorType;
+    strokeColor?: Color;
     strokeWidth?: number;
     text?: string;
     textAlignment?: 'center' | 'justified' | 'left' | 'natural' | 'right';
-    textColor?: ColorType;
+    textColor?: Color;
     textLineBreak?: string;
     textSize?: number;
     trackMouseDown?: boolean;
@@ -90,31 +91,26 @@ declare namespace hs.canvas {
     type: string;
   };
 
-  type CanvasMouseCallbackType = {
-    (
-      this: void,
-      canvas: CanvasType,
-      message: 'mouseEnter' | 'mouseExit' | 'mouseUp',
-      id: number | string,
-    ): void;
-  };
+  type CanvasMouseCallback = (
+    this: void,
+    canvas: Canvas,
+    message: 'mouseEnter' | 'mouseExit' | 'mouseUp',
+    id: number | string,
+  ) => void;
 
-  type CanvasType = {
-    appendElements: (element: CanvasElementType | CanvasElementType[]) => void;
-    delete: () => void;
+  interface Canvas {
+    appendElements(element: CanvasElement | CanvasElement[]): void;
+    delete(): void;
     frame: (newFrame: { x: number; y: number; w: number; h: number }) => void;
-    hide: () => void;
-    mouseCallback: (callback: CanvasMouseCallbackType) => void;
-    replaceElements: (
-      element?: CanvasElementType | CanvasElementType[],
-    ) => void;
-    show: () => void;
-    topLeft:
-      | ((point: { x: number; y: number }) => CanvasType)
-      | (() => { x: number; y: number }[]);
-  };
+    hide(): void;
+    mouseCallback(callback: CanvasMouseCallback): void;
+    replaceElements(element?: CanvasElement | CanvasElement[]): void;
+    show(): void;
+    topLeft(point: { x: number; y: number }): Canvas;
+    topLeft(): { x: number; y: number }[];
+  }
 
-  type ColorType = {
+  type Color = {
     red: number;
     green: number;
     blue: number;
@@ -158,8 +154,8 @@ declare namespace hs.host {
     period?: number,
     callback?: (this: void, result: CpuUsageReturnStats) => void,
   ): {
-    finished: () => boolean;
-    stop: () => void;
+    finished(): boolean;
+    stop(): void;
   };
 
   namespace locale {
@@ -195,12 +191,12 @@ declare namespace hs.hotkey {
 //-----------------------------------------------------------------------------
 declare namespace hs.image {
   // There's other stuff on here, but this is all we care about
-  type ImageType = {
+  interface Image {
     size: () => { w: number; h: number };
-  };
+  }
 
-  function imageFromAppBundle(this: void, bundleID: string): ImageType;
-  function imageFromPath(this: void, path: string): ImageType;
+  function imageFromAppBundle(this: void, bundleID: string): Image;
+  function imageFromPath(this: void, path: string): Image;
 }
 
 //-----------------------------------------------------------------------------
@@ -215,49 +211,47 @@ declare namespace hs.mouse {
 
 //-----------------------------------------------------------------------------
 declare namespace hs.screen {
-  type ScreenType = {
-    frame: () => FrameType;
-    id: () => number;
-    name: () => string;
-  };
+  interface Screen {
+    frame(): Frame;
+    id(): number;
+    name(): string;
+  }
 
   // This should be declared like this:
-  //   new: (args) => return Type
+  //   declare namespace hs.screen.watcher {
+  //     function new(args): ReturnType
+  //  }
   //
-  // But `new` is a typescript keyword, so use this `type` and `const` hack instead
+  // But `new` is a typescript keyword, so use this hack instead
   type ScreenWatcher = {
     new: (
       this: void,
       watcherFn: () => void,
     ) => {
-      start: () => ScreenWatcher;
-      stop: () => ScreenWatcher;
+      start(): ScreenWatcher;
+      stop(): ScreenWatcher;
     };
   };
 
-  function allScreens(this: void): ScreenType[];
-  function primaryScreen(this: void): ScreenType;
+  function allScreens(this: void): Screen[];
+  function primaryScreen(this: void): Screen;
   const watcher: ScreenWatcher;
 }
 
 //-----------------------------------------------------------------------------
 declare namespace hs.timer {
-  type TimerType = {
-    stop: () => void;
-  };
+  interface Timer {
+    stop(): void;
+  }
 
-  function doAfter(
-    this: void,
-    afterSeconds: number,
-    callback: Function,
-  ): TimerType;
+  function doAfter(this: void, afterSeconds: number, callback: Function): Timer;
 
   function doAt(
     this: void,
     time: number | string,
     callback: Function,
     continueOnError?: boolean,
-  ): TimerType;
+  ): Timer;
 
   function doAt(
     this: void,
@@ -265,68 +259,33 @@ declare namespace hs.timer {
     repeatInterval: number | string,
     callback: Function,
     continueOnError?: boolean,
-  ): TimerType;
+  ): Timer;
 
-  function doEvery(this: void, seconds: number, callback: Function): TimerType;
+  function doEvery(this: void, seconds: number, callback: Function): Timer;
 }
 
 //-----------------------------------------------------------------------------
 declare namespace hs.window {
-  type WindowFilter = {
-    getWindows: () => WindowType[];
-    new: (
-      this: void,
-      filterCriteria:
-        | null
-        | boolean
-        | ((this: void, hsWindow: WindowType) => boolean),
-    ) => WindowFilter;
-    subscribe: (events: string[], callback: Function) => void;
-    unsubscribeAll: () => void;
-    windowAllowed: string;
-    windowCreated: string;
-    windowDestroyed: string;
-    windowFocused: string;
-    windowFullscreened: string;
-    windowHidden: string;
-    windowInCurrentSpace: string;
-    windowMinimized: string;
-    windowMoved: string;
-    windowNotInCurrentSpace: string;
-    windowNotOnScreen: string;
-    windowNotVisible: string;
-    windowOnScreen: string;
-    windowRejected: string;
-    windowsChanged: string;
-    windowTitleChanged: string;
-    windowUnfocused: string;
-    windowUnfullscreened: string;
-    windowUnhidden: string;
-    windowUnminimized: string;
-    windowVisible: string;
-  };
+  interface Window {
+    application(): hs.application.Application | null;
+    focus(): void;
+    frame(): hs.Frame;
+    id(): number;
+    isMinimized(): boolean;
+    isStandard(): boolean;
+    minimize(): void;
+    raise(): void;
+    role(): string;
+    screen(): hs.screen.Screen;
+    setFrame({ x, y, w, h }: hs.Frame): void;
+    snapshot(): hs.image.Image | undefined;
+    subrole(): string;
+    title(): string;
+    unminimize(): void;
+  }
 
-  type WindowType = {
-    application: () => hs.application.ApplicationType | null;
-    focus: () => void;
-    frame: () => hs.FrameType;
-    id: () => number;
-    isMinimized: () => boolean;
-    isStandard: () => boolean;
-    minimize: () => void;
-    raise: () => void;
-    role: () => string;
-    screen: () => hs.screen.ScreenType;
-    setFrame: ({ x, y, w, h }: hs.FrameType) => void;
-    snapshot: () => hs.image.ImageType | undefined;
-    subrole: () => string;
-    title: () => string;
-    unminimize: () => void;
-  };
-
-  function allWindows(this: void): WindowType[];
-  function focusedWindow(this: void): WindowType;
-  function get(this: void, windowId: number): WindowType | undefined;
-  function orderedWindows(this: void): WindowType[];
-  const filter: WindowFilter;
+  function allWindows(this: void): Window[];
+  function focusedWindow(this: void): Window;
+  function get(this: void, windowId: number): Window | undefined;
+  function orderedWindows(this: void): Window[];
 }

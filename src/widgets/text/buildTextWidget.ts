@@ -29,8 +29,8 @@ export function buildTextWidget(
   builderParams: WidgetBuilderParams,
 ) {
   type State = {
-    canvas: hs.canvas.CanvasType | undefined;
-    timer: hs.timer.TimerType | undefined;
+    canvas: hs.canvas.Canvas | undefined;
+    timer: hs.timer.Timer | undefined;
   };
 
   const state: State = {

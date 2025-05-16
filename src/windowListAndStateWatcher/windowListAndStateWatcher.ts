@@ -34,10 +34,10 @@ let windowListListeners: {
   callback: (windowStates: WindowState[]) => void;
 }[] = [];
 
-let windowListTimer: hs.timer.TimerType | undefined;
-let windowStateUpdateTimer: hs.timer.TimerType | undefined;
+let windowListTimer: hs.timer.Timer | undefined;
+let windowStateUpdateTimer: hs.timer.Timer | undefined;
 
-let currentWindowList: hs.window.WindowType[] = [];
+let currentWindowList: hs.window.Window[] = [];
 
 export function setWindowListUpdateInterval(newInterval: number) {
   windowListUpdateInterval = newInterval;
@@ -92,7 +92,7 @@ function unsubscribe(screenId: number) {
 
 function handleNewWindowList(args: {
   windowListIsValid: boolean;
-  windowList: hs.window.WindowType[];
+  windowList: hs.window.Window[];
 }) {
   if (args.windowListIsValid) {
     removeStaleCachedAppIcons(args.windowList);

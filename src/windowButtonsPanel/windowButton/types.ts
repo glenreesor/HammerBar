@@ -26,8 +26,8 @@ export type ButtonGeometry = {
 
 export type State = {
   canvases: {
-    mainCanvas: hs.canvas.CanvasType | undefined;
-    hoverCanvas: hs.canvas.CanvasType | undefined;
+    mainCanvas: hs.canvas.Canvas | undefined;
+    hoverCanvas: hs.canvas.Canvas | undefined;
   };
   buttonGeometry: ButtonGeometry;
   mouseButtonIsDown: boolean;

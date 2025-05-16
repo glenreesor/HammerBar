@@ -56,8 +56,8 @@ export function getTickMarkElements(args: {
   paddingToClockEdge: number;
   tickLength: number;
   multiplesOf: number;
-  color: hs.canvas.ColorType;
-}): hs.canvas.CanvasElementType[] {
+  color: hs.canvas.Color;
+}): hs.canvas.CanvasElement[] {
   const {
     clockCenter,
     clockRadius,
@@ -67,7 +67,7 @@ export function getTickMarkElements(args: {
     color,
   } = args;
 
-  const elements: hs.canvas.CanvasElementType[] = [];
+  const elements: hs.canvas.CanvasElement[] = [];
 
   let minute = 0;
   while (minute < 60) {

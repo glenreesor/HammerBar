@@ -199,8 +199,8 @@ export function buildXeyesWidget(
       x: number;
       y: number;
     };
-    canvas: hs.canvas.CanvasType | undefined;
-    timer: hs.timer.TimerType | undefined;
+    canvas: hs.canvas.Canvas | undefined;
+    timer: hs.timer.Timer | undefined;
   } = {
     values: [],
     interval: configParams.maxInterval,

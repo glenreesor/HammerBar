@@ -26,7 +26,7 @@ export function renderMainGraph(args: {
   configParams: ConfigParams;
   state: State;
   widgetWidth: number;
-  mouseCallback: hs.canvas.CanvasMouseCallbackType;
+  mouseCallback: hs.canvas.CanvasMouseCallback;
 }) {
   const { builderParams, configParams, state, widgetWidth, mouseCallback } =
     args;
@@ -81,7 +81,7 @@ export function renderMainGraph(args: {
       ? ''
       : `${Math.round(state.yValues[state.yValues.length - 1])}`;
 
-  const mainCanvasElements: hs.canvas.CanvasElementType[] = [
+  const mainCanvasElements: hs.canvas.CanvasElement[] = [
     {
       type: 'rectangle',
       fillColor: bgColor,

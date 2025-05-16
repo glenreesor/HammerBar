@@ -17,10 +17,10 @@
 
 type WindowListCallback = (args: {
   windowListIsValid: boolean;
-  windowList: hs.window.WindowType[];
+  windowList: hs.window.Window[];
 }) => void;
 
-let timer: hs.timer.TimerType | undefined;
+let timer: hs.timer.Timer | undefined;
 let reportWindowListCallback: WindowListCallback | undefined;
 let screenWasLockedDuringWindowRetrieval = false;
 
@@ -61,8 +61,8 @@ function orchestrateWindowListUpdating() {
 }
 
 function addNextAppsWindowsToList(
-  currentWindowList: hs.window.WindowType[],
-  remainingApps: hs.application.ApplicationType[],
+  currentWindowList: hs.window.Window[],
+  remainingApps: hs.application.Application[],
 ) {
   updateScreenLockedStatus();
 
@@ -101,7 +101,7 @@ function addNextAppsWindowsToList(
   }
 }
 
-function reportWindowList(windowList: hs.window.WindowType[]) {
+function reportWindowList(windowList: hs.window.Window[]) {
   updateScreenLockedStatus();
   const windowListIsValid = !screenWasLockedDuringWindowRetrieval;
 

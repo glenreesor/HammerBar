@@ -19,7 +19,7 @@ export type WindowState = {
   id: number;
   title: string;
   isMinimized: boolean;
-  getAppIcon: () => hs.image.ImageType;
-  getSnapshot: () => hs.image.ImageType;
+  getAppIcon: () => hs.image.Image;
+  getSnapshot: () => hs.image.Image;
   onClick: () => void;
 };

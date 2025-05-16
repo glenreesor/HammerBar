@@ -25,12 +25,12 @@ export type ConfigParams = {
 
 export type State = {
   canvases: {
-    expandedViewCanvas: hs.canvas.CanvasType | undefined;
-    mainGraphCanvas: hs.canvas.CanvasType | undefined;
-    hoverCanvas: hs.canvas.CanvasType | undefined;
+    expandedViewCanvas: hs.canvas.Canvas | undefined;
+    mainGraphCanvas: hs.canvas.Canvas | undefined;
+    hoverCanvas: hs.canvas.Canvas | undefined;
   };
   timers: {
-    timer: hs.timer.TimerType | undefined;
+    timer: hs.timer.Timer | undefined;
   };
   mouseButtonIsDown: boolean;
   mouseIsInside: boolean;

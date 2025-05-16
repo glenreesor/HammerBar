@@ -18,10 +18,10 @@
 import { printWindowInfo } from 'src/utils';
 import type { WindowState } from './types';
 
-const cachedAppIconByBundleId: Map<string, hs.image.ImageType> = new Map();
-const cachedWindowSnapshotsById: Map<number, hs.image.ImageType> = new Map();
+const cachedAppIconByBundleId: Map<string, hs.image.Image> = new Map();
+const cachedWindowSnapshotsById: Map<number, hs.image.Image> = new Map();
 
-export function getWindowState(window: hs.window.WindowType): WindowState {
+export function getWindowState(window: hs.window.Window): WindowState {
   potentiallyUpdateWindowSnapshotCache('getWindowState', window);
 
   return {
@@ -35,7 +35,7 @@ export function getWindowState(window: hs.window.WindowType): WindowState {
 }
 
 export function removeStaleCachedAppIcons(
-  currentWindowList: hs.window.WindowType[],
+  currentWindowList: hs.window.Window[],
 ) {
   const staleBundleIds: string[] = [];
 
@@ -55,7 +55,7 @@ export function removeStaleCachedAppIcons(
 }
 
 export function removeStaleCachedWindowSnapshots(
-  currentWindowList: hs.window.WindowType[],
+  currentWindowList: hs.window.Window[],
 ) {
   const staleWindowIds: number[] = [];
 
@@ -74,7 +74,7 @@ export function removeStaleCachedWindowSnapshots(
   });
 }
 
-function getAppIcon(window: hs.window.WindowType): hs.image.ImageType {
+function getAppIcon(window: hs.window.Window): hs.image.Image {
   const bundleId = window.application()?.bundleID() || '';
   const cachedIcon = cachedAppIconByBundleId.get(bundleId);
   if (cachedIcon) {
@@ -87,7 +87,7 @@ function getAppIcon(window: hs.window.WindowType): hs.image.ImageType {
   return icon;
 }
 
-function cacheCurrentWindowSnapshotIfValid(window: hs.window.WindowType) {
+function cacheCurrentWindowSnapshotIfValid(window: hs.window.Window) {
   // We know we're not going to get a valid snapshot:
   //   - if the screen is locked (MacOS returns undefined)
   //   - if the window is minimized (MacOS returns a 1x1 placeholder image)
@@ -106,13 +106,13 @@ function cacheCurrentWindowSnapshotIfValid(window: hs.window.WindowType) {
   }
 }
 
-function getWindowSnapshot(window: hs.window.WindowType): hs.image.ImageType {
+function getWindowSnapshot(window: hs.window.Window): hs.image.Image {
   cacheCurrentWindowSnapshotIfValid(window);
   // If we don't have a cached snapshot, the app's icon is better than nothing
   return cachedWindowSnapshotsById.get(window.id()) || getAppIcon(window);
 }
 
-function handleWindowButtonClick(window: hs.window.WindowType) {
+function handleWindowButtonClick(window: hs.window.Window) {
   const w = window;
   const keyboardModifiers = hs.eventtap.checkKeyboardModifiers();
 
@@ -144,21 +144,21 @@ function handleWindowButtonClick(window: hs.window.WindowType) {
   }
 }
 
-function unminimizeWindow(window: hs.window.WindowType) {
+function unminimizeWindow(window: hs.window.Window) {
   // Most apps require just focus(), but some like LibreOffice also require raise()
   window.raise();
   window.focus();
   potentiallyUpdateWindowSnapshotCache('unminimize', window);
 }
 
-function minimizeWindow(window: hs.window.WindowType) {
+function minimizeWindow(window: hs.window.Window) {
   potentiallyUpdateWindowSnapshotCache('minimize', window);
   window.minimize();
 }
 
 function potentiallyUpdateWindowSnapshotCache(
   action: 'minimize' | 'unminimize' | 'getWindowState',
-  window: hs.window.WindowType,
+  window: hs.window.Window,
 ) {
   // Dealing with window snapshots is tricky because:
   // - MacOS returns undefined if the screen is locked

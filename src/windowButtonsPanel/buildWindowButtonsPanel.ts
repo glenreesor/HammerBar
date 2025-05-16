@@ -102,7 +102,7 @@ export function buildWindowButtonsPanel(args: {
   }
 
   const state: {
-    canvas: hs.canvas.CanvasType | undefined;
+    canvas: hs.canvas.Canvas | undefined;
     isVisible: boolean;
     windowButtonActionsById: WindowButtonActionsById;
     windowListUnsubscriber: (() => void) | undefined;

@@ -26,7 +26,7 @@ export function renderMainGraph(args: {
   configParams: ConfigParams;
   state: State;
   widgetWidth: number;
-  mouseCallback: hs.canvas.CanvasMouseCallbackType;
+  mouseCallback: hs.canvas.CanvasMouseCallback;
 }) {
   const { builderParams, configParams, state, widgetWidth, mouseCallback } =
     args;
@@ -78,7 +78,7 @@ export function renderMainGraph(args: {
 
   const maxString = `${Math.round(max)}`;
 
-  const mainCanvasElements: hs.canvas.CanvasElementType[] = [
+  const mainCanvasElements: hs.canvas.CanvasElement[] = [
     {
       type: 'rectangle',
       fillColor: bgColor,

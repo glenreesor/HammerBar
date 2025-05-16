@@ -32,7 +32,7 @@ const SECOND_CIRCLE_RADIUS = 1;
 
 export function render(args: {
   configParams: ConfigParams;
-  canvas: hs.canvas.CanvasType;
+  canvas: hs.canvas.Canvas;
   width: number;
   height: number;
 }) {
@@ -126,7 +126,7 @@ export function render(args: {
   });
 
   // Note the order of canvas elements (lowest to highest)
-  const elements: hs.canvas.CanvasElementType[] = [clockOutlineElement];
+  const elements: hs.canvas.CanvasElement[] = [clockOutlineElement];
 
   if (configParams.showCirclePaths) {
     elements.push(...[minuteCirclePathElement, hourCirclePathElement]);
@@ -146,8 +146,8 @@ function getCircleElement(args: {
   distFromOrigin: number;
   angle: number;
   circleRadius: number;
-  color: hs.canvas.ColorType;
-}): hs.canvas.CanvasElementType {
+  color: hs.canvas.Color;
+}): hs.canvas.CanvasElement {
   const { clockCenter, distFromOrigin, angle, circleRadius, color } = args;
   const center = getCoords({
     origin: clockCenter,
