@@ -3,7 +3,7 @@
     "target": "esnext",
     "lib": ["esnext"],
     "moduleResolution": "node",
-    "types": ["./types/hammerspoon"],
+    "typeRoots": ["./types"],
     "strict": true,
     "baseUrl": "./"
   },
