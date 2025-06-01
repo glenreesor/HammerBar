@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
-import { getNoopWidgetBuildingInfo } from 'src/utils';
+import { getNoopWidgetBuildingInfo } from 'src/util';
 import { buildDefaultClockWidget } from './buildDefaultClockWidget';
 import { validateParams } from './validateParams';
 

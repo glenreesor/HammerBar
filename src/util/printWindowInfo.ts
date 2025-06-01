@@ -1,4 +1,4 @@
-// Copyright 2022, 2024, 2025 Glen Reesor
+// Copyright 2025 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -16,50 +16,11 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { getWindowInfo } from 'src/hammerspoonUtils';
-import { WidgetBuildingInfo } from 'src/mainPanel';
-
-export function getNoopWidgetBuildingInfo(
-  widgetName: string,
-  widgetParamErrors: string[],
-): WidgetBuildingInfo {
-  return {
-    widgetName,
-    widgetParamErrors,
-    buildWidget: () => ({
-      width: 0,
-      bringToFront: () => undefined,
-      cleanupPriorToDelete: () => undefined,
-      hide: () => undefined,
-      show: () => undefined,
-    }),
-  };
-}
-
-/**
- * Print the specifed text to the Hammerspoon console (one or multiple lines).
- *
- * If `text` is a single line, prefix it with `HammerBar: `
- * If `text` is multiple lines wrap those lines between:
- *  `HammerBar diagnostic start`
- *  `HammerBar diagnostic end`
- */
-export function printDiagnostic(text: string | string[]) {
-  if (typeof text === 'string') {
-    print(`HammerBar: ${text}`);
-  } else {
-    print();
-    print('HammerBar diagnostic start');
-    text.forEach((line) => {
-      print(`    ${line}`);
-    });
-    print('HammerBar diagnostic end');
-    print();
-  }
-}
+import { printIndentedTextBlock } from './printIndentedTextBlock';
 
 export function printWindowInfo(hsWindow: hs.window.Window) {
   const window = getWindowInfo(hsWindow);
-  printDiagnostic([
+  printIndentedTextBlock('info', 'Window information', [
     `appName    : ${window.appName}`,
     `bundleId   : ${window.bundleId}`,
     `id         : ${window.id}`,

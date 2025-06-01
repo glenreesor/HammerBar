@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import { printIndentedTextBlock } from './util';
 import type { WidgetBuildingInfo } from './mainPanel';
 import { VERSION, BUILD_DATE, GIT_HASH } from './version';
 
@@ -28,8 +29,6 @@ import {
   start,
   stop,
 } from './main';
-
-import { printDiagnostic } from './utils';
 
 import {
   getAppLauncherBuilder,
@@ -109,7 +108,7 @@ function validateWidgetAndAdd(
       '  }',
     ];
 
-    printDiagnostic([
+    printIndentedTextBlock('error', 'Widget configuration error', [
       `Unexpected argument to ${functionName}`,
       'Expecting an argument like this:',
       ...sampleAddWidgetsArgsExact,
@@ -126,7 +125,7 @@ function validateWidgetAndAdd(
 
 function validateAndSetWindowListUpdateInterval(newInterval: unknown) {
   if (typeof newInterval !== 'number') {
-    printDiagnostic([
+    printIndentedTextBlock('error', 'Configuraiton error', [
       'Unexpected argument to setWindowListUpdateInterval',
       'Expected a number, but instead received this:',
       hs.inspect.inspect(newInterval),
@@ -138,7 +137,7 @@ function validateAndSetWindowListUpdateInterval(newInterval: unknown) {
 
 function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
   if (typeof newInterval !== 'number') {
-    printDiagnostic([
+    printIndentedTextBlock('error', 'Configuration error', [
       'Unexpected argument to setWindowStatusUpdateInterval',
       'Expected a number, but instead received this:',
       hs.inspect.inspect(newInterval),
@@ -149,9 +148,11 @@ function validateAndSetWindowStatusUpdateInterval(newInterval: unknown) {
 }
 
 // Print version info here so it's the first the thing seen in the console
-printDiagnostic(`Version   : ${VERSION}`);
-printDiagnostic(`Build Date: ${BUILD_DATE}`);
-printDiagnostic(`Git Hash  : ${GIT_HASH}`);
+printIndentedTextBlock('info', 'HammerBar Version Info', [
+  `Version   : ${VERSION}`,
+  `Build Date: ${BUILD_DATE}`,
+  `Git Hash  : ${GIT_HASH}`,
+]);
 
 // Users don't need to be burdened with understanding that they're getting a
 // builder, so rename on export

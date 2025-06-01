@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { WidgetBuildingInfo } from 'src/mainPanel';
-import { getNoopWidgetBuildingInfo } from 'src/utils';
+import { getNoopWidgetBuildingInfo } from 'src/util';
 import { getDefaultClockBuilder } from './variants/defaultClock/getDefaultClockBuilder';
 import { getAnalogCirclesClockBuilder } from './variants/analogCirclesClock';
 import { getAnalogClockBuilder } from './variants/analogClock';

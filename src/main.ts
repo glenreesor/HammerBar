@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import { console, printIndentedTextBlock } from './util';
 import type { ScreenInfoType } from './hammerspoonUtils';
 import { getScreenInfo } from './hammerspoonUtils';
 
 import { mainPanel } from './mainPanel';
 import type { WidgetBuildingInfo } from './mainPanel';
-import { printDiagnostic } from './utils';
 import { getWindowButtonsPanelBuilder } from './windowButtonsPanel';
 import {
   setWindowListUpdateInterval as applyWindowListUpdateInterval,
@@ -88,7 +88,7 @@ function createPanelsForAllScreens() {
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
-    printDiagnostic(
+    console.log(
       `Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`,
     );
 
@@ -131,8 +131,11 @@ function validateWidgetConfig(buildingInfo: WidgetBuildingInfo): boolean {
   if (buildingInfo.widgetParamErrors.length === 0) {
     return true;
   }
-  print(`Error building widget ${buildingInfo.widgetName}:`);
-  buildingInfo.widgetParamErrors.forEach((txt) => print(`    ${txt}`));
+  printIndentedTextBlock(
+    'error',
+    `Error building widget ${buildingInfo.widgetName}`,
+    buildingInfo.widgetParamErrors,
+  );
 
   return false;
 }
@@ -149,7 +152,7 @@ function verticallyMaximizeCurrentWindow() {
 }
 
 function removeAllPanels() {
-  printDiagnostic('Removing panels for all screens');
+  console.log('Removing panels for all screens');
   state.panels.forEach((p) => p.cleanupPriorToDelete());
   state.panels = [];
 }
@@ -179,7 +182,7 @@ function watchForScreenChanges() {
   }
 
   if (recreateRequired) {
-    printDiagnostic('Screen configuration changed');
+    console.log('Screen configuration changed');
     state.screensById = new Map();
     removeAllPanels();
     createPanelsForAllScreens();

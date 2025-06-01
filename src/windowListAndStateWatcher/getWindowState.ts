@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { printWindowInfo } from 'src/utils';
+import { printWindowInfo } from 'src/util';
 import type { WindowState } from './types';
 
 const cachedAppIconByBundleId: Map<string, hs.image.Image> = new Map();
