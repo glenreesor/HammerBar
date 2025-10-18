@@ -75,7 +75,16 @@ export function buildAppMenuWidget(
               // Just enough of a delay to allow the click animation complete
               hs.timer.doAfter(0, toggleMenu);
             }
-            hs.application.launchOrFocusByBundleID(app.bundleId);
+
+            // Eventually expose this as user config
+            const alwaysCreateNewWindow = true;
+
+            const optionalNewWindowFlag = alwaysCreateNewWindow ? '-n' : '';
+
+            const handle = io.popen(
+              `open ${optionalNewWindowFlag} -b ${app.bundleId}`,
+            );
+            handle.close();
           },
         }),
       );

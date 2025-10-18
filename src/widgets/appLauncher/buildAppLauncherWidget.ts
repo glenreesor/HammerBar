@@ -22,13 +22,20 @@ export function buildAppLauncherWidget(
   bundleId: string,
   builderParams: WidgetBuilderParams,
 ) {
+  // Eventually expose this as user config
+  const alwaysCreateNewWindow = true;
+
   const panelButton = getPanelButton({
     coords: builderParams.coords,
     widgetHeight: builderParams.widgetHeight,
     panelColor: builderParams.panelColor,
     panelHoverColor: builderParams.panelHoverColor,
     imageInfo: { bundleId },
-    onClick: () => hs.application.launchOrFocusByBundleID(bundleId),
+    onClick: () => {
+      const optionalNewWindowFlag = alwaysCreateNewWindow ? '-n' : '';
+      const handle = io.popen(`open ${optionalNewWindowFlag} -b ${bundleId}`);
+      handle.close();
+    },
   });
 
   return panelButton;
