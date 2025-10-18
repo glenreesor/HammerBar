@@ -10,10 +10,14 @@ function replace() {
   local constantName="$1"
   local newValue="$2"
 
+  sedIsModern=true
   if [[ "$(uname)" == "Darwin" ]]; then
-    inplaceFlag="-i ''"
-  else
-    inplaceFlag="-i"
+    sed --version > /dev/null 2>&1
+    if [[ "$?" == "1" ]]; then
+      # Version check failed, thus we're most likely using the
+      # sed that comes with MacOS (rather than a modern gnu variant)
+      sedIsModern=false
+    fi
   fi
 
   regex="^export const $constantName."'*$'
@@ -21,7 +25,13 @@ function replace() {
 
   original=$(grep "$regex" $VERSION_SRC)
 
-  sed "$inplaceFlag" "s/$regex/$newValue/" $VERSION_SRC
+  if $sedIsModern; then
+    sed -i "s/$regex/$newValue/" $VERSION_SRC
+  else
+    sed -i '' "s/$regex/$newValue/" $VERSION_SRC
+  fi
+
+
 
   new=$(grep "$regex" $VERSION_SRC)
 
