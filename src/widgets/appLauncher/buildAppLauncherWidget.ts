@@ -23,7 +23,7 @@ export function buildAppLauncherWidget(
   builderParams: WidgetBuilderParams,
 ) {
   // Eventually expose this as user config
-  const alwaysCreateNewWindow = true;
+  const alwaysCreateNewWindow = bundleId !== 'com.apple.finder';
 
   const panelButton = getPanelButton({
     coords: builderParams.coords,

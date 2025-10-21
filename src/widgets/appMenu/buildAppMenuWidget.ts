@@ -77,7 +77,7 @@ export function buildAppMenuWidget(
             }
 
             // Eventually expose this as user config
-            const alwaysCreateNewWindow = true;
+            const alwaysCreateNewWindow = app.bundleId !== 'com.apple.finder';
 
             const optionalNewWindowFlag = alwaysCreateNewWindow ? '-n' : '';
 
