@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import * as v from 'src/validator';
 import type { ConfigParams, IconInfo } from './types';
 
 type ReturnType =
@@ -29,56 +30,69 @@ type ReturnType =
       expectedArgument: string[];
     };
 
+const ConfigShape1 = v.object({
+  appList: v
+    .array(
+      v.object({
+        bundleId: v.string(),
+        label: v.string(),
+      }),
+    )
+    .nonEmpty(),
+  icon: v
+    .object({
+      bundleId: v.string(),
+      imagePath: v.literal(undefined).optional(),
+    })
+    .optional(),
+});
+
+const ConfigShape2 = v.object({
+  appList: v
+    .array(
+      v.object({
+        bundleId: v.string(),
+        label: v.string(),
+      }),
+    )
+    .nonEmpty(),
+  icon: v
+    .object({
+      bundleId: v.literal(undefined).optional(),
+      imagePath: v.string(),
+    })
+    .optional(),
+});
+
 export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
-  if (isConfigParams(unvalidatedConfigParams)) {
+  try {
+    const validatedParams = ConfigShape1.parse(unvalidatedConfigParams);
+
     return {
       isValid: true,
-      validParams: unvalidatedConfigParams,
+      validParams: validatedParams,
       expectedArgument: undefined,
     };
+  } catch {
+    try {
+      const validatedParams = ConfigShape2.parse(unvalidatedConfigParams);
+
+      return {
+        isValid: true,
+        validParams: validatedParams,
+        expectedArgument: undefined,
+      };
+    } catch {
+      return {
+        isValid: false,
+        validParams: undefined,
+        expectedArgument: [
+          '  {',
+          '    { bundleId = "org.mozilla.firefox", label = "Firefox" },',
+          '    { bundleId = "com.google.Chrome", label = "Chrome" },',
+          '  }',
+        ],
+      };
+    }
   }
-
-  return {
-    isValid: false,
-    validParams: undefined,
-    expectedArgument: [
-      '  {',
-      '    { bundleId = "org.mozilla.firefox", label = "Firefox" },',
-      '    { bundleId = "com.google.Chrome", label = "Chrome" },',
-      '  }',
-    ],
-  };
-}
-
-function isConfigParams(obj: unknown): obj is ConfigParams {
-  return (
-    typeof obj === 'object' &&
-    isNonEmptyAppListArray((obj as ConfigParams).appList) &&
-    (typeof (obj as ConfigParams).icon === 'undefined' ||
-      isIconInfo((obj as ConfigParams).icon))
-  );
-}
-
-function isIconInfo(obj: unknown): boolean {
-  return (
-    (typeof (obj as IconInfo).bundleId === 'string' &&
-      typeof (obj as IconInfo).imagePath === 'undefined') ||
-    (typeof (obj as IconInfo).bundleId === 'undefined' &&
-      typeof (obj as IconInfo).imagePath === 'string')
-  );
-}
-
-function isNonEmptyAppListArray(obj: unknown): boolean {
-  return (
-    Array.isArray(obj) &&
-    obj.reduce(
-      (accum, curr) =>
-        accum &&
-        typeof curr.bundleId === 'string' &&
-        typeof curr.label === 'string' &&
-        Object.keys(curr).length === 2,
-      true,
-    ) &&
-    obj.length > 0
-  );
 }

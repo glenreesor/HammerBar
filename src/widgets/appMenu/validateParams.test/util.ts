@@ -22,7 +22,7 @@ export function expectPass(testParams: any) {
   const { isValid, validParams, expectedArgument } = validateParams(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toBe(testParams);
+  expect(validParams).toStrictEqual(testParams);
 }
 
 export function expectFail(testParams: any) {

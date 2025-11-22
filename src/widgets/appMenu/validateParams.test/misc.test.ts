@@ -32,6 +32,7 @@ describe('invalid params types', () => {
 test('passes when appList correct and icon missing', () => {
   const testParams = {
     appList: [{ bundleId: 'bundleId', label: 'myLabel' }],
+    icon: undefined,
   };
   expectPass(testParams);
 });
@@ -41,6 +42,7 @@ test('passes when appList and icon correct', () => {
     appList: [{ bundleId: 'bundleId', label: 'myLabel' }],
     icon: {
       bundleId: 'bundleId',
+      imagePath: undefined,
     },
   };
   expectPass(testParams);

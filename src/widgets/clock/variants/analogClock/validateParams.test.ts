@@ -68,5 +68,5 @@ test('passes when showSeconds is a boolean', () => {
   const { isValid, validParams, expectedArgument } = validateParams(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toBe(testParams);
+  expect(validParams).toStrictEqual(testParams);
 });

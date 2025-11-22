@@ -14,7 +14,9 @@
 //
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
-//
+
+import * as v from 'src/validator';
+
 type ReturnType =
   | {
       isValid: true;
@@ -27,22 +29,21 @@ type ReturnType =
       errorString: string;
     };
 
+const Config = v.string().nonEmpty();
+
 export function validateParams(unvalidatedBundleId: unknown): ReturnType {
-  if (isNonEmptyString(unvalidatedBundleId)) {
+  try {
+    const bundleId = Config.parse(unvalidatedBundleId);
     return {
       isValid: true,
-      validBundleId: unvalidatedBundleId,
+      validBundleId: bundleId,
       errorString: undefined,
     };
+  } catch (e) {
+    return {
+      isValid: false,
+      validBundleId: undefined,
+      errorString: 'bundleId must be a non-empty string',
+    };
   }
-
-  return {
-    isValid: false,
-    validBundleId: undefined,
-    errorString: 'bundleId must be a non-empty string',
-  };
-}
-
-function isNonEmptyString(obj: unknown): obj is string {
-  return typeof obj === 'string' && obj !== '';
 }

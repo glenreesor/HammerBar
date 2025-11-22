@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import * as v from 'src/validator';
 import type { ConfigParams } from './types';
 
 type ReturnType =
@@ -29,26 +30,33 @@ type ReturnType =
       expectedArgument: string[];
     };
 
+const Config = v.object({
+  title: v.string(),
+  interval: v.number(),
+  cmd: v.fn(),
+});
+
 export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
-  if (isConfigParams(unvalidatedConfigParams)) {
+  try {
+    const validatedConfig = Config.parse(unvalidatedConfigParams);
     return {
       isValid: true,
-      validParams: unvalidatedConfigParams,
+      validParams: validatedConfig,
       expectedArgument: undefined,
     };
+  } catch {
+    return {
+      isValid: false,
+      validParams: undefined,
+      expectedArgument: [
+        '  {',
+        '    title = "The title",',
+        '    interval = <a number>,',
+        '    cmd = <a function that returns a string>,',
+        '  }',
+      ],
+    };
   }
-
-  return {
-    isValid: false,
-    validParams: undefined,
-    expectedArgument: [
-      '  {',
-      '    title = "The title",',
-      '    interval = <a number>,',
-      '    cmd = <a function that returns a string>,',
-      '  }',
-    ],
-  };
 }
 
 function isConfigParams(obj: unknown): obj is ConfigParams {

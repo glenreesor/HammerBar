@@ -28,6 +28,7 @@ describe('valid appList', () => {
   test('passes when appList has one element', () => {
     const testParams = {
       appList: [goodAppEntry],
+      icon: undefined,
     };
     expectPass(testParams);
   });
@@ -35,6 +36,7 @@ describe('valid appList', () => {
   test('passes when appList has multiple elements', () => {
     const testParams = {
       appList: [goodAppEntry, goodAppEntry],
+      icon: undefined,
     };
     expectPass(testParams);
   });

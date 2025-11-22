@@ -75,7 +75,7 @@ describe('showSeconds', () => {
       validateParams(testParams);
     expect(isValid).toBe(true);
     expect(expectedArgument).toBeUndefined();
-    expect(validParams).toBe(testParams);
+    expect(validParams).toStrictEqual(testParams);
   });
 });
 
@@ -114,6 +114,6 @@ describe('showCirclePaths', () => {
       validateParams(testParams);
     expect(isValid).toBe(true);
     expect(expectedArgument).toBeUndefined();
-    expect(validParams).toBe(testParams);
+    expect(validParams).toStrictEqual(testParams);
   });
 });

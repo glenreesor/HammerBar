@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import * as v from 'src/validator';
 import type { ConfigParams } from './types';
 
 type ReturnType =
@@ -29,64 +30,50 @@ type ReturnType =
       expectedArgument: string[];
     };
 
+const Config1 = v.object({
+  type: v.literal('graph'),
+  interval: v.number().positive(),
+  maxValues: v.number().positive(),
+});
+
+const Config2 = v.object({
+  type: v.literal('text'),
+  interval: v.number().positive(),
+});
+
 export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
-  if (isConfigParams(unvalidatedConfigParams)) {
+  try {
+    const validatedParams = Config1.parse(unvalidatedConfigParams);
     return {
       isValid: true,
-      validParams: unvalidatedConfigParams,
+      validParams: validatedParams,
       expectedArgument: undefined,
     };
+  } catch {
+    try {
+      const validatedParams = Config2.parse(unvalidatedConfigParams);
+      return {
+        isValid: true,
+        validParams: validatedParams,
+        expectedArgument: undefined,
+      };
+    } catch {
+      return {
+        isValid: false,
+        validParams: undefined,
+        expectedArgument: [
+          '  {',
+          '    type = "graph"',
+          '    interval = <a number>,',
+          '    maxValues: <a number>,',
+          '  }',
+          '  or',
+          '  {',
+          '    type = "text"',
+          '    interval = <a number>,',
+          '  }',
+        ],
+      };
+    }
   }
-
-  return {
-    isValid: false,
-    validParams: undefined,
-    expectedArgument: [
-      '  {',
-      '    type = "graph"',
-      '    interval = <a number>,',
-      '    maxValues: <a number>,',
-      '  }',
-      '  or',
-      '  {',
-      '    type = "text"',
-      '    interval = <a number>,',
-      '  }',
-    ],
-  };
-}
-
-function isConfigParams(obj: unknown): obj is ConfigParams {
-  return isGraphMonitor(obj) || isTextMonitor(obj);
-}
-
-function isGraphMonitor(obj: unknown): obj is ConfigParams {
-  if (typeof obj !== 'object') {
-    return false;
-  }
-
-  const typedObj = obj as ConfigParams;
-
-  if (typedObj.type !== 'graph') {
-    return false;
-  }
-
-  if (typeof typedObj.interval !== 'number' || typedObj.interval <= 0) {
-    return false;
-  }
-
-  if (typeof typedObj.maxValues !== 'number' || typedObj.maxValues <= 0) {
-    return false;
-  }
-
-  return true;
-}
-
-function isTextMonitor(obj: unknown): obj is ConfigParams {
-  return (
-    typeof obj === 'object' &&
-    (obj as ConfigParams).type === 'text' &&
-    typeof (obj as ConfigParams).interval === 'number' &&
-    (obj as ConfigParams).interval > 0
-  );
 }

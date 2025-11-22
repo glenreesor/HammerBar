@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import * as v from 'src/validator';
 import type { ConfigParams } from './types';
 
 type ReturnType =
@@ -29,34 +30,29 @@ type ReturnType =
       expectedArgument: string[];
     };
 
+const Config = v.object({
+  type: v.literal('analog-clock'),
+  showSeconds: v.boolean(),
+});
 export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
-  if (isConfigParams(unvalidatedConfigParams)) {
+  try {
+    const validConfig = Config.parse(unvalidatedConfigParams);
+
     return {
       isValid: true,
-      validParams: unvalidatedConfigParams,
+      validParams: validConfig,
       expectedArgument: undefined,
     };
+  } catch {
+    return {
+      isValid: false,
+      validParams: undefined,
+      expectedArgument: [
+        '  {',
+        '    type = "analog-circles-clock"',
+        '    showSeconds = true or false',
+        '  }',
+      ],
+    };
   }
-
-  return {
-    isValid: false,
-    validParams: undefined,
-    expectedArgument: [
-      '  {',
-      '    type = "analog-circles-clock"',
-      '    showSeconds = true or false',
-      '  }',
-    ],
-  };
-}
-
-function isConfigParams(obj: unknown): obj is ConfigParams {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'type' in obj &&
-    obj.type === 'analog-clock' &&
-    'showSeconds' in obj &&
-    typeof obj.showSeconds === 'boolean'
-  );
 }

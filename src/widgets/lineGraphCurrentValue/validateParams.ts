@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import * as v from 'src/validator';
+
 import type { ConfigParams } from './types';
 
 type ReturnType =
@@ -29,41 +31,35 @@ type ReturnType =
       expectedArgument: string[];
     };
 
+const Config = v.object({
+  title: v.string(),
+  interval: v.number().positive(),
+  maxValues: v.number().positive(),
+  graphYMax: v.number().positive().optional(),
+  cmd: v.fn(),
+});
+
 export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
-  if (isConfigParams(unvalidatedConfigParams)) {
+  try {
+    const validatedConfig = Config.parse(unvalidatedConfigParams);
     return {
       isValid: true,
-      validParams: unvalidatedConfigParams,
+      validParams: validatedConfig,
       expectedArgument: undefined,
     };
+  } catch {
+    return {
+      isValid: false,
+      validParams: undefined,
+      expectedArgument: [
+        '  {',
+        '    title = "The title",',
+        '    interval = <a number>,',
+        '    maxValues: <a number>,',
+        '    graphYMax: <a number or nil>,',
+        '    cmd = <a function that returns a number>,',
+        '  }',
+      ],
+    };
   }
-
-  return {
-    isValid: false,
-    validParams: undefined,
-    expectedArgument: [
-      '  {',
-      '    title = "The title",',
-      '    interval = <a number>,',
-      '    maxValues: <a number>,',
-      '    graphYMax: <a number or nil>,',
-      '    cmd = <a function that returns a number>,',
-      '  }',
-    ],
-  };
-}
-
-function isConfigParams(obj: unknown): obj is ConfigParams {
-  return (
-    typeof obj === 'object' &&
-    typeof (obj as ConfigParams).title === 'string' &&
-    typeof (obj as ConfigParams).interval === 'number' &&
-    (obj as ConfigParams).interval > 0 &&
-    typeof (obj as ConfigParams).maxValues === 'number' &&
-    (obj as ConfigParams).maxValues > 0 &&
-    ((typeof (obj as ConfigParams).graphYMax === 'number' &&
-      ((obj as ConfigParams).graphYMax as number) > 0) ||
-      typeof (obj as ConfigParams).graphYMax === 'undefined') &&
-    typeof (obj as ConfigParams).cmd === 'function'
-  );
 }

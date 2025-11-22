@@ -20,7 +20,7 @@ export type ConfigParams = {
   interval: number;
   maxValues: number;
   graphYMax: number | undefined;
-  cmd: () => number;
+  cmd: Function;
 };
 
 export type State = {

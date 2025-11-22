@@ -18,5 +18,5 @@
 export type ConfigParams = {
   title: string;
   interval: number;
-  cmd: () => string;
+  cmd: Function;
 };
