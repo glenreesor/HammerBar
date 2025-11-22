@@ -15,6 +15,22 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-// A validator to be run on an object when we already know it's the right
-// type, like a string, number, object, etc
-export type TypeSpecificValidator<T> = (thing: T) => T;
+import { array } from './array';
+import { boolean } from './boolean';
+import { fn } from './function';
+import { literal } from './literal';
+import { number } from './number';
+import { object } from './object';
+import { string } from './string';
+
+const validator = {
+  array,
+  boolean,
+  fn,
+  literal,
+  number,
+  object,
+  string,
+};
+
+export { validator };

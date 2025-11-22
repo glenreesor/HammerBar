@@ -19,3 +19,4 @@ export { console } from './console';
 export { getNoopWidgetBuildingInfo } from './getNoopWidgetBuildingInfo';
 export { printIndentedTextBlock } from './printIndentedTextBlock';
 export { printWindowInfo } from './printWindowInfo';
+export { validator } from './validator';
