@@ -21,12 +21,18 @@ import type { WindowState } from './types';
 const cachedAppIconByBundleId: Map<string, hs.image.Image> = new Map();
 const cachedWindowSnapshotsById: Map<number, hs.image.Image> = new Map();
 
-export function getWindowState(window: hs.window.Window): WindowState {
+export function getWindowState(args: {
+  focusedWindow: hs.window.Window | undefined;
+  window: hs.window.Window;
+}): WindowState {
+  const { focusedWindow, window } = args;
+
   potentiallyUpdateWindowSnapshotCache('getWindowState', window);
 
   return {
     id: window.id(),
     title: window.title(),
+    isFocused: focusedWindow?.id() === window.id(),
     isMinimized: window.isMinimized(),
     getAppIcon: () => getAppIcon(window),
     getSnapshot: () => getWindowSnapshot(window),

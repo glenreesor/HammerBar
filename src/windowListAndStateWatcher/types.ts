@@ -18,6 +18,7 @@
 export type WindowState = {
   id: number;
   title: string;
+  isFocused: boolean;
   isMinimized: boolean;
   getAppIcon: () => hs.image.Image;
   getSnapshot: () => hs.image.Image;

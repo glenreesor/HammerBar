@@ -35,6 +35,7 @@ declare namespace hs.canvas {
     imageAlpha?: number;
     radius?: number;
     roundedRectRadii?: { xRadius: number; yRadius: number };
+    strokeCapStyle?: 'butt' | 'round' | 'square';
     strokeColor?: Color;
     strokeWidth?: number;
     text?: string;
@@ -58,7 +59,8 @@ declare namespace hs.canvas {
   interface Canvas {
     appendElements(element: CanvasElement | CanvasElement[]): void;
     delete(): void;
-    frame: (newFrame: { x: number; y: number; w: number; h: number }) => void;
+    frame(newFrame: { x: number; y: number; w: number; h: number }): void;
+    frame(): { x: number; y: number; w: number; h: number };
     hide(): void;
     mouseCallback(callback: CanvasMouseCallback): void;
     replaceElements(element?: CanvasElement | CanvasElement[]): void;

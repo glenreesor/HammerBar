@@ -27,6 +27,11 @@ export function renderWindowButton(state: State) {
   let paddingLeft;
   let paddingRight;
 
+  const panelHeight = state.canvases.mainCanvas?.frame().h || 0;
+  const buttonVerticalPadding = 6;
+
+  const buttonHeight = panelHeight - 2 * buttonVerticalPadding;
+
   if (state.mouseIsInsideButton) {
     borderWidth = 4;
   } else {
@@ -35,16 +40,16 @@ export function renderWindowButton(state: State) {
 
   if (state.mouseButtonIsDown) {
     fontSize = 10;
-    iconWidth = 0.8 * state.buttonGeometry.height;
+    iconWidth = 0.8 * buttonHeight;
     iconHeight = iconWidth;
-    iconY = 0.1 * state.buttonGeometry.height;
-    paddingLeft = 2 + 0.2 * state.buttonGeometry.height;
+    iconY = buttonVerticalPadding + 0.1 * buttonHeight;
+    paddingLeft = 2 + 0.2 * buttonHeight;
     paddingRight = 5;
   } else {
     fontSize = 12;
-    iconWidth = state.buttonGeometry.height;
+    iconWidth = buttonHeight;
     iconHeight = iconWidth;
-    iconY = 0;
+    iconY = buttonVerticalPadding;
     paddingLeft = 2;
     paddingRight = 5;
   }
@@ -57,10 +62,12 @@ export function renderWindowButton(state: State) {
 
   const textX = paddingLeft + iconWidth;
 
-  const textY = 2;
+  const textY = buttonVerticalPadding + 2;
 
   const maxTextWidth =
     state.buttonGeometry.width - paddingLeft - iconWidth - paddingRight;
+
+  const isFocused = state.windowState.isFocused;
 
   state.canvases.mainCanvas?.replaceElements([
     {
@@ -70,9 +77,9 @@ export function renderWindowButton(state: State) {
       strokeWidth: borderWidth,
       frame: {
         x: 0,
-        y: 0,
+        y: buttonVerticalPadding,
         w: state.buttonGeometry.width,
-        h: state.buttonGeometry.height,
+        h: buttonHeight,
       },
       roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
       trackMouseDown: true,
@@ -98,8 +105,29 @@ export function renderWindowButton(state: State) {
         x: textX,
         y: textY,
         w: maxTextWidth,
-        h: state.buttonGeometry.height,
+        h: buttonHeight,
       },
     },
   ]);
+
+  if (isFocused) {
+    state.canvases.mainCanvas?.appendElements([
+      {
+        type: 'segments',
+        strokeColor: { red: 0, green: 0, blue: 1 },
+        strokeWidth: 2,
+        strokeCapStyle: 'round',
+        coordinates: [
+          {
+            x: 4,
+            y: buttonVerticalPadding + buttonHeight + 3,
+          },
+          {
+            x: state.buttonGeometry.width - 4,
+            y: buttonVerticalPadding + buttonHeight + 3,
+          },
+        ],
+      },
+    ]);
+  }
 }

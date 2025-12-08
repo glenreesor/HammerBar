@@ -115,10 +115,19 @@ function updateWindowStates() {
 }
 
 function notifyListeners() {
+  const focusedWindow = hs.window.focusedWindow();
+
   windowListListeners.forEach((l) => {
     const windowsThisScreen = currentWindowList.filter(
       (w) => w.screen().id() === l.screenId,
     );
-    l.callback(windowsThisScreen.map((w) => getWindowState(w)));
+    l.callback(
+      windowsThisScreen.map((w) =>
+        getWindowState({
+          focusedWindow,
+          window: w,
+        }),
+      ),
+    );
   });
 }

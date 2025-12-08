@@ -21,7 +21,6 @@ export type ButtonGeometry = {
   x: number;
   y: number;
   width: number;
-  height: number;
 };
 
 export type State = {

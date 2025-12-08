@@ -27,6 +27,7 @@ export function createMoveOrDeleteWindowButtons(args: {
     x: number;
     y: number;
     width: number;
+    height: number;
   };
   isPanelVisible: boolean;
   previousWindowButtonActionsById: WindowButtonActionsById;
@@ -66,9 +67,8 @@ export function createMoveOrDeleteWindowButtons(args: {
     if (windowButtonActions) {
       windowButtonActions.setCurrentButtonGeometry({
         x: windowButtonX,
-        y: panelGeometry.y + 5,
+        y: panelGeometry.y,
         width: buttonWidth,
-        height: 35,
       });
       windowButtonX += buttonWidth + BUTTON_PADDING;
 
@@ -84,12 +84,12 @@ export function createMoveOrDeleteWindowButtons(args: {
       const newWindowButtonActions = buildWindowButton({
         buttonGeometry: {
           x: windowButtonX,
-          y: panelGeometry.y + 5,
+          y: panelGeometry.y,
           width: buttonWidth,
-          height: 35,
         },
         windowState,
         isInitiallyVisible: isPanelVisible,
+        panelHeight: panelGeometry.height,
       });
 
       newWindowButtonActionsById.set(windowId, newWindowButtonActions);

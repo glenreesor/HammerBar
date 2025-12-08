@@ -29,11 +29,13 @@ export function buildWindowButton(args: {
   buttonGeometry: ButtonGeometry;
   windowState: WindowState;
   isInitiallyVisible: boolean;
+  panelHeight: number;
 }) {
   const {
     buttonGeometry: initialButtonGeometry,
     windowState,
     isInitiallyVisible,
+    panelHeight,
   } = args;
 
   function cleanupPriorToDelete() {
@@ -84,8 +86,7 @@ export function buildWindowButton(args: {
     const geomIsDifferent =
       state.buttonGeometry.x !== newGeometry.x ||
       state.buttonGeometry.y !== newGeometry.y ||
-      state.buttonGeometry.width !== newGeometry.width ||
-      state.buttonGeometry.height !== newGeometry.height;
+      state.buttonGeometry.width !== newGeometry.width;
 
     if (geomIsDifferent) {
       state.buttonGeometry = newGeometry;
@@ -94,7 +95,7 @@ export function buildWindowButton(args: {
         x: state.buttonGeometry.x,
         y: state.buttonGeometry.y,
         w: state.buttonGeometry.width,
-        h: state.buttonGeometry.height,
+        h: panelHeight,
       });
 
       render();
@@ -104,7 +105,8 @@ export function buildWindowButton(args: {
   function setCurrentWindowState(newState: WindowState) {
     const stateIsDifferent =
       state.windowState.title !== newState.title ||
-      state.windowState.isMinimized !== newState.isMinimized;
+      state.windowState.isMinimized !== newState.isMinimized ||
+      state.windowState.isFocused !== newState.isFocused;
 
     state.windowState = newState;
 
@@ -128,7 +130,7 @@ export function buildWindowButton(args: {
     x: initialButtonGeometry.x,
     y: initialButtonGeometry.y,
     w: initialButtonGeometry.width,
-    h: initialButtonGeometry.height,
+    h: panelHeight,
   });
 
   render();

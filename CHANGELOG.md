@@ -5,6 +5,10 @@
 - `AppMenu` and `AppLauncher` now default to creating a new window if the corresponding
   app is already open, as opposed to focusing an existing window
 
+#### Added
+
+- The window button of the currently active window now has a blue bar under it
+
 ## v1.1.0 (2025-05-02)
 
 #### Enhancements

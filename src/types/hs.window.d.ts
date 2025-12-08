@@ -35,7 +35,7 @@ declare namespace hs.window {
   }
 
   function allWindows(this: void): Window[];
-  function focusedWindow(this: void): Window;
+  function focusedWindow(this: void): Window | undefined;
   function get(this: void, windowId: number): Window | undefined;
   function orderedWindows(this: void): Window[];
 }

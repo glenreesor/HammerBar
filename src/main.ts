@@ -142,6 +142,10 @@ function validateWidgetConfig(buildingInfo: WidgetBuildingInfo): boolean {
 
 function verticallyMaximizeCurrentWindow() {
   const currentWindow = hs.window.focusedWindow();
+  if (!currentWindow) {
+    return;
+  }
+
   const screenInfo = getScreenInfo(currentWindow.screen());
   currentWindow.setFrame({
     x: currentWindow.frame().x,
