@@ -21,18 +21,26 @@ import { validateParams } from './validateParams';
 import { buildAppLauncherWidget } from './buildAppLauncherWidget';
 
 export function getAppLauncherBuilder(
-  unvalidatedBundleId: unknown,
+  unvalidatedConfigParams: unknown,
 ): WidgetBuildingInfo {
-  const { isValid, validBundleId, errorString } =
-    validateParams(unvalidatedBundleId);
+  const { isValid, validParams, expectedArgument } = validateParams(
+    unvalidatedConfigParams,
+  );
   if (!isValid) {
-    return getNoopWidgetBuildingInfo('AppLauncher', [errorString]);
+    const errorDetails = [
+      'Unexpected argument. Expecting an argument like this:',
+      ...expectedArgument,
+      'But instead this was received:',
+      hs.inspect.inspect(unvalidatedConfigParams),
+    ];
+
+    return getNoopWidgetBuildingInfo('AppLauncher', errorDetails);
   }
 
   return {
     widgetName: 'AppLauncher',
     widgetParamErrors: [],
     buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
-      buildAppLauncherWidget(validBundleId, widgetBuilderParams),
+      buildAppLauncherWidget(validParams, widgetBuilderParams),
   };
 }

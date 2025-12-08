@@ -76,13 +76,15 @@ export function buildAppMenuWidget(
               hs.timer.doAfter(0, toggleMenu);
             }
 
-            // Eventually expose this as user config
+            // The Finder fails with the '-n' flag so never apply it
             const alwaysCreateNewWindow = app.bundleId !== 'com.apple.finder';
-
             const optionalNewWindowFlag = alwaysCreateNewWindow ? '-n' : '';
 
+            const args =
+              'args' in app && app.args ? `--args ${app.args.join(' ')}` : '';
+
             const handle = io.popen(
-              `open ${optionalNewWindowFlag} -b ${app.bundleId}`,
+              `open ${optionalNewWindowFlag} -b ${app.bundleId} ${args}`,
             );
             handle.close();
           },

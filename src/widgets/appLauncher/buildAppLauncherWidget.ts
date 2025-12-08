@@ -17,13 +17,19 @@
 
 import type { WidgetBuilderParams } from 'src/mainPanel';
 import { getPanelButton } from '../_helpers/panelButton';
+import type { ConfigParams } from './types';
 
 export function buildAppLauncherWidget(
-  bundleId: string,
+  configParams: ConfigParams,
   builderParams: WidgetBuilderParams,
 ) {
-  // Eventually expose this as user config
-  const alwaysCreateNewWindow = bundleId !== 'com.apple.finder';
+  const { bundleId } = configParams;
+
+  // The Finder fails with the '-n' flag so never apply it
+  const alwaysCreateNewWindow = configParams.bundleId !== 'com.apple.finder';
+
+  const args =
+    'args' in configParams ? `--args ${configParams.args.join(' ')}` : '';
 
   const panelButton = getPanelButton({
     coords: builderParams.coords,
@@ -33,7 +39,9 @@ export function buildAppLauncherWidget(
     imageInfo: { bundleId },
     onClick: () => {
       const optionalNewWindowFlag = alwaysCreateNewWindow ? '-n' : '';
-      const handle = io.popen(`open ${optionalNewWindowFlag} -b ${bundleId}`);
+      const handle = io.popen(
+        `open ${optionalNewWindowFlag} -b ${bundleId} ${args}`,
+      );
       handle.close();
     },
   });

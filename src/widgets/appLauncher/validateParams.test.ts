@@ -15,46 +15,30 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { describe, expect, test } from 'vitest';
+import { expect, test } from 'vitest';
 import { validateParams } from './validateParams';
 
-function expectPass(testBundleId: string) {
-  const { isValid, validBundleId, errorString } = validateParams(testBundleId);
+// Will probably delete these. Put a placeholder in for now
 
+test('it passes when bundleId is valid', () => {
+  const testParams = {
+    bundleId: 'my bundle id',
+  };
+
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
   expect(isValid).toBe(true);
-  expect(validBundleId).toBe(testBundleId);
-  expect(errorString?.length).toBeUndefined;
-}
-
-function expectFail(testBundleId: any) {
-  const { isValid, validBundleId, errorString } = validateParams(testBundleId);
-
-  expect(isValid).toBe(false);
-  expect(validBundleId).toBeUndefined();
-  expect(errorString?.length).toBeGreaterThan(0);
-}
-
-describe('invalid bundleId types', () => {
-  const tests = [
-    { description: 'fails when bundleId is a number', bundleId: 1 },
-    { description: 'fails when bundleId is an array', bundleId: ['bob'] },
-    { description: 'fails when bundleId is an object', bundleId: {} },
-    { description: 'fails when bundleId is a function', bundleId: () => 1 },
-  ];
-
-  test.each(tests)('$description', ({ bundleId }) => {
-    expectFail(bundleId);
-  });
+  expect(expectedArgument).toBeUndefined();
+  expect(validParams).toStrictEqual({ ...testParams, args: undefined });
 });
 
-describe('valid bundleId type', () => {
-  test('fails when bundleId is an empty string', () => {
-    const testBundleId = '';
-    expectFail(testBundleId);
-  });
+test('it passes when bundleId and args are valid', () => {
+  const testParams = {
+    bundleId: 'my bundle id',
+    args: ['1', '2'],
+  };
 
-  test('passes when bundleId is a non-empty string', () => {
-    const testBundleId = 'bob';
-    expectPass(testBundleId);
-  });
+  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  expect(isValid).toBe(true);
+  expect(expectedArgument).toBeUndefined();
+  expect(validParams).toStrictEqual(testParams);
 });

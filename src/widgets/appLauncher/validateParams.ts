@@ -16,34 +16,45 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { validator as v } from 'src/util';
+import type { ConfigParams } from './types';
 
 type ReturnType =
   | {
       isValid: true;
-      validBundleId: string;
-      errorString: undefined;
+      validParams: ConfigParams;
+      expectedArgument: undefined;
     }
   | {
       isValid: false;
-      validBundleId: undefined;
-      errorString: string;
+      validParams: undefined;
+      expectedArgument: string[];
     };
 
-const Config = v.string().nonEmpty();
+const Config = v.object({
+  bundleId: v.string().nonEmpty(),
+  args: v.array(v.string()).optional(),
+});
 
-export function validateParams(unvalidatedBundleId: unknown): ReturnType {
+export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
   try {
-    const bundleId = Config.parse(unvalidatedBundleId);
+    const validatedParams = Config.parse(unvalidatedConfigParams);
     return {
       isValid: true,
-      validBundleId: bundleId,
-      errorString: undefined,
+      validParams: validatedParams,
+      expectedArgument: undefined,
     };
   } catch (e) {
     return {
       isValid: false,
-      validBundleId: undefined,
-      errorString: 'bundleId must be a non-empty string',
+      validParams: undefined,
+      expectedArgument: [
+        '{ bundleId = <BundleId> }',
+        'or',
+        '{',
+        '  bundleId = <BundleId>',
+        '  args = { <arg1, arg2, ...> }',
+        '}',
+      ],
     };
   }
 }

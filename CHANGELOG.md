@@ -8,6 +8,36 @@
 #### Added
 
 - The window button of the currently active window now has a blue bar under it
+- `AppLauncher`:
+
+  - Configuration has changed from a single string specifying the bundleID to
+    an object with a `bundleId` key:
+
+        local firefoxLauncher = spoon.HammerBar.widgets:appLauncher({
+          bundleId = 'org.mozilla.firefox',
+        });
+
+  - It also accepts objects with a list of command line arguments. For example
+    to start Firefox using a different profile:
+
+        local firefoxLauncher = spoon.HammerBar.widgets:appLauncher({
+          bundleId = 'org.mozilla.firefox',
+          args = { '-P', 'test-profile' },
+        });
+
+- `AppMenu`:
+
+  - Similar to `AppLauncher`, each app entry can optionally include a list of
+    command line arguments:
+
+        local appMenu = spoon.HammerBar.widgets:appMenu({
+            appList = {
+              { bundleId = 'org.mozilla.firefox', label = 'FF' },
+              { bundleId = 'org.mozilla.firefox', label = 'FF test-profile', args = { '-P', 'test-profile' }},
+              { bundleId = 'com.apple.Safari', label = 'Safari' },
+              { bundleId = 'com.apple.finder', label = 'Finder' },
+            },
+        });
 
 ## v1.1.0 (2025-05-02)
 

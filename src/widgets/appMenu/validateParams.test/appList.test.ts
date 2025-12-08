@@ -22,6 +22,7 @@ import { expectFail, expectPass } from './util';
 const goodAppEntry: ConfigParams['appList'][number] = {
   bundleId: 'bundle ID',
   label: 'my label',
+  args: undefined,
 };
 
 describe('valid appList', () => {

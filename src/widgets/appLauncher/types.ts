@@ -15,15 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type ConfigParams = {
-  appList: {
-    bundleId: string;
-    label: string;
-    args?: string[];
-  }[];
-  icon?: IconInfo;
-};
-
-export type IconInfo =
-  | { bundleId: string; imagePath: undefined }
-  | { bundleId: undefined; imagePath: string };
+export type ConfigParams =
+  | {
+      bundleId: string;
+    }
+  | {
+      bundleId: string;
+      args: string[];
+    };

@@ -36,6 +36,7 @@ const ConfigShape1 = v.object({
       v.object({
         bundleId: v.string(),
         label: v.string(),
+        args: v.array(v.string()).optional(),
       }),
     )
     .nonEmpty(),
@@ -53,6 +54,7 @@ const ConfigShape2 = v.object({
       v.object({
         bundleId: v.string(),
         label: v.string(),
+        args: v.array(v.string()).optional(),
       }),
     )
     .nonEmpty(),
