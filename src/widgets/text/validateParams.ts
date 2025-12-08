@@ -32,7 +32,7 @@ type ReturnType =
 
 const Config = v.object({
   title: v.string(),
-  interval: v.number(),
+  interval: v.number().positive(),
   cmd: v.fn(),
 });
 
