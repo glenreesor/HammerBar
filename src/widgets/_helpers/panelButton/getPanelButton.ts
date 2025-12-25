@@ -16,6 +16,12 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetBuilderParams } from 'src/mainPanel';
+import {
+  deleteCanvasesAndStopTimers,
+  hideCanvases,
+  showCanvases,
+} from '../util';
+import { renderHoverCanvas } from './renderHoverCanvas';
 
 type ImageInfo =
   | { bundleId: string; imagePath?: undefined }
@@ -27,13 +33,24 @@ export function getPanelButton({
   panelColor,
   panelHoverColor,
   imageInfo,
+  hoverLabel,
   onClick,
-}: WidgetBuilderParams & { imageInfo: ImageInfo; onClick: () => void }) {
+}: WidgetBuilderParams & {
+  imageInfo: ImageInfo;
+  hoverLabel: string | undefined;
+  onClick: () => void;
+}) {
   function cleanupPriorToDelete() {
-    state.canvas?.hide();
-    state.canvas = undefined;
+    deleteCanvasesAndStopTimers(Object.values(state.canvases), []);
   }
 
+  function hide() {
+    hideCanvases(Object.values(state.canvases));
+  }
+
+  function show() {
+    showCanvases(Object.values(state.canvases));
+  }
   const mouseCallback: hs.canvas.CanvasMouseCallback = function (
     this: void,
     _canvas: hs.canvas.Canvas,
@@ -42,10 +59,20 @@ export function getPanelButton({
     if (msg === 'mouseEnter') {
       state.mouseIsInsideButton = true;
       render();
+      if (hoverLabel) {
+        renderHoverCanvas({
+          canvases: state.canvases,
+
+          // Deal with this
+          buttonGeometry: { x: coords.leftX || 0, y: coords.y },
+          hoverText: hoverLabel,
+        });
+      }
     } else if (msg === 'mouseExit') {
       state.mouseIsInsideButton = false;
       state.mouseButtonIsDown = false;
       render();
+      state.canvases.hoverCanvas?.hide();
     } else if (msg === 'mouseDown') {
       state.mouseButtonIsDown = true;
       render();
@@ -75,7 +102,7 @@ export function getPanelButton({
       ? IMAGE_PADDING + 0.1 * normalImageWidth
       : IMAGE_PADDING;
 
-    state.canvas?.replaceElements([
+    state.canvases.mainCanvas?.replaceElements([
       {
         type: 'rectangle',
         fillColor: bgColor,
@@ -107,18 +134,24 @@ export function getPanelButton({
   }
 
   const state: {
-    canvas: hs.canvas.Canvas | undefined;
+    canvases: {
+      mainCanvas: hs.canvas.Canvas | undefined;
+      hoverCanvas: hs.canvas.Canvas | undefined;
+    };
     mouseButtonIsDown: boolean;
     mouseIsInsideButton: boolean;
   } = {
-    canvas: undefined,
+    canvases: {
+      mainCanvas: undefined,
+      hoverCanvas: undefined,
+    },
     mouseButtonIsDown: false,
     mouseIsInsideButton: false,
   };
 
   const width = widgetHeight;
   const canvasX = coords.leftX ?? coords.rightX - width;
-  state.canvas = hs.canvas.new({
+  state.canvases.mainCanvas = hs.canvas.new({
     x: canvasX,
     y: coords.y,
     w: width,
@@ -126,14 +159,14 @@ export function getPanelButton({
   });
 
   render();
-  state.canvas.mouseCallback(mouseCallback);
-  state.canvas.show();
+  state.canvases.mainCanvas.mouseCallback(mouseCallback);
+  state.canvases.mainCanvas.show();
 
   return {
     width,
-    bringToFront: () => state.canvas?.show(),
+    bringToFront: () => state.canvases.mainCanvas?.show(),
     cleanupPriorToDelete,
-    hide: () => state.canvas?.hide(),
-    show: () => state.canvas?.show(),
+    hide,
+    show,
   };
 }

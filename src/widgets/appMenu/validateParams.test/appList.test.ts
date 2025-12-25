@@ -30,6 +30,7 @@ describe('valid appList', () => {
     const testParams = {
       appList: [goodAppEntry],
       icon: undefined,
+      hoverLabel: undefined,
     };
     expectPass(testParams);
   });
@@ -38,6 +39,7 @@ describe('valid appList', () => {
     const testParams = {
       appList: [goodAppEntry, goodAppEntry],
       icon: undefined,
+      hoverLabel: undefined,
     };
     expectPass(testParams);
   });

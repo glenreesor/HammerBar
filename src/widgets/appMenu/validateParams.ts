@@ -46,6 +46,7 @@ const ConfigShape1 = v.object({
       imagePath: v.literal(undefined).optional(),
     })
     .optional(),
+  hoverLabel: v.string().optional(),
 });
 
 const ConfigShape2 = v.object({
@@ -64,6 +65,7 @@ const ConfigShape2 = v.object({
       imagePath: v.string(),
     })
     .optional(),
+  hoverLabel: v.string().optional(),
 });
 
 export function validateParams(unvalidatedConfigParams: unknown): ReturnType {

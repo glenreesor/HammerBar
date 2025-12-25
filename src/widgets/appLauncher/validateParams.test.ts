@@ -28,13 +28,18 @@ test('it passes when bundleId is valid', () => {
   const { isValid, validParams, expectedArgument } = validateParams(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toStrictEqual({ ...testParams, args: undefined });
+  expect(validParams).toStrictEqual({
+    ...testParams,
+    args: undefined,
+    hoverLabel: undefined,
+  });
 });
 
 test('it passes when bundleId and args are valid', () => {
   const testParams = {
     bundleId: 'my bundle id',
     args: ['1', '2'],
+    hoverLabel: undefined,
   };
 
   const { isValid, validParams, expectedArgument } = validateParams(testParams);

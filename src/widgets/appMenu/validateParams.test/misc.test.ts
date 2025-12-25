@@ -33,6 +33,7 @@ test('passes when appList correct and icon missing', () => {
   const testParams = {
     appList: [{ bundleId: 'bundleId', label: 'myLabel', args: undefined }],
     icon: undefined,
+    hoverLabel: undefined,
   };
   expectPass(testParams);
 });
@@ -44,6 +45,7 @@ test('passes when appList and icon correct', () => {
       bundleId: 'bundleId',
       imagePath: undefined,
     },
+    hoverLabel: undefined,
   };
   expectPass(testParams);
 });

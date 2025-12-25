@@ -29,7 +29,9 @@ export function buildAppLauncherWidget(
   const alwaysCreateNewWindow = configParams.bundleId !== 'com.apple.finder';
 
   const args =
-    'args' in configParams ? `--args ${configParams.args.join(' ')}` : '';
+    'args' in configParams && configParams.args
+      ? `--args ${configParams.args.join(' ')}`
+      : '';
 
   const panelButton = getPanelButton({
     coords: builderParams.coords,
@@ -37,6 +39,7 @@ export function buildAppLauncherWidget(
     panelColor: builderParams.panelColor,
     panelHoverColor: builderParams.panelHoverColor,
     imageInfo: { bundleId },
+    hoverLabel: configParams.hoverLabel,
     onClick: () => {
       const optionalNewWindowFlag = alwaysCreateNewWindow ? '-n' : '';
       const handle = io.popen(

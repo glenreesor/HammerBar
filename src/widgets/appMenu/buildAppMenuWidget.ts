@@ -107,6 +107,7 @@ export function buildAppMenuWidget(
     panelColor: builderParams.panelColor,
     panelHoverColor: builderParams.panelHoverColor,
     imageInfo: iconInfo,
+    hoverLabel: configParams.hoverLabel,
     onClick: toggleMenu,
   });
 

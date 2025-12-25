@@ -33,6 +33,7 @@ type ReturnType =
 const Config = v.object({
   bundleId: v.string().nonEmpty(),
   args: v.array(v.string()).optional(),
+  hoverLabel: v.string().optional(),
 });
 
 export function validateParams(unvalidatedConfigParams: unknown): ReturnType {

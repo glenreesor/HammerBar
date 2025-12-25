@@ -22,6 +22,7 @@ export type ConfigParams = {
     args?: string[];
   }[];
   icon?: IconInfo;
+  hoverLabel?: string;
 };
 
 export type IconInfo =

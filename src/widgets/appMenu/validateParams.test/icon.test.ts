@@ -26,7 +26,11 @@ const goodAppEntry: ConfigParams['appList'][number] = {
 };
 
 test('passes when icon is missing', () => {
-  const testParams = { appList: [goodAppEntry], icon: undefined };
+  const testParams = {
+    appList: [goodAppEntry],
+    icon: undefined,
+    hoverLabel: undefined,
+  };
   expectPass(testParams);
 });
 
