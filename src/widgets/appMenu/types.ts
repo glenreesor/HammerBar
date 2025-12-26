@@ -20,6 +20,7 @@ export type ConfigParams = {
     bundleId: string;
     label: string;
     args?: string[];
+    newInstance?: boolean;
   }[];
   icon?: IconInfo;
   hoverLabel?: string;

@@ -25,13 +25,9 @@ export function buildAppLauncherWidget(
 ) {
   const { bundleId } = configParams;
 
-  // The Finder fails with the '-n' flag so never apply it
-  const alwaysCreateNewWindow = configParams.bundleId !== 'com.apple.finder';
+  const args = configParams.args ? `--args ${configParams.args.join(' ')}` : '';
 
-  const args =
-    'args' in configParams && configParams.args
-      ? `--args ${configParams.args.join(' ')}`
-      : '';
+  const newInstance = configParams.newInstance;
 
   const panelButton = getPanelButton({
     coords: builderParams.coords,
@@ -41,9 +37,9 @@ export function buildAppLauncherWidget(
     imageInfo: { bundleId },
     hoverLabel: configParams.hoverLabel,
     onClick: () => {
-      const optionalNewWindowFlag = alwaysCreateNewWindow ? '-n' : '';
+      const optionalNewInstanceFlag = newInstance ? '-n' : '';
       const handle = io.popen(
-        `open ${optionalNewWindowFlag} -b ${bundleId} ${args}`,
+        `open ${optionalNewInstanceFlag} -b ${bundleId} ${args}`,
       );
       handle.close();
     },

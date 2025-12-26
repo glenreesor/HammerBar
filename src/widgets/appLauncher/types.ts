@@ -18,5 +18,6 @@
 export type ConfigParams = {
   bundleId: string;
   args?: string[];
+  newInstance?: boolean;
   hoverLabel?: string;
 };

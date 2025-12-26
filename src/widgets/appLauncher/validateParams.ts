@@ -33,6 +33,7 @@ type ReturnType =
 const Config = v.object({
   bundleId: v.string().nonEmpty(),
   args: v.array(v.string()).optional(),
+  newInstance: v.boolean().optional(),
   hoverLabel: v.string().optional(),
 });
 
@@ -49,11 +50,11 @@ export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
       isValid: false,
       validParams: undefined,
       expectedArgument: [
-        '{ bundleId = <BundleId> }',
-        'or',
         '{',
         '  bundleId = <BundleId>',
-        '  args = { <arg1, arg2, ...> }',
+        '  args = { <arg1, arg2, ...> }    (optional)',
+        '  newInstance = [true or false]   (optional)',
+        '  hoverLabel = "label to display" (optional)',
         '}',
       ],
     };

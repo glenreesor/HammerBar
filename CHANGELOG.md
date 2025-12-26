@@ -1,10 +1,5 @@
 ## Unreleased
 
-#### Enhancements
-
-- `AppMenu` and `AppLauncher` now default to creating a new window if the corresponding
-  app is already open, as opposed to focusing an existing window
-
 #### Added
 
 - The window button of the currently active window now has a blue bar under it
@@ -17,23 +12,37 @@
           bundleId = 'org.mozilla.firefox',
         });
 
-  - It also accepts objects with a list of command line arguments. For example
-    to start Firefox using a different profile:
+  - This new configuration object supports the following optional keys in addition
+    to `bundleId`:
 
-        local firefoxLauncher = spoon.HammerBar.widgets:appLauncher({
-          bundleId = 'org.mozilla.firefox',
-          args = { '-P', 'test-profile' },
-        });
+    - `hoverLabel` - a label to show when the launcher is hovered
+    - `newInstance` - a boolean indicating whether to start a new instance of the program
+    - `args` - a table listing commandline arguments to pass to the program
+
+    For example, to start Firefox using a different profile and include a hover
+    label to distinguish that profile:
+
+          local firefoxLauncher = spoon.HammerBar.widgets:appLauncher({
+            bundleId = 'org.mozilla.firefox',
+            hoverLabel = 'test-profile',
+            newInstance - true,
+            args = { '-P', 'test-profile' },
+          });
 
 - `AppMenu`:
 
   - Similar to `AppLauncher`, each app entry can optionally include a list of
-    command line arguments:
+    command line arguments and `newInstance` (there is no `hoverLabel`):
 
         local appMenu = spoon.HammerBar.widgets:appMenu({
             appList = {
               { bundleId = 'org.mozilla.firefox', label = 'FF' },
-              { bundleId = 'org.mozilla.firefox', label = 'FF test-profile', args = { '-P', 'test-profile' }},
+              {
+                bundleId = 'org.mozilla.firefox',
+                label = 'FF test-profile',
+                newInstance = true,
+                args = { '-P', 'test-profile' }
+              },
               { bundleId = 'com.apple.Safari', label = 'Safari' },
               { bundleId = 'com.apple.finder', label = 'Finder' },
             },
