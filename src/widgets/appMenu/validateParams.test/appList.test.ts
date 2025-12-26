@@ -23,6 +23,7 @@ const goodAppEntry: ConfigParams['appList'][number] = {
   bundleId: 'bundle ID',
   label: 'my label',
   args: undefined,
+  newInstance: undefined,
 };
 
 describe('valid appList', () => {

@@ -32,6 +32,7 @@ test('it passes when bundleId is valid', () => {
     ...testParams,
     args: undefined,
     hoverLabel: undefined,
+    newInstance: undefined,
   });
 });
 
@@ -40,6 +41,7 @@ test('it passes when bundleId and args are valid', () => {
     bundleId: 'my bundle id',
     args: ['1', '2'],
     hoverLabel: undefined,
+    newInstance: undefined,
   };
 
   const { isValid, validParams, expectedArgument } = validateParams(testParams);

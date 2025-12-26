@@ -31,7 +31,14 @@ describe('invalid params types', () => {
 
 test('passes when appList correct and icon missing', () => {
   const testParams = {
-    appList: [{ bundleId: 'bundleId', label: 'myLabel', args: undefined }],
+    appList: [
+      {
+        bundleId: 'bundleId',
+        label: 'myLabel',
+        args: undefined,
+        newInstance: undefined,
+      },
+    ],
     icon: undefined,
     hoverLabel: undefined,
   };
@@ -40,7 +47,14 @@ test('passes when appList correct and icon missing', () => {
 
 test('passes when appList and icon correct', () => {
   const testParams = {
-    appList: [{ bundleId: 'bundleId', label: 'myLabel', args: undefined }],
+    appList: [
+      {
+        bundleId: 'bundleId',
+        label: 'myLabel',
+        args: undefined,
+        newInstance: undefined,
+      },
+    ],
     icon: {
       bundleId: 'bundleId',
       imagePath: undefined,
