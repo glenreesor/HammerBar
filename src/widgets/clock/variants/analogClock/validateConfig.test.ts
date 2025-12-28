@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, test } from 'vitest';
-import { validateParams } from './validateParams';
+import { validateConfig } from './validateConfig';
 
 const GOOD_TYPE = 'analog-clock';
 
@@ -28,10 +28,10 @@ const GOOD_TYPE = 'analog-clock';
 // So we just have to validate `showSeconds`
 
 function expectFail(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
 
   expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
+  expect(validConfig).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 }
 
@@ -65,8 +65,8 @@ test('fails when showSeconds is absent', () => {
 test('passes when showSeconds is a boolean', () => {
   const testParams = { type: GOOD_TYPE, showSeconds: true };
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toStrictEqual(testParams);
+  expect(validConfig).toStrictEqual(testParams);
 });

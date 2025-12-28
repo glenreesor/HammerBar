@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 import { getAngle, getCoords, getTickMarkElements } from '../../util';
 
 const BG_COLOR = { red: 1, green: 1, blue: 1 };
@@ -31,12 +31,12 @@ const EDGE_TO_SECOND_HAND_PADDING =
   EDGE_TO_TICKMARKS_PADDING + TICKMARK_LENGTH + 2;
 
 export function render(args: {
-  configParams: ConfigParams;
+  widgetConfig: WidgetConfig;
   canvas: hs.canvas.Canvas;
   width: number;
   height: number;
 }) {
-  const { configParams, canvas, width, height } = args;
+  const { widgetConfig, canvas, width, height } = args;
 
   const clockRadius = Math.min(width / 2, height / 2) - 2;
 
@@ -108,7 +108,7 @@ export function render(args: {
     minuteHandElement,
   ];
 
-  if (configParams.showSeconds) {
+  if (widgetConfig.showSeconds) {
     elements.push(secondHandElement);
   }
 

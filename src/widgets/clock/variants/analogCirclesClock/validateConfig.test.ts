@@ -16,10 +16,10 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, test } from 'vitest';
-import { validateParams } from './validateParams';
-import type { ConfigParams } from './types';
+import { validateConfig } from './validateConfig';
+import type { WidgetConfig } from './types';
 
-const goodParams: ConfigParams = {
+const goodConfig: WidgetConfig = {
   type: 'analog-circles-clock',
   showSeconds: true,
   showCirclePaths: true,
@@ -33,10 +33,10 @@ const goodParams: ConfigParams = {
 // So we just have to validate other keys
 
 function expectFail(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
 
   expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
+  expect(validConfig).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 }
 
@@ -44,38 +44,38 @@ describe('showSeconds', () => {
   describe('invalid showSeconds types', () => {
     test('fails when showSeconds is a number', () => {
       expect(true).toBe(true); // Keep vitest happy -- at least one test present
-      expectFail({ ...goodParams, showSeconds: 1 });
+      expectFail({ ...goodConfig, showSeconds: 1 });
     });
 
     test('fails when showSeconds is a string', () => {
       expect(true).toBe(true); // Keep vitest happy -- at least one test present
-      expectFail({ ...goodParams, showSeconds: '1' });
+      expectFail({ ...goodConfig, showSeconds: '1' });
     });
 
     test('fails when showSeconds is an array', () => {
       expect(true).toBe(true); // Keep vitest happy -- at least one test present
-      expectFail({ ...goodParams, showSeconds: [] });
+      expectFail({ ...goodConfig, showSeconds: [] });
     });
 
     test('fails when showSeconds is a function', () => {
       expect(true).toBe(true); // Keep vitest happy -- at least one test present
-      expectFail({ ...goodParams, showSeconds: () => 'blarp' });
+      expectFail({ ...goodConfig, showSeconds: () => 'blarp' });
     });
   });
 
   test('fails when showSeconds is absent', () => {
     expect(true).toBe(true);
-    expectFail({ ...goodParams, showSeconds: undefined });
+    expectFail({ ...goodConfig, showSeconds: undefined });
   });
 
   test('passes when showSeconds is a boolean', () => {
-    const testParams = { ...goodParams, showSeconds: true };
+    const testParams = { ...goodConfig, showSeconds: true };
 
-    const { isValid, validParams, expectedArgument } =
-      validateParams(testParams);
+    const { isValid, validConfig, expectedArgument } =
+      validateConfig(testParams);
     expect(isValid).toBe(true);
     expect(expectedArgument).toBeUndefined();
-    expect(validParams).toStrictEqual(testParams);
+    expect(validConfig).toStrictEqual(testParams);
   });
 });
 
@@ -83,37 +83,37 @@ describe('showCirclePaths', () => {
   describe('invalid showCirclePaths types', () => {
     test('fails when showCirclePaths is a number', () => {
       expect(true).toBe(true);
-      expectFail({ ...goodParams, showCirclePaths: 1 });
+      expectFail({ ...goodConfig, showCirclePaths: 1 });
     });
 
     test('fails when showCirclePaths is a string', () => {
       expect(true).toBe(true);
-      expectFail({ ...goodParams, showCirclePaths: '1' });
+      expectFail({ ...goodConfig, showCirclePaths: '1' });
     });
 
     test('fails when showCirclePaths is an array', () => {
       expect(true).toBe(true);
-      expectFail({ ...goodParams, showCirclePaths: [] });
+      expectFail({ ...goodConfig, showCirclePaths: [] });
     });
 
     test('fails when showCirclePaths is a function', () => {
       expect(true).toBe(true);
-      expectFail({ ...goodParams, showCirclePaths: () => 'blarp' });
+      expectFail({ ...goodConfig, showCirclePaths: () => 'blarp' });
     });
   });
 
   test('fails when showCirclePaths is absent', () => {
     expect(true).toBe(true);
-    expectFail({ ...goodParams, showCirclePaths: undefined });
+    expectFail({ ...goodConfig, showCirclePaths: undefined });
   });
 
   test('passes when showCirclePaths is a boolean', () => {
-    const testParams = { ...goodParams, showCirclePaths: true };
+    const testParams = { ...goodConfig, showCirclePaths: true };
 
-    const { isValid, validParams, expectedArgument } =
-      validateParams(testParams);
+    const { isValid, validConfig, expectedArgument } =
+      validateConfig(testParams);
     expect(isValid).toBe(true);
     expect(expectedArgument).toBeUndefined();
-    expect(validParams).toStrictEqual(testParams);
+    expect(validConfig).toStrictEqual(testParams);
   });
 });

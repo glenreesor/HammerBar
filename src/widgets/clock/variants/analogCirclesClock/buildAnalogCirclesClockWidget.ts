@@ -15,23 +15,23 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
 } from '../../../_helpers/util';
 import { render } from './render';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 
 export function buildAnalogCirclesClockWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
 ) {
-  const { coords, widgetHeight } = builderParams;
-  const clockWidth = builderParams.widgetHeight;
+  const { coords, widgetHeight } = widgetLayout;
+  const clockWidth = widgetLayout.widgetHeight;
 
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
   }
 
@@ -57,7 +57,7 @@ export function buildAnalogCirclesClockWidget(
     }
 
     render({
-      configParams,
+      widgetConfig: widgetConfig,
       canvas: state.canvas,
       width: clockWidth,
       height: widgetHeight,
@@ -76,8 +76,8 @@ export function buildAnalogCirclesClockWidget(
   renderWithArgs();
 
   const now = os.date('*t') as os.DateTable;
-  const nextUpdate = configParams?.showSeconds ? 1 : 60 - now.sec;
-  const updateInterval = configParams?.showSeconds ? 1 : 60;
+  const nextUpdate = widgetConfig?.showSeconds ? 1 : 60 - now.sec;
+  const updateInterval = widgetConfig?.showSeconds ? 1 : 60;
 
   state.timer = hs.timer.doAfter(nextUpdate, () => {
     renderWithArgs();
@@ -87,7 +87,7 @@ export function buildAnalogCirclesClockWidget(
   return {
     width: clockWidth,
     bringToFront: () => state.canvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide,
     show,
   };

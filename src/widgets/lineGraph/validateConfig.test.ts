@@ -16,29 +16,29 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, test } from 'vitest';
-import { validateParams } from './validateParams';
-import type { ConfigParams } from './types';
+import { validateConfig } from './validateConfig';
+import type { WidgetConfig } from './types';
 
-const goodParams: ConfigParams = {
+const goodConfig: WidgetConfig = {
   title: 'title',
   interval: 1,
   maxValues: 2,
-  graphYMax: 3,
+  maxGraphValue: 3,
   cmd: () => 1,
 };
 
 function expectPass(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toStrictEqual(testParams);
+  expect(validConfig).toStrictEqual(testParams);
 }
 
 function expectFail(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
 
   expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
+  expect(validConfig).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 }
 
@@ -65,7 +65,7 @@ describe('title', () => {
 
     test.each(tests)('$description', ({ title }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         title,
       };
       expectFail(testParams);
@@ -85,7 +85,7 @@ describe('cmd', () => {
 
     test.each(tests)('$description', ({ title }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         title,
       };
       expectFail(testParams);
@@ -105,7 +105,7 @@ describe('interval', () => {
 
     test.each(tests)('$description', ({ interval }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         interval,
       };
       expectFail(testParams);
@@ -120,7 +120,7 @@ describe('interval', () => {
 
     test.each(tests)('$description', ({ interval }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         interval,
       };
       expectFail(testParams);
@@ -140,7 +140,7 @@ describe('maxValues', () => {
 
     test.each(tests)('$description', ({ maxValues }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         maxValues,
       };
       expectFail(testParams);
@@ -155,7 +155,7 @@ describe('maxValues', () => {
 
     test.each(tests)('$description', ({ maxValues }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         maxValues,
       };
       expectFail(testParams);
@@ -163,31 +163,31 @@ describe('maxValues', () => {
   });
 });
 
-describe('graphYMax', () => {
+describe('maxGraphValue', () => {
   describe('invalid types', () => {
     const tests = [
       {
-        description: 'fails when graphYMax is a string',
-        graphYMax: '1',
+        description: 'fails when maxGraphValue is a string',
+        maxGraphValue: '1',
       },
       {
-        description: 'fails when graphYMax is an array',
-        graphYMax: ['bob'],
+        description: 'fails when maxGraphValue is an array',
+        maxGraphValue: ['bob'],
       },
       {
-        description: 'fails when graphYMax is an object',
-        graphYMax: {},
+        description: 'fails when maxGraphValue is an object',
+        maxGraphValue: {},
       },
       {
-        description: 'fails when graphYMax is a function',
-        graphYMax: () => 1,
+        description: 'fails when maxGraphValue is a function',
+        maxGraphValue: () => 1,
       },
     ];
 
-    test.each(tests)('$description', ({ graphYMax }) => {
+    test.each(tests)('$description', ({ maxGraphValue }) => {
       const testParams = {
-        ...goodParams,
-        graphYMax,
+        ...goodConfig,
+        maxGraphValue,
       };
       expectFail(testParams);
     });
@@ -196,16 +196,16 @@ describe('graphYMax', () => {
   describe('invalid values', () => {
     const tests = [
       {
-        description: 'fails when graphYMax is negative',
-        graphYMax: -1,
+        description: 'fails when maxGraphValue is negative',
+        maxGraphValue: -1,
       },
-      { description: 'fails when graphYMax is zero', graphYMax: 0 },
+      { description: 'fails when maxGraphValue is zero', maxGraphValue: 0 },
     ];
 
-    test.each(tests)('$description', ({ graphYMax }) => {
+    test.each(tests)('$description', ({ maxGraphValue }) => {
       const testParams = {
-        ...goodParams,
-        graphYMax,
+        ...goodConfig,
+        maxGraphValue,
       };
       expectFail(testParams);
     });
@@ -214,12 +214,12 @@ describe('graphYMax', () => {
 
 test('passes when interval and maxValues are correct', () => {
   const testParams = {
-    ...goodParams,
-    graphYMax: undefined,
+    ...goodConfig,
+    maxGraphValue: undefined,
   };
   expectPass(testParams);
 });
 
-test('passes when interval, maxValues and graphYMax are correct', () => {
-  expectPass(goodParams);
+test('passes when interval, maxValues and maxGraphValue are correct', () => {
+  expectPass(goodConfig);
 });

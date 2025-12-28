@@ -56,7 +56,7 @@ function isWidgetBuildingInfoArray(obj: unknown): obj is WidgetBuildingInfo[] {
     obj.reduce(
       (accum, curr) =>
         accum &&
-        isStringArray(curr.widgetParamErrors) &&
+        isStringArray(curr.widgetConfigErrors) &&
         typeof curr.widgetName === 'string' &&
         typeof curr.buildWidget === 'function',
       true,

@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 
 export function getAppButton({
   coords,
@@ -26,12 +26,12 @@ export function getAppButton({
   bundleId,
   label,
   onClick,
-}: WidgetBuilderParams & {
+}: WidgetLayout & {
   bundleId: string;
   label: string;
   onClick: () => void;
 }) {
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     state.canvas?.hide();
     state.canvas = undefined;
   }
@@ -167,7 +167,7 @@ export function getAppButton({
 
   return {
     bringToFront: () => state.canvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide: () => state.canvas?.hide(),
     show: () => state.canvas?.show(),
   };

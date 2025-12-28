@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import { getPanelButton } from '../_helpers/panelButton';
 import { getAppButton } from './appButton';
-import { ConfigParams } from './types';
+import { WidgetConfig } from './types';
 
 export function buildAppMenuWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
 ) {
   const appButtons: ReturnType<typeof getAppButton>[] = [];
 
@@ -31,9 +31,9 @@ export function buildAppMenuWidget(
     appButtons.forEach((appButton) => appButton.bringToFront());
   }
 
-  function cleanupPriorToDelete() {
-    panelButton.cleanupPriorToDelete();
-    appButtons.forEach((appButton) => appButton.cleanupPriorToDelete());
+  function prepareForRemoval() {
+    panelButton.prepareForRemoval();
+    appButtons.forEach((appButton) => appButton.prepareForRemoval());
   }
 
   function hide() {
@@ -48,7 +48,7 @@ export function buildAppMenuWidget(
 
   function toggleMenu() {
     if (state.menuIsVisible) {
-      appButtons.forEach((appButton) => appButton.cleanupPriorToDelete());
+      appButtons.forEach((appButton) => appButton.prepareForRemoval());
       state.menuIsVisible = false;
     } else {
       showMenu();
@@ -57,15 +57,15 @@ export function buildAppMenuWidget(
   }
 
   function showMenu() {
-    let widgetY = builderParams.coords.y - 30 * configParams.appList.length;
+    let widgetY = widgetLayout.coords.y - 30 * widgetConfig.appList.length;
 
-    configParams.appList.forEach((app) => {
+    widgetConfig.appList.forEach((app) => {
       appButtons.push(
         getAppButton({
-          coords: { ...builderParams.coords, y: widgetY },
+          coords: { ...widgetLayout.coords, y: widgetY },
           widgetHeight: 30,
-          panelColor: builderParams.panelColor,
-          panelHoverColor: builderParams.panelHoverColor,
+          panelColor: widgetLayout.panelColor,
+          panelHoverColor: widgetLayout.panelHoverColor,
           bundleId: app.bundleId,
           label: app.label,
           onClick: () => {
@@ -91,19 +91,19 @@ export function buildAppMenuWidget(
   }
 
   const iconInfo =
-    configParams.icon === undefined
+    widgetConfig.icon === undefined
       ? {
           imagePath: `${os.getenv('HOME')}/.hammerspoon/Spoons/HammerBar.spoon/appMenuButton.png`,
         }
-      : configParams.icon;
+      : widgetConfig.icon;
 
   const panelButton = getPanelButton({
-    coords: builderParams.coords,
-    widgetHeight: builderParams.widgetHeight,
-    panelColor: builderParams.panelColor,
-    panelHoverColor: builderParams.panelHoverColor,
+    coords: widgetLayout.coords,
+    widgetHeight: widgetLayout.widgetHeight,
+    panelColor: widgetLayout.panelColor,
+    panelHoverColor: widgetLayout.panelHoverColor,
     imageInfo: iconInfo,
-    hoverLabel: configParams.hoverLabel,
+    hoverLabel: widgetConfig.hoverLabel,
     onClick: toggleMenu,
   });
 
@@ -114,7 +114,7 @@ export function buildAppMenuWidget(
   return {
     width: panelButton.width,
     bringToFront,
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide,
     show,
   };

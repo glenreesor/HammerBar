@@ -17,8 +17,8 @@
 
 export { mainPanel } from './mainPanel';
 export type {
-  Widget,
+  WidgetHandle,
   WidgetBuilderGetter,
-  WidgetBuilderParams,
+  WidgetLayout,
   WidgetBuildingInfo,
 } from './types';

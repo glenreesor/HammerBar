@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { validateParams as validateDefaultClockParams } from './variants/defaultClock';
-import { validateParams as validateAnalogClockParams } from './variants/analogClock';
-import { validateParams as validateAnalogCirclesClockParams } from './variants/analogCirclesClock';
+import { validateConfig as validateDefaultClockParams } from './variants/defaultClock';
+import { validateConfig as validateAnalogClockParams } from './variants/analogClock';
+import { validateConfig as validateAnalogCirclesClockParams } from './variants/analogCirclesClock';
 
 type ValidType = 'default' | 'analog-clock' | 'analog-circles-clock';
 type ReturnType =
@@ -30,7 +30,7 @@ type ReturnType =
       expectedArgument: string[];
     };
 
-export function getClockType(unvalidatedConfigParams?: unknown): ReturnType {
+export function getClockType(unvalidatedWidgetConfig?: unknown): ReturnType {
   const checks = [
     { type: 'default' as const, checker: validateDefaultClockParams },
     { type: 'analog-clock' as const, checker: validateAnalogClockParams },
@@ -44,7 +44,7 @@ export function getClockType(unvalidatedConfigParams?: unknown): ReturnType {
   let expectedArguments: string[] = [];
 
   checks.forEach((c) => {
-    const check = c.checker(unvalidatedConfigParams);
+    const check = c.checker(unvalidatedWidgetConfig);
     if (check.isValid) {
       foundType = c.type;
     } else {

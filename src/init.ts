@@ -103,7 +103,7 @@ function validateWidgetAndAdd(
       '    {',
       '      buildWidget = <function>',
       '      widgetName = "Widget Name",',
-      '      widgetParamErrors = {},',
+      '      widgetConfigErrors = {},',
       '    }',
       '  }',
     ];

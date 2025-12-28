@@ -16,36 +16,36 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
-import type { WidgetBuilderParams } from 'src/mainPanel';
-import type { ConfigParams } from './types';
+import type { WidgetLayout } from 'src/mainPanel';
+import type { WidgetConfig } from './types';
 
 export function renderTextWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
   canvas: hs.canvas.Canvas,
 ) {
-  const width = builderParams.widgetHeight * 1.5;
+  const width = widgetLayout.widgetHeight * 1.5;
   const fontSize = 12;
-  const titleY = builderParams.widgetHeight / 2 - fontSize - fontSize / 2;
+  const titleY = widgetLayout.widgetHeight / 2 - fontSize - fontSize / 2;
   const outputY = titleY + fontSize * 1.6;
 
-  const output = configParams.cmd();
+  const output = widgetConfig.cmd();
 
   canvas.replaceElements([
     {
       type: 'rectangle',
-      fillColor: builderParams.panelHoverColor,
-      strokeColor: builderParams.panelColor,
+      fillColor: widgetLayout.panelHoverColor,
+      strokeColor: widgetLayout.panelColor,
       frame: {
         x: 0,
         y: 0,
         w: width,
-        h: builderParams.widgetHeight,
+        h: widgetLayout.widgetHeight,
       },
     },
     {
       type: 'text',
-      text: configParams.title,
+      text: widgetConfig.title,
       textAlignment: 'center',
       textColor: BLACK,
       textSize: fontSize,

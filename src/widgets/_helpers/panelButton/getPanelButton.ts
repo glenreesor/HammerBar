@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
@@ -35,12 +35,12 @@ export function getPanelButton({
   imageInfo,
   hoverLabel,
   onClick,
-}: WidgetBuilderParams & {
+}: WidgetLayout & {
   imageInfo: ImageInfo;
   hoverLabel: string | undefined;
   onClick: () => void;
 }) {
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     deleteCanvasesAndStopTimers(Object.values(state.canvases), []);
   }
 
@@ -165,7 +165,7 @@ export function getPanelButton({
   return {
     width,
     bringToFront: () => state.canvases.mainCanvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide,
     show,
   };

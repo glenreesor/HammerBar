@@ -16,29 +16,28 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK, WHITE } from 'src/constants';
-import type { WidgetBuilderParams } from 'src/mainPanel';
-import { ConfigParams, State } from '../types';
+import type { WidgetLayout } from 'src/mainPanel';
+import { WidgetConfig, State } from '../types';
 import { getGraphLineSegments } from './getGraphLineSegments';
 import { getGraphScaleFactors } from './getGraphScaleFactors';
 
 export function renderExpandedView(args: {
-  builderParams: WidgetBuilderParams;
-  configParams: ConfigParams;
+  widgetLayout: WidgetLayout;
+  widgetConfig: WidgetConfig;
   state: State;
   widgetWidth: number;
 }) {
-  const { builderParams, configParams, state, widgetWidth } = args;
+  const { widgetLayout, widgetConfig, state, widgetWidth } = args;
 
   const expandedViewHeight = 150;
   const expandedViewWidth = 150;
   const canvasX =
-    builderParams.coords.leftX ??
-    builderParams.coords.rightX - expandedViewWidth;
+    widgetLayout.coords.leftX ?? widgetLayout.coords.rightX - expandedViewWidth;
 
   if (state.canvases.expandedViewCanvas === undefined) {
     state.canvases.expandedViewCanvas = hs.canvas.new({
       x: canvasX,
-      y: builderParams.coords.y - expandedViewHeight,
+      y: widgetLayout.coords.y - expandedViewHeight,
       w: expandedViewWidth,
       h: expandedViewHeight,
     });
@@ -49,7 +48,7 @@ export function renderExpandedView(args: {
   const titleY = fontSize;
 
   const maxY =
-    configParams.graphYMax ??
+    widgetConfig.graphYMax ??
     state.yValues.reduce((acc, v) => (v > acc ? v : acc), 0);
 
   const currentValue = state.yValues[state.yValues.length - 1];
@@ -74,7 +73,7 @@ export function renderExpandedView(args: {
   const scale = getGraphScaleFactors({
     graphDimensions,
     maxYValue: maxY,
-    numValues: configParams.maxValues,
+    numValues: widgetConfig.maxValues,
     shrinkIfMouseButtonDown: false,
     mouseButtonIsDown: state.mouseButtonIsDown,
   });
@@ -101,7 +100,7 @@ export function renderExpandedView(args: {
       strokeColor: { red: 0, green: 0, blue: 1 },
       frame: {
         x:
-          builderParams.coords.leftX !== undefined
+          widgetLayout.coords.leftX !== undefined
             ? 0
             : expandedViewWidth - widgetWidth,
         y: expandedViewHeight - indicatorBarHeight,
@@ -113,7 +112,7 @@ export function renderExpandedView(args: {
     {
       // Title
       type: 'text',
-      text: configParams.title,
+      text: widgetConfig.title,
       textColor: BLACK,
       textSize: fontSize,
       frame: {

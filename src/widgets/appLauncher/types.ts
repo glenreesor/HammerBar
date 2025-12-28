@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type ConfigParams = {
+export type WidgetConfig = {
   bundleId: string;
   args?: string[];
   newInstance?: boolean;

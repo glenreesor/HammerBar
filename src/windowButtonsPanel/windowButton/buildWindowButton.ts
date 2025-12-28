@@ -38,7 +38,7 @@ export function buildWindowButton(args: {
     panelHeight,
   } = args;
 
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     deleteCanvasesAndStopTimers(Object.values(state.canvases), []);
   }
 
@@ -142,7 +142,7 @@ export function buildWindowButton(args: {
 
   return {
     bringToFront: () => state.canvases.mainCanvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide,
     show,
     setCurrentButtonGeometry,

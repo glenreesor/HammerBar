@@ -15,16 +15,16 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
+import type { WidgetLayout, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/util';
-import { validateParams } from './validateParams';
+import { validateConfig } from './validateConfig';
 import { buildCpuMonitorWidget } from './buildCpuMonitorWidget';
 
 export function getCpuMonitorBuilder(
-  unvalidatedConfigParams: unknown,
+  unvalidatedWidgetConfig: unknown,
 ): WidgetBuildingInfo {
-  const { isValid, validParams, expectedArgument } = validateParams(
-    unvalidatedConfigParams,
+  const { isValid, validConfig, expectedArgument } = validateConfig(
+    unvalidatedWidgetConfig,
   );
 
   if (!isValid) {
@@ -32,7 +32,7 @@ export function getCpuMonitorBuilder(
       'Unexpected argument. Expecting an argument like this:',
       ...expectedArgument,
       'But instead this was received:',
-      hs.inspect.inspect(unvalidatedConfigParams),
+      hs.inspect.inspect(unvalidatedWidgetConfig),
     ];
 
     return getNoopWidgetBuildingInfo('CpuMonitor', errorDetails);
@@ -40,8 +40,8 @@ export function getCpuMonitorBuilder(
 
   return {
     widgetName: 'CpuMonitor',
-    widgetParamErrors: [],
-    buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
-      buildCpuMonitorWidget(validParams, widgetBuilderParams),
+    widgetConfigErrors: [],
+    buildWidget: (widgetLayout: WidgetLayout) =>
+      buildCpuMonitorWidget(validConfig, widgetLayout),
   };
 }

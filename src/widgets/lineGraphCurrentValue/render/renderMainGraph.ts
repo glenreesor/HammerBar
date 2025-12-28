@@ -16,30 +16,35 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK, WHITE } from 'src/constants';
-import type { WidgetBuilderParams } from 'src/mainPanel';
-import { ConfigParams, State } from '../types';
+import type { WidgetLayout } from 'src/mainPanel';
+import { WidgetConfig, State } from '../types';
 import { getGraphLineSegments } from './getGraphLineSegments';
 import { getGraphScaleFactors } from './getGraphScaleFactors';
 
 export function renderMainGraph(args: {
-  builderParams: WidgetBuilderParams;
-  configParams: ConfigParams;
+  widgetLayout: WidgetLayout;
+  widgetConfig: WidgetConfig;
   state: State;
   widgetWidth: number;
   mouseCallback: hs.canvas.CanvasMouseCallback;
 }) {
-  const { builderParams, configParams, state, widgetWidth, mouseCallback } =
-    args;
+  const {
+    widgetLayout,
+    widgetConfig: configParams,
+    state,
+    widgetWidth,
+    mouseCallback,
+  } = args;
 
   if (state.canvases.mainGraphCanvas === undefined) {
     const canvasX =
-      builderParams.coords.leftX ?? builderParams.coords.rightX - widgetWidth;
+      widgetLayout.coords.leftX ?? widgetLayout.coords.rightX - widgetWidth;
 
     state.canvases.mainGraphCanvas = hs.canvas.new({
       x: canvasX,
-      y: builderParams.coords.y,
+      y: widgetLayout.coords.y,
       w: widgetWidth,
-      h: builderParams.widgetHeight,
+      h: widgetLayout.widgetHeight,
     });
 
     state.canvases.mainGraphCanvas.mouseCallback(mouseCallback);
@@ -49,10 +54,10 @@ export function renderMainGraph(args: {
   const baseFontSize = 12;
   const fontSize = state.mouseButtonIsDown ? baseFontSize * 0.8 : baseFontSize;
 
-  const titleY = builderParams.widgetHeight / 2 - fontSize - fontSize / 2;
+  const titleY = widgetLayout.widgetHeight / 2 - fontSize - fontSize / 2;
   const bgColor = state.mouseIsInside
     ? { red: 120 / 255, green: 140 / 255, blue: 140 / 255 }
-    : builderParams.panelHoverColor;
+    : widgetLayout.panelHoverColor;
 
   const max =
     configParams.graphYMax ??
@@ -65,7 +70,7 @@ export function renderMainGraph(args: {
 
   const graphDimensions = {
     w: widgetWidth,
-    h: builderParams.widgetHeight - graphTopLeft.y,
+    h: widgetLayout.widgetHeight - graphTopLeft.y,
   };
 
   const scale = getGraphScaleFactors({
@@ -85,12 +90,12 @@ export function renderMainGraph(args: {
     {
       type: 'rectangle',
       fillColor: bgColor,
-      strokeColor: builderParams.panelColor,
+      strokeColor: widgetLayout.panelColor,
       frame: {
         x: 0,
         y: 0,
         w: widgetWidth,
-        h: builderParams.widgetHeight,
+        h: widgetLayout.widgetHeight,
       },
       trackMouseEnterExit: true,
       trackMouseDown: true,
@@ -132,7 +137,7 @@ export function renderMainGraph(args: {
   ];
 
   const graphLineSegments = getGraphLineSegments({
-    bgColor: builderParams.panelHoverColor,
+    bgColor: widgetLayout.panelHoverColor,
     graphDimensions,
     graphTopLeft,
     scale,

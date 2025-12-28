@@ -16,32 +16,32 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, test } from 'vitest';
-import { validateParams } from './validateParams';
-import type { ConfigParams } from './types';
+import { validateConfig } from './validateConfig';
+import type { WidgetConfig } from './types';
 
-const goodParamsGraph: ConfigParams = {
+const goodConfigGraph: WidgetConfig = {
   type: 'graph',
   interval: 1,
   maxValues: 2,
 };
 
-const goodParamsText: ConfigParams = {
+const goodConfigText: WidgetConfig = {
   type: 'text',
   interval: 1,
 };
 
 function expectPass(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toStrictEqual(testParams);
+  expect(validConfig).toStrictEqual(testParams);
 }
 
 function expectFail(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
 
   expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
+  expect(validConfig).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 }
 
@@ -68,7 +68,7 @@ describe('type', () => {
 
     test.each(tests)('$description', ({ type }) => {
       const testParams = {
-        ...goodParamsGraph,
+        ...goodConfigGraph,
         type,
       };
       expectFail(testParams);
@@ -82,7 +82,7 @@ describe('type', () => {
 
     test.each(tests)('$description', ({ type }) => {
       const testParams = {
-        ...goodParamsGraph,
+        ...goodConfigGraph,
         type,
       };
       expectFail(testParams);
@@ -102,7 +102,7 @@ describe('interval', () => {
 
     test.each(tests)('$description', ({ interval }) => {
       const testParams = {
-        ...goodParamsGraph,
+        ...goodConfigGraph,
         interval,
       };
       expectFail(testParams);
@@ -117,7 +117,7 @@ describe('interval', () => {
 
     test.each(tests)('$description', ({ interval }) => {
       const testParams = {
-        ...goodParamsGraph,
+        ...goodConfigGraph,
         interval,
       };
       expectFail(testParams);
@@ -137,7 +137,7 @@ describe('maxValues', () => {
 
     test.each(tests)('$description', ({ maxValues }) => {
       const testParams = {
-        ...goodParamsGraph,
+        ...goodConfigGraph,
         type: 'graph',
         maxValues,
       };
@@ -153,7 +153,7 @@ describe('maxValues', () => {
 
     test.each(tests)('$description', ({ maxValues }) => {
       const testParams = {
-        ...goodParamsGraph,
+        ...goodConfigGraph,
         maxValues,
       };
       expectFail(testParams);
@@ -162,11 +162,11 @@ describe('maxValues', () => {
 });
 
 test('passes when type is graph and interval and maxValues are correct', () => {
-  const testParams = goodParamsGraph;
+  const testParams = goodConfigGraph;
   expectPass(testParams);
 });
 
 test('passes when type is text and interval is correct', () => {
-  const testParams = goodParamsText;
+  const testParams = goodConfigText;
   expectPass(testParams);
 });

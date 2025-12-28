@@ -101,7 +101,7 @@ export function createMoveOrDeleteWindowButtons(args: {
   noLongerExistingWindowIds.forEach((windowId) => {
     const windowActions = previousWindowButtonActionsById.get(windowId);
     if (windowActions) {
-      windowActions.cleanupPriorToDelete();
+      windowActions.prepareForRemoval();
     }
   });
 

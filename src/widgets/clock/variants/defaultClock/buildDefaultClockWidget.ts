@@ -15,24 +15,24 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
 } from '../../../_helpers/util';
 import { render } from './render';
-import { ConfigParams } from './types';
+import { WidgetConfig } from './types';
 
 const CLOCK_WIDTH = 100;
 
 export function buildDefaultClockWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
 ) {
-  const { coords, widgetHeight } = builderParams;
+  const { coords, widgetHeight } = widgetLayout;
 
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
   }
 
@@ -58,7 +58,7 @@ export function buildDefaultClockWidget(
     }
 
     render({
-      configParams,
+      widgetConfig: widgetConfig,
       canvas: state.canvas,
       width: CLOCK_WIDTH,
       height: widgetHeight,
@@ -86,7 +86,7 @@ export function buildDefaultClockWidget(
   state.canvas.show();
 
   const updateInterval =
-    configParams?.timeFormat && configParams.timeFormat.includes('ss') ? 1 : 60;
+    widgetConfig?.timeFormat && widgetConfig.timeFormat.includes('ss') ? 1 : 60;
 
   const now = os.date('*t') as os.DateTable;
 
@@ -102,7 +102,7 @@ export function buildDefaultClockWidget(
   return {
     width: CLOCK_WIDTH,
     bringToFront: () => state.canvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide,
     show,
   };

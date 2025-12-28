@@ -16,16 +16,16 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 export type WidgetBuilderGetter = (
-  unvalidatedWidgetParams: unknown,
+  unvalidatedWidgetConfig: unknown,
 ) => WidgetBuildingInfo;
 
 export type WidgetBuildingInfo = {
   widgetName: string;
-  widgetParamErrors: string[];
-  buildWidget: (params: WidgetBuilderParams) => Widget;
+  widgetConfigErrors: string[];
+  buildWidget: (layout: WidgetLayout) => WidgetHandle;
 };
 
-export type WidgetBuilderParams = {
+export type WidgetLayout = {
   coords:
     | {
         leftX: number;
@@ -42,10 +42,10 @@ export type WidgetBuilderParams = {
   panelHoverColor: hs.canvas.Color;
 };
 
-export type Widget = {
+export type WidgetHandle = {
   width: number;
   bringToFront: () => void;
-  cleanupPriorToDelete: () => void;
+  prepareForRemoval: () => void;
   hide: () => void;
   show: () => void;
 };

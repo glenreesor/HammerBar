@@ -16,27 +16,27 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK, WHITE } from 'src/constants';
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import { State } from '../types';
 
 export function renderHoverValue(args: {
-  builderParams: WidgetBuilderParams;
+  widgetLayout: WidgetLayout;
   state: State;
   widgetWidth: number;
 }) {
-  const { builderParams, state, widgetWidth } = args;
+  const { widgetLayout, state, widgetWidth } = args;
 
   const fontSize = 10;
   const value = state.yValues[state.yValues.length - 1];
   const canvasX =
-    builderParams.coords.leftX ?? builderParams.coords.rightX - widgetWidth;
+    widgetLayout.coords.leftX ?? widgetLayout.coords.rightX - widgetWidth;
   const hoverWidth = fontSize * (value.toString().length + 1);
   const hoverHeight = fontSize * 2;
 
   if (state.canvases.hoverCanvas === undefined) {
     state.canvases.hoverCanvas = hs.canvas.new({
       x: canvasX,
-      y: builderParams.coords.y - hoverHeight - 2,
+      y: widgetLayout.coords.y - hoverHeight - 2,
       w: widgetWidth,
       h: hoverHeight,
     });

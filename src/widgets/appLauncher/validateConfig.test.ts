@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { expect, test } from 'vitest';
-import { validateParams } from './validateParams';
+import { validateConfig } from './validateConfig';
 
 // Will probably delete these. Put a placeholder in for now
 
@@ -25,10 +25,10 @@ test('it passes when bundleId is valid', () => {
     bundleId: 'my bundle id',
   };
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toStrictEqual({
+  expect(validConfig).toStrictEqual({
     ...testParams,
     args: undefined,
     hoverLabel: undefined,
@@ -44,8 +44,8 @@ test('it passes when bundleId and args are valid', () => {
     newInstance: undefined,
   };
 
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toStrictEqual(testParams);
+  expect(validConfig).toStrictEqual(testParams);
 });

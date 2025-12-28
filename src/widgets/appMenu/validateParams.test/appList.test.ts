@@ -16,10 +16,10 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, test } from 'vitest';
-import type { ConfigParams } from '../types';
+import type { WidgetConfig } from '../types';
 import { expectFail, expectPass } from './util';
 
-const goodAppEntry: ConfigParams['appList'][number] = {
+const goodAppEntry: WidgetConfig['appList'][number] = {
   bundleId: 'bundle ID',
   label: 'my label',
   args: undefined,

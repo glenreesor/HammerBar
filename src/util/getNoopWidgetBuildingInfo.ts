@@ -19,15 +19,15 @@ import { WidgetBuildingInfo } from 'src/mainPanel';
 
 export function getNoopWidgetBuildingInfo(
   widgetName: string,
-  widgetParamErrors: string[],
+  widgetConfigErrors: string[],
 ): WidgetBuildingInfo {
   return {
     widgetName,
-    widgetParamErrors,
+    widgetConfigErrors,
     buildWidget: () => ({
       width: 0,
       bringToFront: () => undefined,
-      cleanupPriorToDelete: () => undefined,
+      prepareForRemoval: () => undefined,
       hide: () => undefined,
       show: () => undefined,
     }),

@@ -16,17 +16,17 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { validator as v } from 'src/util';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 
 type ReturnType =
   | {
       isValid: true;
-      validParams: ConfigParams;
+      validConfig: WidgetConfig;
       expectedArgument: undefined;
     }
   | {
       isValid: false;
-      validParams: undefined;
+      validConfig: undefined;
       expectedArgument: string[];
     };
 
@@ -70,28 +70,28 @@ const ConfigShape2 = v.object({
   hoverLabel: v.string().optional(),
 });
 
-export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
+export function validateConfig(unvalidatedWidgetConfig: unknown): ReturnType {
   try {
-    const validatedParams = ConfigShape1.parse(unvalidatedConfigParams);
+    const validatedConfig = ConfigShape1.parse(unvalidatedWidgetConfig);
 
     return {
       isValid: true,
-      validParams: validatedParams,
+      validConfig: validatedConfig,
       expectedArgument: undefined,
     };
   } catch {
     try {
-      const validatedParams = ConfigShape2.parse(unvalidatedConfigParams);
+      const validatedConfig = ConfigShape2.parse(unvalidatedWidgetConfig);
 
       return {
         isValid: true,
-        validParams: validatedParams,
+        validConfig: validatedConfig,
         expectedArgument: undefined,
       };
     } catch {
       return {
         isValid: false,
-        validParams: undefined,
+        validConfig: undefined,
         expectedArgument: [
           '  {',
           '    { bundleId = "org.mozilla.firefox", label = "Firefox" },',

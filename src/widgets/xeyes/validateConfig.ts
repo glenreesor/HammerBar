@@ -16,56 +16,43 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { validator as v } from 'src/util';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 
 type ReturnType =
   | {
       isValid: true;
-      validParams: ConfigParams;
+      validConfig: WidgetConfig;
       expectedArgument: undefined;
     }
   | {
       isValid: false;
-      validParams: undefined;
+      validConfig: undefined;
       expectedArgument: string[];
     };
 
 const Config = v.object({
-  title: v.string(),
-  interval: v.number().positive(),
-  cmd: v.fn(),
+  minInterval: v.number().positive(),
+  maxInterval: v.number().positive(),
 });
 
-export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
+export function validateConfig(unvalidatedWidgetConfig: unknown): ReturnType {
   try {
-    const validatedConfig = Config.parse(unvalidatedConfigParams);
+    const validatedConfig = Config.parse(unvalidatedWidgetConfig);
     return {
       isValid: true,
-      validParams: validatedConfig,
+      validConfig: validatedConfig,
       expectedArgument: undefined,
     };
   } catch {
     return {
       isValid: false,
-      validParams: undefined,
+      validConfig: undefined,
       expectedArgument: [
         '  {',
-        '    title = "The title",',
-        '    interval = <a number>,',
-        '    cmd = <a function that returns a string>,',
+        '    minInterval = <a number>,',
+        '    maxInterval = <a number>,',
         '  }',
       ],
     };
   }
-}
-
-function isConfigParams(obj: unknown): obj is ConfigParams {
-  return (
-    typeof obj === 'object' &&
-    typeof (obj as ConfigParams).title === 'string' &&
-    typeof (obj as ConfigParams).interval === 'number' &&
-    (obj as ConfigParams).interval > 0 &&
-    typeof (obj as ConfigParams).cmd === 'function' &&
-    Object.keys(obj as ConfigParams).length === 3
-  );
 }

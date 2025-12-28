@@ -15,18 +15,18 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
 } from '../_helpers/util';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 import { renderTextWidget } from './renderTextWidget';
 
 export function buildTextWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
 ) {
   type State = {
     canvas: hs.canvas.Canvas | undefined;
@@ -38,25 +38,25 @@ export function buildTextWidget(
     timer: undefined,
   };
 
-  const width = builderParams.widgetHeight * 1.5;
+  const width = widgetLayout.widgetHeight * 1.5;
   const canvasX =
-    builderParams.coords.leftX ?? builderParams.coords.rightX - width;
+    widgetLayout.coords.leftX ?? widgetLayout.coords.rightX - width;
 
   state.canvas = hs.canvas.new({
     x: canvasX,
-    y: builderParams.coords.y,
+    y: widgetLayout.coords.y,
     w: width,
-    h: builderParams.widgetHeight,
+    h: widgetLayout.widgetHeight,
   });
 
   state.canvas.show();
-  state.timer = hs.timer.doEvery(configParams.interval, () => {
+  state.timer = hs.timer.doEvery(widgetConfig.interval, () => {
     if (state.canvas) {
-      renderTextWidget(configParams, builderParams, state.canvas);
+      renderTextWidget(widgetConfig, widgetLayout, state.canvas);
     }
   });
 
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
   }
 
@@ -68,12 +68,12 @@ export function buildTextWidget(
     showCanvases([state.canvas]);
   }
 
-  renderTextWidget(configParams, builderParams, state.canvas);
+  renderTextWidget(widgetConfig, widgetLayout, state.canvas);
 
   return {
     width,
     bringToFront: () => state.canvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide,
     show,
   };

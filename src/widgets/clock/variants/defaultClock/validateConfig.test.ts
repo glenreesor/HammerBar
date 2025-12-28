@@ -16,11 +16,11 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, test } from 'vitest';
-import { validateParams } from './validateParams';
+import { validateConfig } from './validateConfig';
 
 describe('success', () => {
   test('when params is undefined', () => {
-    const { isValid, expectedArgument } = validateParams();
+    const { isValid, expectedArgument } = validateConfig();
     expect(isValid).toBe(true);
     expect(expectedArgument).toBe(undefined);
   });
@@ -28,7 +28,7 @@ describe('success', () => {
   test('when params.dateFormat is a string', () => {
     const testParams = { dateFormat: 'YY-MM-DD' };
 
-    const { isValid, expectedArgument } = validateParams(testParams);
+    const { isValid, expectedArgument } = validateConfig(testParams);
     expect(isValid).toBe(true);
     expect(expectedArgument).toBe(undefined);
   });
@@ -36,7 +36,7 @@ describe('success', () => {
   test('when params.timeFormat is a string', () => {
     const testParams = { timeFormat: 'h:mm:ss' };
 
-    const { isValid, expectedArgument } = validateParams(testParams);
+    const { isValid, expectedArgument } = validateConfig(testParams);
     expect(isValid).toBe(true);
     expect(expectedArgument).toBe(undefined);
   });
@@ -47,7 +47,7 @@ describe('success', () => {
       timeFormat: 'h:mm:ss',
     };
 
-    const { isValid, expectedArgument } = validateParams(testParams);
+    const { isValid, expectedArgument } = validateConfig(testParams);
     expect(isValid).toBe(true);
     expect(expectedArgument).toBe(undefined);
   });
@@ -59,7 +59,7 @@ describe('failure when params is an object and has invalid keys', () => {
       dateFormat: 1,
     };
 
-    const { isValid, expectedArgument } = validateParams(testParams);
+    const { isValid, expectedArgument } = validateConfig(testParams);
     expect(isValid).toBe(false);
     expect(expectedArgument?.length).gt(0);
   });
@@ -69,7 +69,7 @@ describe('failure when params is an object and has invalid keys', () => {
       timeFormat: 1,
     };
 
-    const { isValid, expectedArgument } = validateParams(testParams);
+    const { isValid, expectedArgument } = validateConfig(testParams);
     expect(isValid).toBe(false);
     expect(expectedArgument?.length).gt(0);
   });
@@ -79,7 +79,7 @@ describe('failure when params is an object and has invalid keys', () => {
       blarp: '1',
     };
 
-    const { isValid, expectedArgument } = validateParams(testParams);
+    const { isValid, expectedArgument } = validateConfig(testParams);
     expect(isValid).toBe(false);
     expect(expectedArgument?.length).gt(0);
   });
@@ -87,31 +87,31 @@ describe('failure when params is an object and has invalid keys', () => {
 
 describe('failure when params is defined and not an object', () => {
   test('params is a number', () => {
-    const { isValid, expectedArgument } = validateParams(1);
+    const { isValid, expectedArgument } = validateConfig(1);
     expect(isValid).toBe(false);
     expect(expectedArgument?.length).gt(0);
   });
 
   test('params is a string', () => {
-    const { isValid, expectedArgument } = validateParams('1');
+    const { isValid, expectedArgument } = validateConfig('1');
     expect(isValid).toBe(false);
     expect(expectedArgument?.length).gt(0);
   });
 
   test('params is a function', () => {
-    const { isValid, expectedArgument } = validateParams(() => 1);
+    const { isValid, expectedArgument } = validateConfig(() => 1);
     expect(isValid).toBe(false);
     expect(expectedArgument?.length).gt(0);
   });
 
   test('params is an array', () => {
-    const { isValid, expectedArgument } = validateParams([1]);
+    const { isValid, expectedArgument } = validateConfig([1]);
     expect(isValid).toBe(false);
     expect(expectedArgument?.length).gt(0);
   });
 
   test('params is a boolean', () => {
-    const { isValid, expectedArgument } = validateParams(true);
+    const { isValid, expectedArgument } = validateConfig(true);
     expect(isValid).toBe(false);
     expect(expectedArgument?.length).gt(0);
   });

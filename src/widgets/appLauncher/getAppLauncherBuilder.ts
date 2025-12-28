@@ -15,23 +15,23 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams, WidgetBuildingInfo } from 'src/mainPanel';
+import type { WidgetLayout, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/util';
-import { validateParams } from './validateParams';
+import { validateConfig } from './validateConfig';
 import { buildAppLauncherWidget } from './buildAppLauncherWidget';
 
 export function getAppLauncherBuilder(
-  unvalidatedConfigParams: unknown,
+  unvalidatedWidgetConfig: unknown,
 ): WidgetBuildingInfo {
-  const { isValid, validParams, expectedArgument } = validateParams(
-    unvalidatedConfigParams,
+  const { isValid, validConfig, expectedArgument } = validateConfig(
+    unvalidatedWidgetConfig,
   );
   if (!isValid) {
     const errorDetails = [
       'Unexpected argument. Expecting an argument like this:',
       ...expectedArgument,
       'But instead this was received:',
-      hs.inspect.inspect(unvalidatedConfigParams),
+      hs.inspect.inspect(unvalidatedWidgetConfig),
     ];
 
     return getNoopWidgetBuildingInfo('AppLauncher', errorDetails);
@@ -39,8 +39,8 @@ export function getAppLauncherBuilder(
 
   return {
     widgetName: 'AppLauncher',
-    widgetParamErrors: [],
-    buildWidget: (widgetBuilderParams: WidgetBuilderParams) =>
-      buildAppLauncherWidget(validParams, widgetBuilderParams),
+    widgetConfigErrors: [],
+    buildWidget: (widgetLayout: WidgetLayout) =>
+      buildAppLauncherWidget(validConfig, widgetLayout),
   };
 }

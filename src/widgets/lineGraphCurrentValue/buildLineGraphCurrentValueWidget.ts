@@ -15,20 +15,20 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
 } from '../_helpers/util';
-import type { ConfigParams, State } from './types';
+import type { WidgetConfig, State } from './types';
 import { renderMainGraph, renderExpandedView } from './render';
 
 export function buildLineGraphCurrentValueWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
 ) {
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     deleteCanvasesAndStopTimers(
       Object.values(state.canvases),
       Object.values(state.timers),
@@ -45,8 +45,8 @@ export function buildLineGraphCurrentValueWidget(
 
   function renderExpandedViewWithArgs() {
     renderExpandedView({
-      builderParams,
-      configParams,
+      widgetLayout,
+      widgetConfig: widgetConfig,
       state,
       widgetWidth,
     });
@@ -54,8 +54,8 @@ export function buildLineGraphCurrentValueWidget(
 
   function renderMainGraphWithArgs() {
     renderMainGraph({
-      builderParams,
-      configParams,
+      widgetLayout,
+      widgetConfig: widgetConfig,
       state,
       widgetWidth,
       mouseCallback,
@@ -97,8 +97,8 @@ export function buildLineGraphCurrentValueWidget(
   };
 
   function runCmdAndRender() {
-    state.yValues.push(configParams.cmd());
-    state.yValues = state.yValues.slice(-1 * configParams.maxValues);
+    state.yValues.push(widgetConfig.cmd());
+    state.yValues = state.yValues.slice(-1 * widgetConfig.maxValues);
     renderMainGraphWithArgs();
 
     if (state.renderExpandedView) {
@@ -106,7 +106,7 @@ export function buildLineGraphCurrentValueWidget(
     }
 
     state.timers.timer = hs.timer.doAfter(
-      configParams.interval,
+      widgetConfig.interval,
       runCmdAndRender,
     );
   }
@@ -125,14 +125,14 @@ export function buildLineGraphCurrentValueWidget(
     yValues: [],
   };
 
-  const widgetWidth = builderParams.widgetHeight * 1.5;
+  const widgetWidth = widgetLayout.widgetHeight * 1.5;
 
   runCmdAndRender();
 
   return {
     width: widgetWidth,
     bringToFront: () => state.canvases.mainGraphCanvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide: hide,
     show: show,
   };

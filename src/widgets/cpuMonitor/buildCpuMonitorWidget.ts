@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { Widget, WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetHandle, WidgetLayout } from 'src/mainPanel';
 import { getLineGraphCurrentValueBuilder } from '../lineGraphCurrentValue';
 import { getTextBuilder } from '../text';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 
 export function buildCpuMonitorWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
 ) {
   // We don't want to block the thread each time `cmd` is called, so:
   // - update a local value using hammerspoon's native async cpuUsage function
@@ -32,7 +32,7 @@ export function buildCpuMonitorWidget(
     | ReturnType<typeof hs.host.cpuUsage>
     | undefined;
 
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     if (!hammerspoonCpuUsageHandle?.finished()) {
       hammerspoonCpuUsageHandle?.stop();
     }
@@ -41,7 +41,7 @@ export function buildCpuMonitorWidget(
 
   function scheduleNextCpuUsageCallback() {
     hammerspoonCpuUsageHandle = hs.host.cpuUsage(
-      configParams.interval,
+      widgetConfig.interval,
       updateLocalCpuUsage,
     );
   }
@@ -60,29 +60,29 @@ export function buildCpuMonitorWidget(
 
   scheduleNextCpuUsageCallback();
 
-  let widget: Widget;
+  let widgetHandle: WidgetHandle;
 
-  if (configParams.type === 'text') {
-    widget = getTextBuilder({
+  if (widgetConfig.type === 'text') {
+    widgetHandle = getTextBuilder({
       title: 'CPU',
-      interval: configParams.interval,
+      interval: widgetConfig.interval,
       cmd: () => `${getHammerspoonProvidedCpuUsage()}%`,
-    }).buildWidget(builderParams);
+    }).buildWidget(widgetLayout);
   } else {
-    widget = getLineGraphCurrentValueBuilder({
+    widgetHandle = getLineGraphCurrentValueBuilder({
       title: 'CPU',
-      interval: configParams.interval,
-      maxValues: configParams.maxValues,
+      interval: widgetConfig.interval,
+      maxValues: widgetConfig.maxValues,
       graphYMax: 100,
       cmd: getHammerspoonProvidedCpuUsage,
-    }).buildWidget(builderParams);
+    }).buildWidget(widgetLayout);
   }
 
   return {
-    ...widget,
-    cleanupPriorToDelete: () => {
-      cleanupPriorToDelete();
-      widget.cleanupPriorToDelete();
+    ...widgetHandle,
+    prepareForRemoval: () => {
+      prepareForRemoval();
+      widgetHandle.prepareForRemoval();
     },
   };
 }

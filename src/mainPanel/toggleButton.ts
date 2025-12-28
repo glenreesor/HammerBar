@@ -29,7 +29,7 @@ export default function ToggleButton(args: {
   const { coords, panelHeight, panelColor, panelHoverColor, side, onClick } =
     args;
 
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     state.canvas?.hide();
     state.canvas = undefined;
   }
@@ -120,7 +120,7 @@ export default function ToggleButton(args: {
 
   return {
     bringToFront: () => state.canvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     setPanelVisibility,
   };
 }

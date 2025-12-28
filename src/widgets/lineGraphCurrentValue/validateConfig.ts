@@ -16,64 +16,50 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { validator as v } from 'src/util';
-import type { ConfigParams } from './types';
+
+import type { WidgetConfig } from './types';
 
 type ReturnType =
   | {
       isValid: true;
-      validParams: ConfigParams;
+      validConfig: WidgetConfig;
       expectedArgument: undefined;
     }
   | {
       isValid: false;
-      validParams: undefined;
+      validConfig: undefined;
       expectedArgument: string[];
     };
 
-const Config1 = v.object({
-  type: v.literal('graph'),
+const Config = v.object({
+  title: v.string(),
   interval: v.number().positive(),
   maxValues: v.number().positive(),
+  graphYMax: v.number().positive().optional(),
+  cmd: v.fn(),
 });
 
-const Config2 = v.object({
-  type: v.literal('text'),
-  interval: v.number().positive(),
-});
-
-export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
+export function validateConfig(unvalidatedWidgetConfig: unknown): ReturnType {
   try {
-    const validatedParams = Config1.parse(unvalidatedConfigParams);
+    const validatedConfig = Config.parse(unvalidatedWidgetConfig);
     return {
       isValid: true,
-      validParams: validatedParams,
+      validConfig: validatedConfig,
       expectedArgument: undefined,
     };
   } catch {
-    try {
-      const validatedParams = Config2.parse(unvalidatedConfigParams);
-      return {
-        isValid: true,
-        validParams: validatedParams,
-        expectedArgument: undefined,
-      };
-    } catch {
-      return {
-        isValid: false,
-        validParams: undefined,
-        expectedArgument: [
-          '  {',
-          '    type = "graph"',
-          '    interval = <a number>,',
-          '    maxValues: <a number>,',
-          '  }',
-          '  or',
-          '  {',
-          '    type = "text"',
-          '    interval = <a number>,',
-          '  }',
-        ],
-      };
-    }
+    return {
+      isValid: false,
+      validConfig: undefined,
+      expectedArgument: [
+        '  {',
+        '    title = "The title",',
+        '    interval = <a number>,',
+        '    maxValues: <a number>,',
+        '    graphYMax: <a number or nil>,',
+        '    cmd = <a function that returns a number>,',
+        '  }',
+      ],
+    };
   }
 }

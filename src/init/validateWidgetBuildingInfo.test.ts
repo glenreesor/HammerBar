@@ -16,16 +16,16 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, test } from 'vitest';
-import { WidgetBuilderParams, WidgetBuildingInfo } from '../mainPanel/types';
+import { WidgetLayout, WidgetBuildingInfo } from '../mainPanel/types';
 import { validateWidgetBuildingInfoArray } from './validateWidgetBuildingInfo';
 
 const goodWidgetBuildingInfo: WidgetBuildingInfo = {
   widgetName: 'a',
-  widgetParamErrors: [],
-  buildWidget: (_params: WidgetBuilderParams) => ({
+  widgetConfigErrors: [],
+  buildWidget: (_params: WidgetLayout) => ({
     width: 0,
     bringToFront: () => undefined,
-    cleanupPriorToDelete: () => undefined,
+    prepareForRemoval: () => undefined,
     show: () => undefined,
     hide: () => undefined,
   }),
@@ -94,62 +94,62 @@ describe('invalid widgetName types', () => {
   });
 });
 
-describe('invalid widgetParamErrors types', () => {
+describe('invalid widgetConfigErrors types', () => {
   const tests = [
     {
-      description: 'fails when widgetParamErrors is a number',
+      description: 'fails when widgetConfigErrors is a number',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: 1 },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: 1 },
       ],
     },
     {
-      description: 'fails when widgetParamErrors is an string',
+      description: 'fails when widgetConfigErrors is an string',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: 'blarp' },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: 'blarp' },
       ],
     },
     {
-      description: 'fails when widgetParamErrors is an object',
+      description: 'fails when widgetConfigErrors is an object',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: {} },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: {} },
       ],
     },
     {
-      description: 'fails when widgetParamErrors is a function',
+      description: 'fails when widgetConfigErrors is a function',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: () => '1' },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: () => '1' },
       ],
     },
     {
-      description: 'fails when widgetParamErrors is an array with a number',
+      description: 'fails when widgetConfigErrors is an array with a number',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: ['a', 1] },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: ['a', 1] },
       ],
     },
     {
-      description: 'fails when widgetParamErrors is an array with an object',
+      description: 'fails when widgetConfigErrors is an array with an object',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: ['a', {}] },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: ['a', {}] },
       ],
     },
     {
-      description: 'fails when widgetParamErrors is an array with an array',
+      description: 'fails when widgetConfigErrors is an array with an array',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: ['a', ['a']] },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: ['a', ['a']] },
       ],
     },
     {
-      description: 'fails when widgetParamErrors is an array with a function',
+      description: 'fails when widgetConfigErrors is an array with a function',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: ['a', () => 'a'] },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: ['a', () => 'a'] },
       ],
     },
   ];
@@ -199,17 +199,17 @@ describe('invalid buildWidget types', () => {
 describe('valid', () => {
   const tests = [
     {
-      description: 'passes when widgetParamErrors is an empty array',
+      description: 'passes when widgetConfigErrors is an empty array',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: [] },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: [] },
       ],
     },
     {
-      description: 'passes when widgetParamErrors is a non-empty array',
+      description: 'passes when widgetConfigErrors is a non-empty array',
       buildingInfoArray: [
         goodWidgetBuildingInfo,
-        { ...goodWidgetBuildingInfo, widgetParamErrors: ['a'] },
+        { ...goodWidgetBuildingInfo, widgetConfigErrors: ['a'] },
       ],
     },
   ];

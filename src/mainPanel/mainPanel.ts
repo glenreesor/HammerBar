@@ -17,7 +17,7 @@
 
 import ToggleButton from './toggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
-import type { Widget, WidgetBuildingInfo } from './types';
+import type { WidgetHandle, WidgetBuildingInfo } from './types';
 
 export function mainPanel(params: {
   coords: { x: number; y: number };
@@ -31,13 +31,13 @@ export function mainPanel(params: {
     y: number;
     height: number;
     width: number;
-  }) => Widget;
+  }) => WidgetHandle;
 }) {
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     state.canvas?.hide();
     state.canvas = undefined;
-    toggleButtons.forEach((button) => button.cleanupPriorToDelete());
-    widgets.forEach((widget) => widget.cleanupPriorToDelete());
+    toggleButtons.forEach((button) => button.prepareForRemoval());
+    widgetHandlers.forEach((widget) => widget.prepareForRemoval());
   }
 
   function toggleVisibility() {
@@ -52,7 +52,7 @@ export function mainPanel(params: {
         button.setPanelVisibility(true);
         button.bringToFront();
       });
-      widgets.forEach((widget) => {
+      widgetHandlers.forEach((widget) => {
         widget.show();
         widget.bringToFront();
       });
@@ -62,7 +62,7 @@ export function mainPanel(params: {
         button.setPanelVisibility(false);
         button.bringToFront();
       });
-      widgets.forEach((widget) => {
+      widgetHandlers.forEach((widget) => {
         widget.hide();
       });
     }
@@ -132,7 +132,7 @@ export function mainPanel(params: {
     }),
   );
 
-  const widgets: Widget[] = [];
+  const widgetHandlers: WidgetHandle[] = [];
 
   // Left Widgets
   let widgetLeftX = params.coords.x + TOGGLE_BUTTON_WIDTH;
@@ -144,7 +144,7 @@ export function mainPanel(params: {
       panelHoverColor,
     });
 
-    widgets.push(newWidget);
+    widgetHandlers.push(newWidget);
     widgetLeftX += newWidget.width;
   });
 
@@ -162,15 +162,15 @@ export function mainPanel(params: {
       panelHoverColor,
     });
 
-    widgets.push(newWidget);
+    widgetHandlers.push(newWidget);
     widgetRightX -= newWidget.width;
   });
 
   const totalWidgetWidth =
     2 * TOGGLE_BUTTON_WIDTH +
-    widgets.reduce((acc, widget) => acc + widget.width, 0);
+    widgetHandlers.reduce((acc, widget) => acc + widget.width, 0);
 
-  widgets.push(
+  widgetHandlers.push(
     params.windowButtonsPanelBuilder({
       x: endOfLeftWidgets,
       y: params.coords.y,
@@ -180,6 +180,6 @@ export function mainPanel(params: {
   );
 
   return {
-    cleanupPriorToDelete,
+    prepareForRemoval,
   };
 }

@@ -16,19 +16,19 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { expect } from 'vitest';
-import { validateParams } from '../validateParams';
+import { validateConfig } from '../validateConfig';
 
 export function expectPass(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toStrictEqual(testParams);
+  expect(validConfig).toStrictEqual(testParams);
 }
 
 export function expectFail(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
 
   expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
+  expect(validConfig).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 }

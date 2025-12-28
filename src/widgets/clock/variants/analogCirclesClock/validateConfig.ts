@@ -16,48 +16,44 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { validator as v } from 'src/util';
-
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 
 type ReturnType =
   | {
       isValid: true;
-      validParams: ConfigParams;
+      validConfig: WidgetConfig;
       expectedArgument: undefined;
     }
   | {
       isValid: false;
-      validParams: undefined;
+      validConfig: undefined;
       expectedArgument: string[];
     };
 
 const Config = v.object({
-  title: v.string(),
-  interval: v.number().positive(),
-  maxValues: v.number().positive(),
-  maxGraphValue: v.number().positive().optional(),
-  cmd: v.fn(),
+  type: v.literal('analog-circles-clock'),
+  showSeconds: v.boolean(),
+  showCirclePaths: v.boolean(),
 });
 
-export function validateParams(unvalidatedConfigParams: unknown): ReturnType {
+export function validateConfig(unvalidatedWidgetConfig: unknown): ReturnType {
   try {
-    const validatedConfig = Config.parse(unvalidatedConfigParams);
+    const validConfig = Config.parse(unvalidatedWidgetConfig);
+
     return {
       isValid: true,
-      validParams: validatedConfig,
+      validConfig: validConfig,
       expectedArgument: undefined,
     };
   } catch {
     return {
       isValid: false,
-      validParams: undefined,
+      validConfig: undefined,
       expectedArgument: [
         '  {',
-        '    title = "The title",',
-        '    interval = <a number>,',
-        '    maxValues: <a number>,',
-        '    maxGraphValue: <a number or nil>,',
-        '    cmd = <a function that returns a number>,',
+        '    type = "analog-circles-clock"',
+        '    showSeconds = true or false',
+        '    showCirclePaths = true or false',
         '  }',
       ],
     };

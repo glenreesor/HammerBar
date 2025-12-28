@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { Widget } from 'src/mainPanel';
+import type { WidgetHandle } from 'src/mainPanel';
 import type { WindowState } from 'src/windowListAndStateWatcher';
 import type { WindowButtonActionsById } from './types';
 import { createMoveOrDeleteWindowButtons } from './createMoveOrDeleteWindowButtons';
@@ -32,17 +32,17 @@ export function buildWindowButtonsPanel(args: {
     screenId: number,
     callback: (windowStates: WindowState[]) => void,
   ) => () => void;
-}): Widget {
+}): WidgetHandle {
   function bringToFront() {
     state.canvas?.show();
     state.windowButtonActionsById.forEach((w) => w.bringToFront());
   }
 
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     state.canvas?.hide();
     state.canvas = undefined;
 
-    state.windowButtonActionsById.forEach((w) => w.cleanupPriorToDelete());
+    state.windowButtonActionsById.forEach((w) => w.prepareForRemoval());
 
     if (state.windowListUnsubscriber) {
       state.windowListUnsubscriber();
@@ -129,7 +129,7 @@ export function buildWindowButtonsPanel(args: {
   return {
     width: 0, // this isn't used, but need it for the type
     bringToFront,
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide,
     show,
   };

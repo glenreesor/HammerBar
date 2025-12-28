@@ -41,7 +41,7 @@ const config: Config = {
 };
 
 type State = {
-  panels: { cleanupPriorToDelete: () => void }[];
+  panels: { prepareForRemoval: () => void }[];
   primaryScreenWidgets: {
     left: WidgetBuildingInfo[];
     right: WidgetBuildingInfo[];
@@ -128,13 +128,13 @@ function createPanelsForAllScreens() {
 }
 
 function validateWidgetConfig(buildingInfo: WidgetBuildingInfo): boolean {
-  if (buildingInfo.widgetParamErrors.length === 0) {
+  if (buildingInfo.widgetConfigErrors.length === 0) {
     return true;
   }
   printIndentedTextBlock(
     'error',
     `Error building widget ${buildingInfo.widgetName}`,
-    buildingInfo.widgetParamErrors,
+    buildingInfo.widgetConfigErrors,
   );
 
   return false;
@@ -157,7 +157,7 @@ function verticallyMaximizeCurrentWindow() {
 
 function removeAllPanels() {
   console.log('Removing panels for all screens');
-  state.panels.forEach((p) => p.cleanupPriorToDelete());
+  state.panels.forEach((p) => p.prepareForRemoval());
   state.panels = [];
 }
 

@@ -16,19 +16,19 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK, WHITE } from 'src/constants';
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import {
   deleteCanvasesAndStopTimers,
   hideCanvases,
   showCanvases,
 } from '../_helpers/util';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 
 export function buildXeyesWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
 ) {
-  function cleanupPriorToDelete() {
+  function prepareForRemoval() {
     deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
   }
 
@@ -49,23 +49,23 @@ export function buildXeyesWidget(
 
     const leftEyeCenter = {
       x: 2 + eyeRadius,
-      y: builderParams.widgetHeight / 2,
+      y: widgetLayout.widgetHeight / 2,
     };
     const leftEyeCenterAbsolute = {
       x:
-        (builderParams.coords.leftX ?? builderParams.coords.rightX) +
+        (widgetLayout.coords.leftX ?? widgetLayout.coords.rightX) +
         leftEyeCenter.x,
-      y: builderParams.coords.y + leftEyeCenter.y,
+      y: widgetLayout.coords.y + leftEyeCenter.y,
     };
     const rightEyeCenter = {
       x: width / 2 + 2 + eyeRadius,
-      y: builderParams.widgetHeight / 2,
+      y: widgetLayout.widgetHeight / 2,
     };
     const rightEyeCenterAbsolute = {
       x:
-        (builderParams.coords.leftX ?? builderParams.coords.rightX) +
+        (widgetLayout.coords.leftX ?? widgetLayout.coords.rightX) +
         rightEyeCenter.x,
-      y: builderParams.coords.y + rightEyeCenter.y,
+      y: widgetLayout.coords.y + rightEyeCenter.y,
     };
 
     const leftdy = leftEyeCenterAbsolute.y - mouseCoords.y;
@@ -98,12 +98,12 @@ export function buildXeyesWidget(
       ((rightEyeAngleToMouse - state.lastPupilAngle.right) * 180) / Math.PI;
 
     if (Math.abs(dThetaX) < 10 && Math.abs(dThetaY) < 10) {
-      state.interval = Math.min(state.interval * 2, configParams.maxInterval);
+      state.interval = Math.min(state.interval * 2, widgetConfig.maxInterval);
       state.timer = hs.timer.doAfter(state.interval, render);
       return;
     }
 
-    state.interval = configParams.minInterval;
+    state.interval = widgetConfig.minInterval;
 
     const leftEyeDeltaIsBig = Math.abs(dThetaX) > 40;
     const leftEyeDeltaIsMedium = Math.abs(dThetaX) > 10;
@@ -147,13 +147,13 @@ export function buildXeyesWidget(
     state.canvas?.replaceElements([
       {
         type: 'rectangle',
-        fillColor: builderParams.panelHoverColor,
-        strokeColor: builderParams.panelColor,
+        fillColor: widgetLayout.panelHoverColor,
+        strokeColor: widgetLayout.panelColor,
         frame: {
           x: 0,
           y: 0,
           w: width,
-          h: builderParams.widgetHeight,
+          h: widgetLayout.widgetHeight,
         },
       },
       {
@@ -203,7 +203,7 @@ export function buildXeyesWidget(
     timer: hs.timer.Timer | undefined;
   } = {
     values: [],
-    interval: configParams.maxInterval,
+    interval: widgetConfig.maxInterval,
     lastPupilAngle: {
       left: 0,
       right: 0,
@@ -216,14 +216,14 @@ export function buildXeyesWidget(
     timer: undefined,
   };
 
-  const width = builderParams.widgetHeight;
+  const width = widgetLayout.widgetHeight;
   const canvasX =
-    builderParams.coords.leftX ?? builderParams.coords.rightX - width;
+    widgetLayout.coords.leftX ?? widgetLayout.coords.rightX - width;
   state.canvas = hs.canvas.new({
     x: canvasX,
-    y: builderParams.coords.y,
+    y: widgetLayout.coords.y,
     w: width,
-    h: builderParams.widgetHeight,
+    h: widgetLayout.widgetHeight,
   });
 
   render();
@@ -232,7 +232,7 @@ export function buildXeyesWidget(
   return {
     width,
     bringToFront: () => state.canvas?.show(),
-    cleanupPriorToDelete,
+    prepareForRemoval,
     hide,
     show,
   };

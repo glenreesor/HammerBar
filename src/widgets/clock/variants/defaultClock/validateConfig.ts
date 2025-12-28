@@ -16,17 +16,17 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { validator as v } from 'src/util';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 
 type ReturnType =
   | {
       isValid: true;
-      validParams: ConfigParams;
+      validConfig: WidgetConfig;
       expectedArgument: undefined;
     }
   | {
       isValid: false;
-      validParams: undefined;
+      validConfig: undefined;
       expectedArgument: string[];
     };
 
@@ -37,18 +37,18 @@ const Config = v
   })
   .optional();
 
-export function validateParams(unvalidatedConfigParams?: unknown): ReturnType {
+export function validateConfig(unvalidatedWidgetConfig?: unknown): ReturnType {
   try {
-    const validParams = Config.parse(unvalidatedConfigParams);
+    const validConfig = Config.parse(unvalidatedWidgetConfig);
     return {
       isValid: true,
-      validParams: validParams,
+      validConfig: validConfig,
       expectedArgument: undefined,
     };
   } catch {
     return {
       isValid: false,
-      validParams: undefined,
+      validConfig: undefined,
       expectedArgument: [
         'nil',
         'or',

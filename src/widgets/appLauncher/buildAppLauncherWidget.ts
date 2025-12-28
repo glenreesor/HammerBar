@@ -15,27 +15,27 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuilderParams } from 'src/mainPanel';
+import type { WidgetLayout } from 'src/mainPanel';
 import { getPanelButton } from '../_helpers/panelButton';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 
 export function buildAppLauncherWidget(
-  configParams: ConfigParams,
-  builderParams: WidgetBuilderParams,
+  widgetConfig: WidgetConfig,
+  widgetLayout: WidgetLayout,
 ) {
-  const { bundleId } = configParams;
+  const { bundleId } = widgetConfig;
 
-  const args = configParams.args ? `--args ${configParams.args.join(' ')}` : '';
+  const args = widgetConfig.args ? `--args ${widgetConfig.args.join(' ')}` : '';
 
-  const newInstance = configParams.newInstance;
+  const newInstance = widgetConfig.newInstance;
 
   const panelButton = getPanelButton({
-    coords: builderParams.coords,
-    widgetHeight: builderParams.widgetHeight,
-    panelColor: builderParams.panelColor,
-    panelHoverColor: builderParams.panelHoverColor,
+    coords: widgetLayout.coords,
+    widgetHeight: widgetLayout.widgetHeight,
+    panelColor: widgetLayout.panelColor,
+    panelHoverColor: widgetLayout.panelHoverColor,
     imageInfo: { bundleId },
-    hoverLabel: configParams.hoverLabel,
+    hoverLabel: widgetConfig.hoverLabel,
     onClick: () => {
       const optionalNewInstanceFlag = newInstance ? '-n' : '';
       const handle = io.popen(

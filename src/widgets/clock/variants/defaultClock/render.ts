@@ -16,21 +16,21 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
-import { ConfigParams } from './types';
+import { WidgetConfig } from './types';
 import { getFormattedDate, getFormattedTime } from './util';
 
 export function render(args: {
-  configParams: ConfigParams;
+  widgetConfig: WidgetConfig;
   canvas: hs.canvas.Canvas;
   width: number;
   height: number;
 }) {
-  const { configParams, canvas, width, height } = args;
+  const { widgetConfig, canvas, width, height } = args;
 
   const bgColor = { red: 1, green: 1, blue: 1 };
   const { formattedTime, formattedDate } = getFormattedCurrentDateTime({
-    dateFormatString: configParams ? configParams.dateFormat : undefined,
-    timeFormatString: configParams ? configParams.timeFormat : undefined,
+    dateFormatString: widgetConfig ? widgetConfig.dateFormat : undefined,
+    timeFormatString: widgetConfig ? widgetConfig.timeFormat : undefined,
   });
   const fontSize = 12;
   const timeY = height / 2 - fontSize - fontSize / 2;

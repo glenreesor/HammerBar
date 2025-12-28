@@ -22,7 +22,7 @@ export type WindowButtonActionsById = Map<
   number,
   {
     bringToFront: () => void;
-    cleanupPriorToDelete: () => void;
+    prepareForRemoval: () => void;
     hide: () => void;
     show: () => void;
     setCurrentButtonGeometry: (newGeometry: ButtonGeometry) => void;

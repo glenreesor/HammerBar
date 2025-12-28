@@ -16,27 +16,27 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { describe, expect, test } from 'vitest';
-import { validateParams } from './validateParams';
-import type { ConfigParams } from './types';
+import { validateConfig } from './validateConfig';
+import type { WidgetConfig } from './types';
 
-const goodParams: ConfigParams = {
+const goodConfig: WidgetConfig = {
   title: 'title',
   interval: 1,
   cmd: () => '1',
 };
 
 function expectPass(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
   expect(isValid).toBe(true);
   expect(expectedArgument).toBeUndefined();
-  expect(validParams).toStrictEqual(testParams);
+  expect(validConfig).toStrictEqual(testParams);
 }
 
 function expectFail(testParams: any) {
-  const { isValid, validParams, expectedArgument } = validateParams(testParams);
+  const { isValid, validConfig, expectedArgument } = validateConfig(testParams);
 
   expect(isValid).toBe(false);
-  expect(validParams).toBeUndefined();
+  expect(validConfig).toBeUndefined();
   expect(expectedArgument?.length).toBeGreaterThan(0);
 }
 
@@ -63,7 +63,7 @@ describe('title', () => {
 
     test.each(tests)('$description', ({ title }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         title,
       };
       expectFail(testParams);
@@ -82,7 +82,7 @@ describe('cmd', () => {
 
     test.each(tests)('$description', ({ title }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         title,
       };
       expectFail(testParams);
@@ -102,7 +102,7 @@ describe('interval', () => {
 
     test.each(tests)('$description', ({ interval }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         interval,
       };
       expectFail(testParams);
@@ -117,7 +117,7 @@ describe('interval', () => {
 
     test.each(tests)('$description', ({ interval }) => {
       const testParams = {
-        ...goodParams,
+        ...goodConfig,
         interval,
       };
       expectFail(testParams);
@@ -126,5 +126,5 @@ describe('interval', () => {
 });
 
 test('passes when title, interval and cmd are valid', () => {
-  expectPass(goodParams);
+  expectPass(goodConfig);
 });

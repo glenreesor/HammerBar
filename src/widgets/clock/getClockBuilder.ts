@@ -23,28 +23,28 @@ import { getAnalogClockBuilder } from './variants/analogClock';
 import { getClockType } from './getClockType';
 
 export function getClockBuilder(
-  unvalidatedConfigParams: unknown,
+  unvalidatedWidgetConfig: unknown,
 ): WidgetBuildingInfo {
-  const { type, expectedArgument } = getClockType(unvalidatedConfigParams);
+  const { type, expectedArgument } = getClockType(unvalidatedWidgetConfig);
 
   if (type === 'unknown') {
     const errorDetails = [
       'Unexpected argument. Expecting an argument like this:',
       ...expectedArgument,
       'But instead this was received:',
-      hs.inspect.inspect(unvalidatedConfigParams),
+      hs.inspect.inspect(unvalidatedWidgetConfig),
     ];
 
     return getNoopWidgetBuildingInfo('Clock', errorDetails);
   }
 
   if (type === 'default') {
-    return getDefaultClockBuilder(unvalidatedConfigParams);
+    return getDefaultClockBuilder(unvalidatedWidgetConfig);
   }
 
   if (type === 'analog-clock') {
-    return getAnalogClockBuilder(unvalidatedConfigParams);
+    return getAnalogClockBuilder(unvalidatedWidgetConfig);
   }
 
-  return getAnalogCirclesClockBuilder(unvalidatedConfigParams);
+  return getAnalogCirclesClockBuilder(unvalidatedWidgetConfig);
 }

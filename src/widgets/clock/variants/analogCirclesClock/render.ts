@@ -16,7 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
-import type { ConfigParams } from './types';
+import type { WidgetConfig } from './types';
 import { getAngle, getCoords, getTickMarkElements } from '../../util';
 
 const BG_COLOR = { red: 1, green: 1, blue: 1 };
@@ -31,12 +31,12 @@ const MINUTE_CIRCLE_RADIUS = 1.5;
 const SECOND_CIRCLE_RADIUS = 1;
 
 export function render(args: {
-  configParams: ConfigParams;
+  widgetConfig: WidgetConfig;
   canvas: hs.canvas.Canvas;
   width: number;
   height: number;
 }) {
-  const { configParams, canvas, width, height } = args;
+  const { widgetConfig, canvas, width, height } = args;
 
   const clockRadius = Math.min(width / 2, height / 2) - 2;
 
@@ -128,13 +128,13 @@ export function render(args: {
   // Note the order of canvas elements (lowest to highest)
   const elements: hs.canvas.CanvasElement[] = [clockOutlineElement];
 
-  if (configParams.showCirclePaths) {
+  if (widgetConfig.showCirclePaths) {
     elements.push(...[minuteCirclePathElement, hourCirclePathElement]);
   }
 
   elements.push(...[...tickMarks, minuteCircleElement, hourCircleElement]);
 
-  if (configParams.showSeconds) {
+  if (widgetConfig.showSeconds) {
     elements.push(secondCircleElement);
   }
 
