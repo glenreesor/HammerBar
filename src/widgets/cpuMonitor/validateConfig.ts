@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { validator as v } from 'src/util';
+import { configValidator1, configValidator2 } from './types';
 import type { WidgetConfig } from './types';
 
 type ReturnType =
@@ -30,20 +30,9 @@ type ReturnType =
       expectedArgument: string[];
     };
 
-const Config1 = v.object({
-  type: v.literal('graph'),
-  interval: v.number().positive(),
-  maxValues: v.number().positive(),
-});
-
-const Config2 = v.object({
-  type: v.literal('text'),
-  interval: v.number().positive(),
-});
-
 export function validateConfig(unvalidatedWidgetConfig: unknown): ReturnType {
   try {
-    const validatedConfig = Config1.parse(unvalidatedWidgetConfig);
+    const validatedConfig = configValidator1.parse(unvalidatedWidgetConfig);
     return {
       isValid: true,
       validConfig: validatedConfig,
@@ -51,7 +40,7 @@ export function validateConfig(unvalidatedWidgetConfig: unknown): ReturnType {
     };
   } catch {
     try {
-      const validatedConfig = Config2.parse(unvalidatedWidgetConfig);
+      const validatedConfig = configValidator2.parse(unvalidatedWidgetConfig);
       return {
         isValid: true,
         validConfig: validatedConfig,

@@ -15,9 +15,13 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type WidgetConfig =
-  | undefined
-  | {
-      dateFormat?: string;
-      timeFormat?: string;
-    };
+import { validator as v } from 'src/util';
+
+export const configValidator = v
+  .object({
+    dateFormat: v.string().optional(),
+    timeFormat: v.string().optional(),
+  })
+  .optional();
+
+export type WidgetConfig = ReturnType<typeof configValidator.parse>;

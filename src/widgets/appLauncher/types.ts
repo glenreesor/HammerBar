@@ -15,9 +15,13 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type WidgetConfig = {
-  bundleId: string;
-  args?: string[];
-  newInstance?: boolean;
-  hoverLabel?: string;
-};
+import { validator as v } from 'src/util';
+
+export const configValidator = v.object({
+  bundleId: v.string().nonEmpty(),
+  args: v.array(v.string()).optional(),
+  newInstance: v.boolean().optional(),
+  hoverLabel: v.string().optional(),
+});
+
+export type WidgetConfig = ReturnType<typeof configValidator.parse>;

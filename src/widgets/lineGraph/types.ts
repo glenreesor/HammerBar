@@ -15,13 +15,17 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type WidgetConfig = {
-  title: string;
-  interval: number;
-  maxValues: number;
-  maxGraphValue: number | undefined;
-  cmd: Function;
-};
+import { validator as v } from 'src/util';
+
+export const configValidator = v.object({
+  title: v.string(),
+  interval: v.number().positive(),
+  maxValues: v.number().positive(),
+  maxGraphValue: v.number().positive().optional(),
+  cmd: v.fn(),
+});
+
+export type WidgetConfig = ReturnType<typeof configValidator.parse>;
 
 export type State = {
   canvases: {

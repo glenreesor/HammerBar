@@ -15,7 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type WidgetConfig = {
-  minInterval: number;
-  maxInterval: number;
-};
+import { validator as v } from 'src/util';
+
+export const configValidator = v.object({
+  minInterval: v.number().positive(),
+  maxInterval: v.number().positive(),
+});
+
+export type WidgetConfig = ReturnType<typeof configValidator.parse>;

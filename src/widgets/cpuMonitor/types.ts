@@ -15,13 +15,19 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import { validator as v } from 'src/util';
+
+export const configValidator1 = v.object({
+  type: v.literal('graph'),
+  interval: v.number().positive(),
+  maxValues: v.number().positive(),
+});
+
+export const configValidator2 = v.object({
+  type: v.literal('text'),
+  interval: v.number().positive(),
+});
+
 export type WidgetConfig =
-  | {
-      type: 'graph';
-      interval: number;
-      maxValues: number;
-    }
-  | {
-      type: 'text';
-      interval: number;
-    };
+  | ReturnType<typeof configValidator1.parse>
+  | ReturnType<typeof configValidator2.parse>;

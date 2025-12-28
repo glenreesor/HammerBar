@@ -15,7 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-export type WidgetConfig = {
-  type: 'analog-clock';
-  showSeconds: boolean;
-};
+import { validator as v } from 'src/util';
+
+export const configValidator = v.object({
+  type: v.literal('analog-clock'),
+  showSeconds: v.boolean(),
+});
+
+export type WidgetConfig = ReturnType<typeof configValidator.parse>;
