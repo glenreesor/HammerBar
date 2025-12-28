@@ -15,21 +15,15 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { WidgetBuildingInfo } from 'src/mainPanel';
+import { WidgetBuildingInfoError } from 'src/mainPanel';
 
 export function getNoopWidgetBuildingInfo(
   widgetName: string,
   widgetConfigErrors: string[],
-): WidgetBuildingInfo {
+): WidgetBuildingInfoError {
   return {
+    type: 'error',
     widgetName,
     widgetConfigErrors,
-    buildWidget: () => ({
-      width: 0,
-      bringToFront: () => undefined,
-      prepareForRemoval: () => undefined,
-      hide: () => undefined,
-      show: () => undefined,
-    }),
   };
 }

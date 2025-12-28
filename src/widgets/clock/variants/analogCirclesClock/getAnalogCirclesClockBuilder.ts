@@ -39,8 +39,8 @@ export function getAnalogCirclesClockBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'Clock',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildAnalogCirclesClockWidget(validConfig, widgetLayout),
   };

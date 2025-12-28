@@ -39,8 +39,8 @@ export function getLineGraphCurrentValueBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'LineGraph',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildLineGraphCurrentValueWidget(validConfig, widgetLayout),
   };

@@ -39,8 +39,8 @@ export function getAppMenuBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'AppMenu',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildAppMenuWidget(validConfig, widgetLayout),
   };

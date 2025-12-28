@@ -39,8 +39,8 @@ export function getDefaultClockBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'Clock',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildDefaultClockWidget(validConfig, widgetLayout),
   };

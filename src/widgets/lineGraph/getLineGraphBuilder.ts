@@ -39,8 +39,8 @@ export function getLineGraphBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'LineGraph',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildLineGraphWidget(validConfig, widgetLayout),
   };

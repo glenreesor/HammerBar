@@ -39,8 +39,8 @@ export function getXeyesBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'Xeyes',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildXeyesWidget(validConfig, widgetLayout),
   };

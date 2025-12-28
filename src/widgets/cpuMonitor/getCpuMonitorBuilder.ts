@@ -39,8 +39,8 @@ export function getCpuMonitorBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'CpuMonitor',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildCpuMonitorWidget(validConfig, widgetLayout),
   };

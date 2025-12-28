@@ -20,7 +20,10 @@ import type { ScreenInfoType } from './hammerspoonUtils';
 import { getScreenInfo } from './hammerspoonUtils';
 
 import { mainPanel } from './mainPanel';
-import type { WidgetBuildingInfo } from './mainPanel';
+import type {
+  WidgetBuildingInfo,
+  WidgetBuildingInfoSuccess,
+} from './mainPanel';
 import { getWindowButtonsPanelBuilder } from './windowButtonsPanel';
 import {
   setWindowListUpdateInterval as applyWindowListUpdateInterval,
@@ -76,15 +79,18 @@ const state: State = {
 function createPanelsForAllScreens() {
   const primaryScreenId = hs.screen.primaryScreen().id();
 
-  const errorFreeWidgetBuildersPrimaryLeft =
-    state.primaryScreenWidgets.left.filter((w) => validateWidgetConfig(w));
-  const errorFreeWidgetBuildersPrimaryRight =
-    state.primaryScreenWidgets.right.filter((w) => validateWidgetConfig(w));
-
-  const errorFreeWidgetBuildersSecondaryLeft =
-    state.secondaryScreenWidgets.left.filter((w) => validateWidgetConfig(w));
-  const errorFreeWidgetBuildersSecondaryRight =
-    state.secondaryScreenWidgets.right.filter((w) => validateWidgetConfig(w));
+  const errorFreeWidgetBuildersPrimaryLeft = getErrorFreeWidgetBuilders(
+    state.primaryScreenWidgets.left,
+  );
+  const errorFreeWidgetBuildersPrimaryRight = getErrorFreeWidgetBuilders(
+    state.primaryScreenWidgets.right,
+  );
+  const errorFreeWidgetBuildersSecondaryLeft = getErrorFreeWidgetBuilders(
+    state.secondaryScreenWidgets.left,
+  );
+  const errorFreeWidgetBuildersSecondaryRight = getErrorFreeWidgetBuilders(
+    state.secondaryScreenWidgets.right,
+  );
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
     const screenInfo = getScreenInfo(hammerspoonScreen);
@@ -127,17 +133,24 @@ function createPanelsForAllScreens() {
   });
 }
 
-function validateWidgetConfig(buildingInfo: WidgetBuildingInfo): boolean {
-  if (buildingInfo.widgetConfigErrors.length === 0) {
-    return true;
-  }
-  printIndentedTextBlock(
-    'error',
-    `Error building widget ${buildingInfo.widgetName}`,
-    buildingInfo.widgetConfigErrors,
-  );
+function getErrorFreeWidgetBuilders(
+  buildingInfo: WidgetBuildingInfo[],
+): WidgetBuildingInfoSuccess[] {
+  const errorFreeBuilders: WidgetBuildingInfoSuccess[] = [];
 
-  return false;
+  buildingInfo.forEach((bi) => {
+    if (bi.type === 'success') {
+      errorFreeBuilders.push(bi);
+    } else {
+      printIndentedTextBlock(
+        'error',
+        `Error building widget ${bi.widgetName}`,
+        bi.widgetConfigErrors,
+      );
+    }
+  });
+
+  return errorFreeBuilders;
 }
 
 function verticallyMaximizeCurrentWindow() {

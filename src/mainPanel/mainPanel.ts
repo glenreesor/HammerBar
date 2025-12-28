@@ -17,14 +17,14 @@
 
 import ToggleButton from './toggleButton';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
-import type { WidgetHandle, WidgetBuildingInfo } from './types';
+import type { WidgetHandle, WidgetBuildingInfoSuccess } from './types';
 
 export function mainPanel(params: {
   coords: { x: number; y: number };
   dimensions: { w: number; h: number };
   widgetsBuildingInfo: {
-    left: WidgetBuildingInfo[];
-    right: WidgetBuildingInfo[];
+    left: WidgetBuildingInfoSuccess[];
+    right: WidgetBuildingInfoSuccess[];
   };
   windowButtonsPanelBuilder: (panelParams: {
     x: number;

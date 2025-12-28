@@ -38,8 +38,8 @@ export function getAppLauncherBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'AppLauncher',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildAppLauncherWidget(validConfig, widgetLayout),
   };

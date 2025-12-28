@@ -39,8 +39,8 @@ export function getTextBuilder(
   }
 
   return {
+    type: 'success',
     widgetName: 'Text',
-    widgetConfigErrors: [],
     buildWidget: (widgetLayout: WidgetLayout) =>
       buildTextWidget(validConfig, widgetLayout),
   };

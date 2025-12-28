@@ -15,7 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetHandle, WidgetLayout } from 'src/mainPanel';
+import type {
+  WidgetBuildingInfo,
+  WidgetHandle,
+  WidgetLayout,
+} from 'src/mainPanel';
 import { getLineGraphCurrentValueBuilder } from '../lineGraphCurrentValue';
 import { getTextBuilder } from '../text';
 import type { WidgetConfig } from './types';
@@ -60,23 +64,29 @@ export function buildCpuMonitorWidget(
 
   scheduleNextCpuUsageCallback();
 
-  let widgetHandle: WidgetHandle;
+  let builder: WidgetBuildingInfo;
 
   if (widgetConfig.type === 'text') {
-    widgetHandle = getTextBuilder({
+    builder = getTextBuilder({
       title: 'CPU',
       interval: widgetConfig.interval,
       cmd: () => `${getHammerspoonProvidedCpuUsage()}%`,
-    }).buildWidget(widgetLayout);
+    });
   } else {
-    widgetHandle = getLineGraphCurrentValueBuilder({
+    builder = getLineGraphCurrentValueBuilder({
       title: 'CPU',
       interval: widgetConfig.interval,
       maxValues: widgetConfig.maxValues,
       graphYMax: 100,
       cmd: getHammerspoonProvidedCpuUsage,
-    }).buildWidget(widgetLayout);
+    });
   }
+
+  if (builder.type === 'error') {
+    throw new Error('Unexpected builder error types');
+  }
+
+  const widgetHandle = builder.buildWidget(widgetLayout);
 
   return {
     ...widgetHandle,

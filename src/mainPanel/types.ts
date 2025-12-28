@@ -15,15 +15,25 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+export type WidgetBuildingInfoSuccess = {
+  type: 'success';
+  widgetName: string;
+  buildWidget: (layout: WidgetLayout) => WidgetHandle;
+};
+
+export type WidgetBuildingInfoError = {
+  type: 'error';
+  widgetName: string;
+  widgetConfigErrors: string[];
+};
+
+export type WidgetBuildingInfo =
+  | WidgetBuildingInfoSuccess
+  | WidgetBuildingInfoError;
+
 export type WidgetBuilderGetter = (
   unvalidatedWidgetConfig: unknown,
 ) => WidgetBuildingInfo;
-
-export type WidgetBuildingInfo = {
-  widgetName: string;
-  widgetConfigErrors: string[];
-  buildWidget: (layout: WidgetLayout) => WidgetHandle;
-};
 
 export type WidgetLayout = {
   coords:
