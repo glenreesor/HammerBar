@@ -36,6 +36,18 @@ describe('base validator', () => {
       expect(() => schema.parse(testValue)).toThrow();
     });
   });
+
+  test('is reusable', () => {
+    const testValue1 = 7;
+    const testValue2 = 'not an boolean';
+    const testValue3 = 7;
+
+    const schema = number();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(() => schema.parse(testValue2)).toThrow();
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
 });
 
 describe('.positive()', () => {
@@ -59,6 +71,18 @@ describe('.positive()', () => {
     const schema = number().positive();
     expect(() => schema.parse(testValue)).toThrow();
   });
+
+  test('is reusable', () => {
+    const testValue1 = 7;
+    const testValue2 = -42;
+    const testValue3 = 7;
+
+    const schema = number().positive();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(() => schema.parse(testValue2)).toThrow();
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
 });
 
 describe('.optional()', () => {
@@ -74,5 +98,77 @@ describe('.optional()', () => {
 
     const schema = number().optional();
     expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('is reusable', () => {
+    const testValue1 = undefined;
+    const testValue2 = 7;
+    const testValue3 = undefined;
+
+    const schema = number().optional();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(schema.parse(testValue2)).toStrictEqual(testValue2);
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
+});
+
+describe('.optional() and .positive()', () => {
+  test('it validates undefined', () => {
+    const testValue = undefined;
+
+    const schema = number().optional().positive();
+    expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('it validates a positive number', () => {
+    const testValue = 7;
+
+    const schema = number().optional().positive();
+    expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('throws for zero', () => {
+    const testValue = 0;
+
+    const schema = number().optional().positive();
+    expect(() => schema.parse(testValue)).toThrow();
+  });
+
+  test('throws for a negative number', () => {
+    const testValue = -12;
+
+    const schema = number().optional().positive();
+    expect(() => schema.parse(testValue)).toThrow();
+  });
+});
+
+describe('.positive() and .optional() (that order)', () => {
+  test('it validates undefined', () => {
+    const testValue = undefined;
+
+    const schema = number().positive().optional();
+    expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('it validates a positive number', () => {
+    const testValue = 7;
+
+    const schema = number().positive().optional();
+    expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('throws for zero', () => {
+    const testValue = 0;
+
+    const schema = number().positive().optional();
+    expect(() => schema.parse(testValue)).toThrow();
+  });
+
+  test('throws for a negative number', () => {
+    const testValue = -12;
+
+    const schema = number().positive().optional();
+    expect(() => schema.parse(testValue)).toThrow();
   });
 });

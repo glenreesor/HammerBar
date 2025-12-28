@@ -74,6 +74,20 @@ describe('base validator', () => {
       expect(() => schema.parse(testValue)).toThrow();
     });
   });
+
+  test('is reusable', () => {
+    const testValue1 = { myKey: 'hello' };
+    const testValue2 = { myKey: 7 };
+    const testValue3 = { myKey: 'hello' };
+
+    const schema = object({
+      myKey: string(),
+    });
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(() => schema.parse(testValue2)).toThrow();
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
 });
 
 describe('.optional()', () => {
@@ -95,5 +109,65 @@ describe('.optional()', () => {
       myKey: string(),
     }).optional();
     expect(schema.parse(testValue)).toStrictEqual(testValue);
+  });
+
+  test('is reusable', () => {
+    const testValue1 = { myKey: 'hello' };
+    const testValue2 = undefined;
+    const testValue3 = { myKey: 'hello' };
+
+    const schema = object({
+      myKey: string(),
+    }).optional();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(schema.parse(testValue2)).toStrictEqual(testValue2);
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
+});
+
+describe('nested objects', () => {
+  test('validates a nested object', () => {
+    const testValue = {
+      a: 'hello',
+      b: {
+        b1: 'hello b1',
+        b2: 'hello b2',
+        b3: 42,
+      },
+    };
+
+    const schema = object({
+      a: string(),
+      b: object({
+        b1: string(),
+        b2: string(),
+        b3: number(),
+      }),
+    });
+
+    expect(schema.parse(testValue)).toStrictEqual(testValue);
+  });
+
+  test('throws for an invalid nested value', () => {
+    const testValue = {
+      a: 'hello',
+      b: {
+        b1: 42,
+        b2: 'hello b2',
+        b3: 42,
+      },
+    };
+
+    const schema = object({
+      a: string(),
+      b: object({
+        b1: string(),
+        b2: string(),
+        b3: number(),
+      }),
+    });
+
+    expect(() => schema.parse(testValue)).toThrow();
   });
 });

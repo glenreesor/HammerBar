@@ -47,6 +47,18 @@ describe('base validator', () => {
       const schema = literal(undefined);
       expect(schema.parse(testValue)).toBe(testValue);
     });
+
+    test('is reusable', () => {
+      const testValue1 = 'myValue';
+      const testValue2 = [];
+      const testValue3 = 'myValue';
+
+      const schema = literal('myValue');
+
+      expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+      expect(() => schema.parse(testValue2)).toThrow();
+      expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+    });
   });
 
   describe('throws', () => {
@@ -93,5 +105,17 @@ describe('.optional()', () => {
 
     const schema = literal('required literal').optional();
     expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('is reusable', () => {
+    const testValue1 = undefined;
+    const testValue2 = 'myValue';
+    const testValue3 = undefined;
+
+    const schema = literal('myValue').optional();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(schema.parse(testValue2)).toStrictEqual(testValue2);
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
   });
 });

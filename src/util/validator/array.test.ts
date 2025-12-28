@@ -51,6 +51,18 @@ describe('base validator', () => {
       expect(() => schema.parse(testValue)).toThrow();
     });
   });
+
+  test('is reusable', () => {
+    const testValue1 = [];
+    const testValue2 = 'not an array';
+    const testValue3 = [];
+
+    const schema = array(string());
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(() => schema.parse(testValue2)).toThrow();
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
 });
 
 describe('.nonEmpty()', () => {
@@ -74,6 +86,18 @@ describe('.nonEmpty()', () => {
     const schema = array(string()).nonEmpty();
     expect(() => schema.parse(testValue)).toThrow();
   });
+
+  test('is reusable', () => {
+    const testValue1 = ['non empty 1'];
+    const testValue2 = [];
+    const testValue3 = ['non empty 2'];
+
+    const schema = array(string()).nonEmpty();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(() => schema.parse(testValue2)).toThrow();
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
 });
 
 describe('.optional()', () => {
@@ -88,6 +112,64 @@ describe('.optional()', () => {
     const testValue = undefined;
 
     const schema = array(string()).optional();
+    expect(schema.parse(testValue)).toStrictEqual(testValue);
+  });
+
+  test('is reusable', () => {
+    const testValue1 = undefined;
+    const testValue2 = [];
+    const testValue3 = undefined;
+
+    const schema = array(string()).optional();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(schema.parse(testValue2)).toStrictEqual(testValue2);
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
+});
+
+describe('.optional() and .nonEmpty()', () => {
+  test('validates a non-empty array', () => {
+    const testValue = ['non empty'];
+
+    const schema = array(string()).optional().nonEmpty();
+    expect(schema.parse(testValue)).toStrictEqual(testValue);
+  });
+
+  test('throws for an empty array', () => {
+    const testValue = [];
+
+    const schema = array(string()).optional().nonEmpty();
+    expect(() => schema.parse(testValue)).toThrow();
+  });
+
+  test('validates undefined', () => {
+    const testValue = undefined;
+
+    const schema = array(string()).optional().nonEmpty();
+    expect(schema.parse(testValue)).toStrictEqual(testValue);
+  });
+});
+
+describe('.nonEmpty() and .optional() (in that order)', () => {
+  test('validates a non-empty array', () => {
+    const testValue = ['non empty'];
+
+    const schema = array(string()).nonEmpty().optional();
+    expect(schema.parse(testValue)).toStrictEqual(testValue);
+  });
+
+  test('throws for an empty array', () => {
+    const testValue = [];
+
+    const schema = array(string()).nonEmpty().optional();
+    expect(() => schema.parse(testValue)).toThrow();
+  });
+
+  test('validates undefined', () => {
+    const testValue = undefined;
+
+    const schema = array(string()).nonEmpty().optional();
     expect(schema.parse(testValue)).toStrictEqual(testValue);
   });
 });

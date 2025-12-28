@@ -36,6 +36,18 @@ describe('base validator', () => {
       expect(() => schema.parse(testValue)).toThrow();
     });
   });
+
+  test('is reusable', () => {
+    const testValue1 = 'hello';
+    const testValue2 = ['not a string'];
+    const testValue3 = 'hello';
+
+    const schema = string();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(() => schema.parse(testValue2)).toThrow();
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
 });
 
 describe('.nonEmpty()', () => {
@@ -52,6 +64,18 @@ describe('.nonEmpty()', () => {
     const schema = string().nonEmpty();
     expect(() => schema.parse(testValue)).toThrow();
   });
+
+  test('is reusable', () => {
+    const testValue1 = 'hello';
+    const testValue2 = '';
+    const testValue3 = 'hello';
+
+    const schema = string().nonEmpty();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(() => schema.parse(testValue2)).toThrow();
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
 });
 
 describe('.optional()', () => {
@@ -67,5 +91,63 @@ describe('.optional()', () => {
 
     const schema = string().optional();
     expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('is reusable', () => {
+    const testValue1 = 'hello';
+    const testValue2 = undefined;
+    const testValue3 = 'hello';
+
+    const schema = string().optional();
+
+    expect(schema.parse(testValue1)).toStrictEqual(testValue1);
+    expect(schema.parse(testValue2)).toStrictEqual(testValue2);
+    expect(schema.parse(testValue3)).toStrictEqual(testValue3);
+  });
+});
+
+describe('.optional() and .nonEmpty()', () => {
+  test('validates a string', () => {
+    const testValue = 'hello';
+
+    const schema = string().optional().nonEmpty();
+    expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('validates undefined', () => {
+    const testValue = undefined;
+
+    const schema = string().optional().nonEmpty();
+    expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('throws for an empty string', () => {
+    const testValue = '';
+
+    const schema = string().optional().nonEmpty();
+    expect(() => schema.parse(testValue)).toThrow();
+  });
+});
+
+describe('.nonEmpty() and .optional() (that order)', () => {
+  test('validates a string', () => {
+    const testValue = 'hello';
+
+    const schema = string().nonEmpty().optional();
+    expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('validates undefined', () => {
+    const testValue = undefined;
+
+    const schema = string().nonEmpty().optional();
+    expect(schema.parse(testValue)).toBe(testValue);
+  });
+
+  test('throws for an empty string', () => {
+    const testValue = '';
+
+    const schema = string().nonEmpty().optional();
+    expect(() => schema.parse(testValue)).toThrow();
   });
 });
