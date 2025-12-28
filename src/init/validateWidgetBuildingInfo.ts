@@ -15,7 +15,12 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import type { WidgetBuildingInfo } from '../mainPanel';
+import { validator as v } from 'src/util';
+import type {
+  WidgetBuildingInfo,
+  WidgetBuildingInfoError,
+  WidgetBuildingInfoSuccess,
+} from '../mainPanel';
 
 type ReturnType =
   | {
@@ -27,39 +32,53 @@ type ReturnType =
       validWidgetBuildingInfoArray: undefined;
     };
 
+const ConfigShapeSuccess = v.array(
+  v.object({
+    type: v.literal('success'),
+    widgetName: v.string().nonEmpty(),
+    buildWidget: v.fn(),
+  }),
+);
+
+const ConfigShapeError = v.array(
+  v.object({
+    type: v.literal('error'),
+    widgetName: v.string().nonEmpty(),
+    widgetConfigErrors: v.array(v.string()),
+  }),
+);
+
 export function validateWidgetBuildingInfoArray(
   unvalidated: unknown,
 ): ReturnType {
-  if (isWidgetBuildingInfoArray(unvalidated)) {
+  try {
+    const validatedConfig = ConfigShapeSuccess.parse(unvalidated);
+
     return {
       isValid: true,
-      validWidgetBuildingInfoArray: unvalidated,
+
+      // Need an assertion because v.fn() only returns whether it's a function
+      // but our type has extra info like parameters and return type
+      validWidgetBuildingInfoArray:
+        validatedConfig as WidgetBuildingInfoSuccess[],
     };
+  } catch {
+    try {
+      const validatedConfig = ConfigShapeError.parse(unvalidated);
+
+      return {
+        isValid: true,
+
+        // Need an assertion because v.fn() only returns whether it's a function
+        // but our type has extra info like parameters and return type
+        validWidgetBuildingInfoArray:
+          validatedConfig as WidgetBuildingInfoError[],
+      };
+    } catch {
+      return {
+        isValid: false,
+        validWidgetBuildingInfoArray: undefined,
+      };
+    }
   }
-
-  return {
-    isValid: false,
-    validWidgetBuildingInfoArray: undefined,
-  };
-}
-
-function isStringArray(obj: unknown): obj is string[] {
-  return (
-    Array.isArray(obj) &&
-    obj.reduce((accum, curr) => accum && typeof curr === 'string', true)
-  );
-}
-
-function isWidgetBuildingInfoArray(obj: unknown): obj is WidgetBuildingInfo[] {
-  return (
-    Array.isArray(obj) &&
-    obj.reduce(
-      (accum, curr) =>
-        accum &&
-        isStringArray(curr.widgetConfigErrors) &&
-        typeof curr.widgetName === 'string' &&
-        typeof curr.buildWidget === 'function',
-      true,
-    )
-  );
 }
