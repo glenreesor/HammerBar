@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -34,14 +34,13 @@ export function buildWindowButtonsPanel(args: {
   ) => () => void;
 }): WidgetHandle {
   function bringToFront() {
-    state.canvas?.show();
+    state.rightFillerPanel?.show();
     state.windowButtonActionsById.forEach((w) => w.bringToFront());
   }
 
   function prepareForRemoval() {
-    state.canvas?.hide();
-    state.canvas = undefined;
-
+    state.rightFillerPanel?.hide();
+    state.rightFillerPanel = undefined;
     state.windowButtonActionsById.forEach((w) => w.prepareForRemoval());
 
     if (state.windowListUnsubscriber) {
@@ -50,37 +49,34 @@ export function buildWindowButtonsPanel(args: {
   }
 
   function hide() {
-    state.canvas?.hide();
+    state.rightFillerPanel?.hide();
     state.windowButtonActionsById.forEach((w) => w.hide());
     state.isVisible = false;
   }
 
   function show() {
-    state.canvas?.show();
+    state.rightFillerPanel?.show();
     state.windowButtonActionsById.forEach((w) => w.show());
     state.isVisible = true;
   }
 
-  function render() {
-    const color = { red: 150 / 255, green: 150 / 255, blue: 150 / 255 };
-
-    state.canvas?.replaceElements([
-      {
-        type: 'rectangle',
-        fillColor: color,
-        strokeColor: color,
-        frame: {
-          x: 0,
-          y: 0,
-          w: args.geometry.width,
-          h: args.geometry.height,
-        },
-      },
-    ]);
-    state.canvas?.show();
-  }
-
   //--------------------------------------------------------------------------
+
+  const PANEL_COLOR = { red: 150 / 255, green: 150 / 255, blue: 150 / 255 };
+
+  // Hack for now. This should not be duplicated from createMoveOrDeleteWindowButtons
+  const BUTTON_PADDING = 5;
+
+  function getButtonWidth(totalWidth: number, numButtons: number) {
+    const MAX_BUTTON_WIDTH = 120;
+
+    // Layout looks like this:
+    //    [leftEdge] [padding] [button] [padding] [button] [padding] [rightEdge]
+    const buttonWidth =
+      (totalWidth - (numButtons + 1) * BUTTON_PADDING) / numButtons;
+
+    return Math.min(buttonWidth, MAX_BUTTON_WIDTH);
+  }
 
   function handleNewWindowList(newWindowStates: WindowState[]) {
     const updatedWindowButtonActionsById = createMoveOrDeleteWindowButtons({
@@ -92,6 +88,26 @@ export function buildWindowButtonsPanel(args: {
 
     state.windowButtonActionsById = updatedWindowButtonActionsById;
     updateWindowButtonStates(newWindowStates);
+
+    // Adjust width of filler panel so it's not underneath the window buttons
+    const newFillerX =
+      state.windowButtonActionsById.size *
+      getButtonWidth(args.geometry.width, state.windowButtonActionsById.size);
+    const newFillerWidth = args.geometry.width - newFillerX;
+
+    state.rightFillerPanel?.replaceElements([
+      {
+        type: 'rectangle',
+        fillColor: PANEL_COLOR,
+        strokeColor: PANEL_COLOR,
+        frame: {
+          x: newFillerX,
+          y: 0,
+          w: newFillerWidth,
+          h: args.geometry.height,
+        },
+      },
+    ]);
   }
 
   function updateWindowButtonStates(windowStates: WindowState[]) {
@@ -102,29 +118,43 @@ export function buildWindowButtonsPanel(args: {
   }
 
   const state: {
-    canvas: hs.canvas.Canvas | undefined;
     isVisible: boolean;
     windowButtonActionsById: WindowButtonActionsById;
     windowListUnsubscriber: (() => void) | undefined;
+    rightFillerPanel: hs.canvas.Canvas | undefined;
   } = {
-    canvas: undefined,
     isVisible: true,
     windowButtonActionsById: new Map(),
     windowListUnsubscriber: undefined,
+    rightFillerPanel: undefined,
   };
-
-  state.canvas = hs.canvas.new({
-    x: args.geometry.x,
-    y: args.geometry.y,
-    w: args.geometry.width,
-    h: args.geometry.height,
-  });
-  render();
 
   state.windowListUnsubscriber = args.subscribeToWindowListUpdates(
     args.screenId,
     handleNewWindowList,
   );
+
+  state.rightFillerPanel = hs.canvas.new({
+    x: args.geometry.x,
+    y: args.geometry.y,
+    w: args.geometry.width,
+    h: args.geometry.height,
+  });
+
+  state.rightFillerPanel.replaceElements([
+    {
+      type: 'rectangle',
+      fillColor: PANEL_COLOR,
+      strokeColor: PANEL_COLOR,
+      frame: {
+        x: 0,
+        y: 0,
+        w: args.geometry.width,
+        h: args.geometry.height,
+      },
+    },
+  ]);
+  state.rightFillerPanel.show();
 
   return {
     width: 0, // this isn't used, but need it for the type

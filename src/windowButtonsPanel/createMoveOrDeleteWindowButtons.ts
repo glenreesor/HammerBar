@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -61,7 +61,7 @@ export function createMoveOrDeleteWindowButtons(args: {
   // Some pre-existing windows may have been removed, thereby changing
   // position and size of remaining window buttons, so recalculate and tell
   // them to update
-  let windowButtonX = panelGeometry.x + BUTTON_PADDING;
+  let windowButtonX = panelGeometry.x;
   orderedPreExistingWindowIds.forEach((windowId) => {
     const windowButtonActions = previousWindowButtonActionsById.get(windowId);
     if (windowButtonActions) {
@@ -70,7 +70,7 @@ export function createMoveOrDeleteWindowButtons(args: {
         y: panelGeometry.y,
         width: buttonWidth,
       });
-      windowButtonX += buttonWidth + BUTTON_PADDING;
+      windowButtonX += buttonWidth;
 
       newWindowButtonActionsById.set(windowId, windowButtonActions);
     }
@@ -93,7 +93,7 @@ export function createMoveOrDeleteWindowButtons(args: {
       });
 
       newWindowButtonActionsById.set(windowId, newWindowButtonActions);
-      windowButtonX += buttonWidth + BUTTON_PADDING;
+      windowButtonX += buttonWidth;
     }
   });
 

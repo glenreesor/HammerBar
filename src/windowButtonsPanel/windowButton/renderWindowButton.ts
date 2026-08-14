@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -24,8 +24,11 @@ export function renderWindowButton(state: State) {
   let iconHeight;
   let iconWidth;
   let iconY;
-  let paddingLeft;
-  let paddingRight;
+  let textPaddingLeft;
+  let textPaddingRight;
+
+  const LEFT_PADDING = 5;
+  const PANEL_COLOR = { red: 150 / 255, green: 150 / 255, blue: 150 / 255 };
 
   const panelHeight = state.canvases.mainCanvas?.frame().h || 0;
   const buttonVerticalPadding = 6;
@@ -43,15 +46,15 @@ export function renderWindowButton(state: State) {
     iconWidth = 0.8 * buttonHeight;
     iconHeight = iconWidth;
     iconY = buttonVerticalPadding + 0.1 * buttonHeight;
-    paddingLeft = 2 + 0.2 * buttonHeight;
-    paddingRight = 5;
+    textPaddingLeft = 2 + 0.2 * buttonHeight;
+    textPaddingRight = 5;
   } else {
     fontSize = 12;
     iconWidth = buttonHeight;
     iconHeight = iconWidth;
     iconY = buttonVerticalPadding;
-    paddingLeft = 2;
-    paddingRight = 5;
+    textPaddingLeft = 2;
+    textPaddingRight = 5;
   }
 
   const borderColor = { red: 0.5, green: 0.5, blue: 0.5 };
@@ -60,25 +63,40 @@ export function renderWindowButton(state: State) {
     ? { red: 0.7, green: 0.7, blue: 0.7 }
     : { red: 1, green: 1, blue: 1 };
 
-  const textX = paddingLeft + iconWidth;
+  const textX = LEFT_PADDING + textPaddingLeft + iconWidth;
 
   const textY = buttonVerticalPadding + 2;
 
   const maxTextWidth =
-    state.buttonGeometry.width - paddingLeft - iconWidth - paddingRight;
+    state.buttonGeometry.width -
+    LEFT_PADDING -
+    textPaddingLeft -
+    iconWidth -
+    textPaddingRight;
 
   const isFocused = state.windowState.isFocused;
 
   state.canvases.mainCanvas?.replaceElements([
     {
       type: 'rectangle',
+      fillColor: PANEL_COLOR,
+      strokeColor: PANEL_COLOR,
+      frame: {
+        x: 0,
+        y: 0,
+        w: state.buttonGeometry.width,
+        h: panelHeight,
+      },
+    },
+    {
+      type: 'rectangle',
       fillColor: bgColor,
       strokeColor: borderColor,
       strokeWidth: borderWidth,
       frame: {
-        x: 0,
+        x: LEFT_PADDING,
         y: buttonVerticalPadding,
-        w: state.buttonGeometry.width,
+        w: state.buttonGeometry.width - LEFT_PADDING,
         h: buttonHeight,
       },
       roundedRectRadii: { xRadius: 5.0, yRadius: 5.0 },
@@ -89,7 +107,7 @@ export function renderWindowButton(state: State) {
     {
       type: 'image',
       frame: {
-        x: paddingLeft,
+        x: LEFT_PADDING + textPaddingLeft,
         y: iconY,
         w: iconWidth,
         h: iconWidth,
@@ -119,7 +137,7 @@ export function renderWindowButton(state: State) {
         strokeCapStyle: 'round',
         coordinates: [
           {
-            x: 4,
+            x: LEFT_PADDING + 4,
             y: buttonVerticalPadding + buttonHeight + 3,
           },
           {

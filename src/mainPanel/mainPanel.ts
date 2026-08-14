@@ -1,4 +1,4 @@
-// Copyright 2023-2025 Glen Reesor
+// Copyright 2023-2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import ToggleButton from './toggleButton';
+import { addToggleButtons } from './addToggleButtons';
+import { addWidgets } from './addWidgets';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 import type { WidgetHandle, WidgetBuildingInfoSuccess } from './types';
 
@@ -34,143 +35,62 @@ export function mainPanel(params: {
   }) => WidgetHandle;
 }) {
   function prepareForRemoval() {
-    state.canvas?.hide();
-    state.canvas = undefined;
     toggleButtons.forEach((button) => button.prepareForRemoval());
-    widgetHandlers.forEach((widget) => widget.prepareForRemoval());
+    widgetHandles.forEach((widget) => widget.prepareForRemoval());
   }
 
   function toggleVisibility() {
-    if (!state.canvas) {
-      return;
-    }
-
     state.isVisible = !state.isVisible;
     if (state.isVisible) {
-      state.canvas.show();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(true);
         button.bringToFront();
       });
-      widgetHandlers.forEach((widget) => {
+      widgetHandles.forEach((widget) => {
         widget.show();
         widget.bringToFront();
       });
     } else {
-      state.canvas.hide();
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(false);
         button.bringToFront();
       });
-      widgetHandlers.forEach((widget) => {
+      widgetHandles.forEach((widget) => {
         widget.hide();
       });
     }
   }
 
   const state: {
-    canvas: hs.canvas.Canvas | undefined;
     isVisible: boolean;
   } = {
-    canvas: undefined,
     isVisible: true,
   };
 
   const panelColor = { red: 100 / 255, green: 100 / 255, blue: 100 / 255 };
   const panelHoverColor = { red: 120 / 255, green: 120 / 255, blue: 120 / 255 };
 
-  state.canvas = hs.canvas.new({
-    x: params.coords.x,
-    y: params.coords.y,
-    w: params.dimensions.w,
-    h: params.dimensions.h,
-  });
-  state.canvas.replaceElements([
-    {
-      type: 'rectangle',
-      fillColor: panelColor,
-      strokeColor: panelColor,
-      frame: {
-        x: 0,
-        y: 0,
-        w: params.dimensions.w,
-        h: params.dimensions.h,
-      },
-    },
-  ]);
-  state.canvas.show();
-
-  const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
-
-  // Left Toggle Button
-  toggleButtons.push(
-    ToggleButton({
-      coords: {
-        x: params.coords.x,
-        y: params.coords.y,
-      },
-      panelHeight: params.dimensions.h,
-      panelColor,
-      panelHoverColor,
-      side: 'left',
-      onClick: toggleVisibility,
-    }),
-  );
-
-  // Right Toggle Button
-  toggleButtons.push(
-    ToggleButton({
-      coords: {
-        x: params.coords.x + params.dimensions.w - TOGGLE_BUTTON_WIDTH,
-        y: params.coords.y,
-      },
-      panelHeight: params.dimensions.h,
-      panelColor,
-      panelHoverColor,
-      side: 'right',
-      onClick: toggleVisibility,
-    }),
-  );
-
-  const widgetHandlers: WidgetHandle[] = [];
-
-  // Left Widgets
-  let widgetLeftX = params.coords.x + TOGGLE_BUTTON_WIDTH;
-  params.widgetsBuildingInfo.left.forEach((builderInfo) => {
-    const newWidget = builderInfo.buildWidget({
-      coords: { leftX: widgetLeftX, rightX: undefined, y: params.coords.y },
-      widgetHeight: params.dimensions.h,
-      panelColor,
-      panelHoverColor,
-    });
-
-    widgetHandlers.push(newWidget);
-    widgetLeftX += newWidget.width;
+  const toggleButtons = addToggleButtons({
+    coords: params.coords,
+    dimensions: params.dimensions,
+    panelColor,
+    panelHoverColor,
+    toggleVisibility,
   });
 
-  const endOfLeftWidgets = widgetLeftX;
-
-  // Right Widgets
-  let widgetRightX =
-    params.coords.x + params.dimensions.w - TOGGLE_BUTTON_WIDTH;
-
-  params.widgetsBuildingInfo.right.forEach((builderInfo) => {
-    const newWidget = builderInfo.buildWidget({
-      coords: { leftX: undefined, rightX: widgetRightX, y: params.coords.y },
-      widgetHeight: params.dimensions.h,
-      panelColor,
-      panelHoverColor,
-    });
-
-    widgetHandlers.push(newWidget);
-    widgetRightX -= newWidget.width;
+  const { widgetHandles, endOfLeftWidgets } = addWidgets({
+    coords: params.coords,
+    dimensions: params.dimensions,
+    widgetsBuildingInfo: params.widgetsBuildingInfo,
+    panelColor,
+    panelHoverColor,
   });
 
   const totalWidgetWidth =
     2 * TOGGLE_BUTTON_WIDTH +
-    widgetHandlers.reduce((acc, widget) => acc + widget.width, 0);
+    widgetHandles.reduce((acc, widget) => acc + widget.width, 0);
 
-  widgetHandlers.push(
+  widgetHandles.push(
     params.windowButtonsPanelBuilder({
       x: endOfLeftWidgets,
       y: params.coords.y,
