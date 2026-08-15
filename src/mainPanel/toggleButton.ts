@@ -1,4 +1,4 @@
-// Copyright 2023-2025 Glen Reesor
+// Copyright 2023-2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,19 +15,18 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
+import { getTheme } from 'src/theme';
 
 export default function ToggleButton(args: {
   coords: { x: number; y: number };
   panelHeight: number;
-  panelColor: hs.canvas.Color;
-  panelHoverColor: hs.canvas.Color;
   side: 'left' | 'right';
   onClick: () => void;
 }) {
-  const { coords, panelHeight, panelColor, panelHoverColor, side, onClick } =
-    args;
+  const { coords, panelHeight, side, onClick } = args;
+
+  const theme = getTheme();
 
   function prepareForRemoval() {
     state.canvas?.hide();
@@ -51,7 +50,12 @@ export default function ToggleButton(args: {
   };
 
   function render() {
-    const bgColor = state.mouseIsInsideButton ? panelHoverColor : panelColor;
+    const toggleColors = theme.toggleButtons;
+    const colors = state.mouseIsInsideButton
+      ? toggleColors.hover
+      : toggleColors.normal;
+
+    const bgColor = colors.background;
 
     const fontSize = 14;
     let toggleSymbol;
@@ -79,7 +83,7 @@ export default function ToggleButton(args: {
       {
         type: 'text',
         text: toggleSymbol,
-        textColor: BLACK,
+        textColor: colors.foreground,
         textSize: fontSize,
         frame: {
           x: TOGGLE_BUTTON_WIDTH / 4,
@@ -116,6 +120,7 @@ export default function ToggleButton(args: {
   });
   render();
   state.canvas.mouseCallback(mouseCallback);
+  state.canvas.alpha(theme.toggleButtons.alpha);
   state.canvas.show();
 
   return {

@@ -15,10 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import type { State } from './types';
+import { getTheme } from 'src/theme';
 
 export function renderWindowButton(state: State) {
+  const theme = getTheme();
   let borderWidth;
   let fontSize;
   let iconHeight;
@@ -28,7 +29,6 @@ export function renderWindowButton(state: State) {
   let textPaddingRight;
 
   const LEFT_PADDING = 5;
-  const PANEL_COLOR = { red: 150 / 255, green: 150 / 255, blue: 150 / 255 };
 
   const panelHeight = state.canvases.mainCanvas?.frame().h || 0;
   const buttonVerticalPadding = 6;
@@ -42,14 +42,14 @@ export function renderWindowButton(state: State) {
   }
 
   if (state.mouseButtonIsDown) {
-    fontSize = 10;
+    fontSize = theme.fontSize * 0.8;
     iconWidth = 0.8 * buttonHeight;
     iconHeight = iconWidth;
     iconY = buttonVerticalPadding + 0.1 * buttonHeight;
     textPaddingLeft = 2 + 0.2 * buttonHeight;
     textPaddingRight = 5;
   } else {
-    fontSize = 12;
+    fontSize = theme.fontSize;
     iconWidth = buttonHeight;
     iconHeight = iconWidth;
     iconY = buttonVerticalPadding;
@@ -57,11 +57,40 @@ export function renderWindowButton(state: State) {
     textPaddingRight = 5;
   }
 
-  const borderColor = { red: 0.5, green: 0.5, blue: 0.5 };
+  let colors = theme.windowButtonsPanel.windowButton.normal;
 
-  const bgColor = state.windowState.isMinimized
-    ? { red: 0.7, green: 0.7, blue: 0.7 }
-    : { red: 1, green: 1, blue: 1 };
+  if (
+    !state.windowState.isMinimized &&
+    !state.mouseButtonIsDown &&
+    state.mouseIsInsideButton
+  ) {
+    colors = theme.windowButtonsPanel.windowButton.normalHover;
+  }
+
+  if (
+    state.windowState.isMinimized &&
+    !state.mouseButtonIsDown &&
+    !state.mouseIsInsideButton
+  ) {
+    colors = theme.windowButtonsPanel.windowButton.minimized;
+  }
+
+  if (
+    state.windowState.isMinimized &&
+    !state.mouseButtonIsDown &&
+    state.mouseIsInsideButton
+  ) {
+    colors = theme.windowButtonsPanel.windowButton.minimizedHover;
+  }
+
+  if (state.mouseButtonIsDown) {
+    colors = theme.windowButtonsPanel.windowButton.mouseDown;
+  }
+
+  const borderColor = colors.border;
+  const bgColor = colors.background;
+  const fgColor = colors.foreground;
+  const iconAlpha = colors.iconAlpha;
 
   const textX = LEFT_PADDING + textPaddingLeft + iconWidth;
 
@@ -79,8 +108,8 @@ export function renderWindowButton(state: State) {
   state.canvases.mainCanvas?.replaceElements([
     {
       type: 'rectangle',
-      fillColor: PANEL_COLOR,
-      strokeColor: PANEL_COLOR,
+      fillColor: theme.windowButtonsPanel.background,
+      strokeColor: theme.windowButtonsPanel.background,
       frame: {
         x: 0,
         y: 0,
@@ -113,11 +142,12 @@ export function renderWindowButton(state: State) {
         h: iconWidth,
       },
       image: state.windowState.getAppIcon(),
+      imageAlpha: iconAlpha,
     },
     {
       type: 'text',
       text: state.windowState.title,
-      textColor: BLACK,
+      textColor: fgColor,
       textSize: fontSize,
       frame: {
         x: textX,
@@ -132,7 +162,7 @@ export function renderWindowButton(state: State) {
     state.canvases.mainCanvas?.appendElements([
       {
         type: 'segments',
-        strokeColor: { red: 0, green: 0, blue: 1 },
+        strokeColor: theme.windowButtonsPanel.windowButton.activeIndicator,
         strokeWidth: 2,
         strokeCapStyle: 'round',
         coordinates: [

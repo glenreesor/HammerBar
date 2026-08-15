@@ -15,10 +15,12 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
+import { addBorders } from './addBorders';
 import { addToggleButtons } from './addToggleButtons';
 import { addWidgets } from './addWidgets';
 import { TOGGLE_BUTTON_WIDTH } from './constants';
 import type { WidgetHandle, WidgetBuildingInfoSuccess } from './types';
+import { getTheme } from 'src/theme';
 
 export function mainPanel(params: {
   coords: { x: number; y: number };
@@ -35,12 +37,15 @@ export function mainPanel(params: {
   }) => WidgetHandle;
 }) {
   function prepareForRemoval() {
+    borders.prepareForRemoval();
     toggleButtons.forEach((button) => button.prepareForRemoval());
     widgetHandles.forEach((widget) => widget.prepareForRemoval());
   }
 
   function toggleVisibility() {
     state.isVisible = !state.isVisible;
+    borders.setPanelVisibility(state.isVisible);
+
     if (state.isVisible) {
       toggleButtons.forEach((button) => {
         button.setPanelVisibility(true);
@@ -61,29 +66,35 @@ export function mainPanel(params: {
     }
   }
 
+  const panelBorderWidth = getTheme().panelBorder.width;
+  const innerPanelCoords = {
+    x: params.coords.x + panelBorderWidth,
+    y: params.coords.y + panelBorderWidth,
+  };
+
+  const innerPanelDimensions = {
+    w: params.dimensions.w - 2 * panelBorderWidth,
+    h: params.dimensions.h - 2 * panelBorderWidth,
+  };
+
   const state: {
     isVisible: boolean;
   } = {
     isVisible: true,
   };
 
-  const panelColor = { red: 100 / 255, green: 100 / 255, blue: 100 / 255 };
-  const panelHoverColor = { red: 120 / 255, green: 120 / 255, blue: 120 / 255 };
-
   const toggleButtons = addToggleButtons({
-    coords: params.coords,
-    dimensions: params.dimensions,
-    panelColor,
-    panelHoverColor,
+    coords: innerPanelCoords,
+    dimensions: innerPanelDimensions,
     toggleVisibility,
   });
 
+  const borders = addBorders(params);
+
   const { widgetHandles, endOfLeftWidgets } = addWidgets({
-    coords: params.coords,
-    dimensions: params.dimensions,
+    coords: innerPanelCoords,
+    dimensions: innerPanelDimensions,
     widgetsBuildingInfo: params.widgetsBuildingInfo,
-    panelColor,
-    panelHoverColor,
   });
 
   const totalWidgetWidth =
@@ -93,9 +104,9 @@ export function mainPanel(params: {
   widgetHandles.push(
     params.windowButtonsPanelBuilder({
       x: endOfLeftWidgets,
-      y: params.coords.y,
-      height: params.dimensions.h,
-      width: params.dimensions.w - totalWidgetWidth,
+      y: innerPanelCoords.y,
+      height: innerPanelDimensions.h,
+      width: innerPanelDimensions.w - totalWidgetWidth,
     }),
   );
 

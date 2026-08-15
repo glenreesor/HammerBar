@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK, WHITE } from 'src/constants';
 import type { WidgetLayout } from 'src/mainPanel';
 import { State } from '../types';
+import { getTheme } from '../theme';
 
 export function renderHoverValue(args: {
   widgetLayout: WidgetLayout;
@@ -25,8 +25,9 @@ export function renderHoverValue(args: {
   widgetWidth: number;
 }) {
   const { widgetLayout, state, widgetWidth } = args;
+  const theme = getTheme();
 
-  const fontSize = 10;
+  const fontSize = theme.fontSize * 0.8;
   const value = state.yValues[state.yValues.length - 1];
   const canvasX =
     widgetLayout.coords.leftX ?? widgetLayout.coords.rightX - widgetWidth;
@@ -42,10 +43,12 @@ export function renderHoverValue(args: {
     });
   }
 
+  state.canvases.hoverCanvas.alpha(getTheme().widget.alpha);
   state.canvases.hoverCanvas.replaceElements([
     {
       type: 'rectangle',
-      fillColor: WHITE,
+      fillColor: theme.widget.normal.background,
+      strokeColor: theme.widget.normal.background,
       frame: {
         x: 0,
         y: 0,
@@ -57,7 +60,7 @@ export function renderHoverValue(args: {
     {
       type: 'text',
       text: `${value}`,
-      textColor: BLACK,
+      textColor: theme.widget.normal.foreground,
       textSize: fontSize,
       textAlignment: 'center',
       frame: {

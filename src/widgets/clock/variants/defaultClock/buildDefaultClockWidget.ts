@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -23,6 +23,7 @@ import {
 } from '../../../_helpers/util';
 import { render } from './render';
 import { WidgetConfig } from './types';
+import { getTheme } from 'src/theme';
 
 const CLOCK_WIDTH = 100;
 
@@ -81,6 +82,7 @@ export function buildDefaultClockWidget(
     h: widgetHeight,
   });
 
+  state.canvas.alpha(getTheme().widget.alpha);
   renderWithArgs();
 
   state.canvas.show();

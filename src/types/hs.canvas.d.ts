@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 - 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -26,6 +26,7 @@
 
 declare namespace hs.canvas {
   type CanvasElement = {
+    action?: 'clip' | 'build' | 'fill' | 'skip' | 'stroke' | 'strokeAndFill';
     center?: { x: number; y: number };
     coordinates?: { x: number; y: number }[];
     fillColor?: Color;
@@ -67,6 +68,7 @@ declare namespace hs.canvas {
     show(): void;
     topLeft(point: { x: number; y: number }): Canvas;
     topLeft(): { x: number; y: number }[];
+    alpha(newAlpha: number): void;
   }
 
   type Color = {

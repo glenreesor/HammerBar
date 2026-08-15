@@ -1,4 +1,4 @@
-// Copyright 2023-2025 Glen Reesor
+// Copyright 2023-2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -21,9 +21,12 @@ import { getDefaultClockBuilder } from './variants/defaultClock/getDefaultClockB
 import { getAnalogCirclesClockBuilder } from './variants/analogCirclesClock';
 import { getAnalogClockBuilder } from './variants/analogClock';
 import { getClockType } from './getClockType';
+import type { Theme } from 'src/theme';
+import { setTheme } from './theme';
 
 export function getClockBuilder(
   unvalidatedWidgetConfig: unknown,
+  getTheme: () => Theme,
 ): WidgetBuildingInfo {
   const { type, expectedArgument } = getClockType(unvalidatedWidgetConfig);
 
@@ -37,6 +40,8 @@ export function getClockBuilder(
 
     return getNoopWidgetBuildingInfo('Clock', errorDetails);
   }
+
+  setTheme(getTheme());
 
   if (type === 'default') {
     return getDefaultClockBuilder(unvalidatedWidgetConfig);

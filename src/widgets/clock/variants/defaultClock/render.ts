@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import { WidgetConfig } from './types';
 import { getFormattedDate, getFormattedTime } from './util';
+import { getTheme } from '../../theme';
 
 export function render(args: {
   widgetConfig: WidgetConfig;
@@ -27,12 +27,15 @@ export function render(args: {
 }) {
   const { widgetConfig, canvas, width, height } = args;
 
-  const bgColor = { red: 1, green: 1, blue: 1 };
+  const theme = getTheme();
+
+  const bgColor = theme.widget.normal.background;
+
   const { formattedTime, formattedDate } = getFormattedCurrentDateTime({
     dateFormatString: widgetConfig ? widgetConfig.dateFormat : undefined,
     timeFormatString: widgetConfig ? widgetConfig.timeFormat : undefined,
   });
-  const fontSize = 12;
+  const fontSize = getTheme().fontSize;
   const timeY = height / 2 - fontSize - fontSize / 2;
   const dateY = timeY + fontSize * 1.6;
 
@@ -52,7 +55,7 @@ export function render(args: {
       type: 'text',
       text: formattedTime,
       textAlignment: 'center',
-      textColor: BLACK,
+      textColor: theme.widget.normal.foreground,
       textSize: fontSize,
       frame: {
         x: 0,
@@ -65,7 +68,7 @@ export function render(args: {
       type: 'text',
       text: formattedDate,
       textAlignment: 'center',
-      textColor: BLACK,
+      textColor: theme.widget.normal.foreground,
       textSize: fontSize,
       frame: {
         x: 0,

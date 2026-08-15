@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,17 +15,18 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import type { WidgetLayout } from 'src/mainPanel';
 import type { WidgetConfig } from './types';
+import type { Theme } from 'src/theme';
 
 export function renderTextWidget(
   widgetConfig: WidgetConfig,
   widgetLayout: WidgetLayout,
   canvas: hs.canvas.Canvas,
+  theme: Theme,
 ) {
   const width = widgetLayout.widgetHeight * 1.5;
-  const fontSize = 12;
+  const fontSize = theme.fontSize;
   const titleY = widgetLayout.widgetHeight / 2 - fontSize - fontSize / 2;
   const outputY = titleY + fontSize * 1.6;
 
@@ -34,8 +35,8 @@ export function renderTextWidget(
   canvas.replaceElements([
     {
       type: 'rectangle',
-      fillColor: widgetLayout.panelHoverColor,
-      strokeColor: widgetLayout.panelColor,
+      fillColor: theme.widget.normal.background,
+      strokeColor: theme.widget.normal.background,
       frame: {
         x: 0,
         y: 0,
@@ -47,7 +48,7 @@ export function renderTextWidget(
       type: 'text',
       text: widgetConfig.title,
       textAlignment: 'center',
-      textColor: BLACK,
+      textColor: theme.widget.normal.foreground,
       textSize: fontSize,
       frame: {
         x: 0,
@@ -60,7 +61,7 @@ export function renderTextWidget(
       type: 'text',
       text: output,
       textAlignment: 'center',
-      textColor: BLACK,
+      textColor: theme.widget.normal.foregroundSecondary,
       textSize: fontSize,
       frame: {
         x: 0,

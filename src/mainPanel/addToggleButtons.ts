@@ -21,12 +21,9 @@ import ToggleButton from './toggleButton';
 export function addToggleButtons(args: {
   coords: { x: number; y: number };
   dimensions: { w: number; h: number };
-  panelColor: hs.canvas.Color;
-  panelHoverColor: hs.canvas.Color;
   toggleVisibility: () => void;
 }): ReturnType<typeof ToggleButton>[] {
-  const { coords, dimensions, panelColor, panelHoverColor, toggleVisibility } =
-    args;
+  const { coords, dimensions, toggleVisibility } = args;
   const toggleButtons: ReturnType<typeof ToggleButton>[] = [];
 
   // Left Toggle Button
@@ -34,8 +31,6 @@ export function addToggleButtons(args: {
     ToggleButton({
       coords: coords,
       panelHeight: dimensions.h,
-      panelColor,
-      panelHoverColor,
       side: 'left',
       onClick: toggleVisibility,
     }),
@@ -49,8 +44,6 @@ export function addToggleButtons(args: {
         y: coords.y,
       },
       panelHeight: dimensions.h,
-      panelColor,
-      panelHoverColor,
       side: 'right',
       onClick: toggleVisibility,
     }),

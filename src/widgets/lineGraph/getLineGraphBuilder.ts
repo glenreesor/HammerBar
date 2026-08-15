@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -19,9 +19,12 @@ import type { WidgetLayout, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/util';
 import { validateConfig } from './validateConfig';
 import { buildLineGraphWidget } from './buildLineGraphWidget';
+import type { Theme } from 'src/theme';
+import { setTheme } from './theme';
 
 export function getLineGraphBuilder(
   unvalidatedWidgetConfig: unknown,
+  getTheme: () => Theme,
 ): WidgetBuildingInfo {
   const { isValid, validConfig, expectedArgument } = validateConfig(
     unvalidatedWidgetConfig,
@@ -35,8 +38,10 @@ export function getLineGraphBuilder(
       hs.inspect.inspect(unvalidatedWidgetConfig),
     ];
 
-    return getNoopWidgetBuildingInfo('CpuMonitor', errorDetails);
+    return getNoopWidgetBuildingInfo('LineGraph', errorDetails);
   }
+
+  setTheme(getTheme());
 
   return {
     type: 'success',

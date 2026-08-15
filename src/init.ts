@@ -1,4 +1,4 @@
-// Copyright 2021-2025 Glen Reesor
+// Copyright 2021-2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -40,6 +40,8 @@ import {
   getTextBuilder,
   getXeyesBuilder,
 } from './widgets';
+
+import { getTheme } from 'src/theme';
 
 import { validateWidgetBuildingInfoArray } from './init/validateWidgetBuildingInfo';
 
@@ -157,14 +159,29 @@ printIndentedTextBlock('info', 'HammerBar Version Info', [
 // Users don't need to be burdened with understanding that they're getting a
 // builder, so rename on export
 export const widgets = {
-  appLauncher: getAppLauncherBuilder,
-  appMenu: getAppMenuBuilder,
-  clock: getClockBuilder,
-  cpuMonitor: getCpuMonitorBuilder,
-  lineGraph: getLineGraphBuilder,
-  lineGraphCurrentValue: getLineGraphCurrentValueBuilder,
-  text: getTextBuilder,
-  xeyes: getXeyesBuilder,
+  appLauncher: (unvalidatedWidgetConfig: unknown) =>
+    getAppLauncherBuilder(unvalidatedWidgetConfig),
+
+  appMenu: (unvalidatedWidgetConfig: unknown) =>
+    getAppMenuBuilder(unvalidatedWidgetConfig, getTheme),
+
+  clock: (unvalidatedWidgetConfig: unknown) =>
+    getClockBuilder(unvalidatedWidgetConfig, getTheme),
+
+  cpuMonitor: (unvalidatedWidgetConfig: unknown) =>
+    getCpuMonitorBuilder(unvalidatedWidgetConfig, getTheme),
+
+  lineGraph: (unvalidatedWidgetConfig: unknown) =>
+    getLineGraphBuilder(unvalidatedWidgetConfig, getTheme),
+
+  lineGraphCurrentValue: (unvalidatedWidgetConfig: unknown) =>
+    getLineGraphCurrentValueBuilder(unvalidatedWidgetConfig, getTheme),
+
+  text: (unvalidatedWidgetConfig: unknown) =>
+    getTextBuilder(unvalidatedWidgetConfig, getTheme),
+
+  xeyes: (unvalidatedWidgetConfig: unknown) =>
+    getXeyesBuilder(unvalidatedWidgetConfig, getTheme),
 };
 
 export {

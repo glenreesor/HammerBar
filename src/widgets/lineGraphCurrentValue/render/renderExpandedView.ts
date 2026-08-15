@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK, WHITE } from 'src/constants';
 import type { WidgetLayout } from 'src/mainPanel';
 import { WidgetConfig, State } from '../types';
 import { getGraphLineSegments } from './getGraphLineSegments';
 import { getGraphScaleFactors } from './getGraphScaleFactors';
+import { getTheme } from '../theme';
 
 export function renderExpandedView(args: {
   widgetLayout: WidgetLayout;
@@ -28,6 +28,8 @@ export function renderExpandedView(args: {
   widgetWidth: number;
 }) {
   const { widgetLayout, widgetConfig, state, widgetWidth } = args;
+
+  const theme = getTheme();
 
   const expandedViewHeight = 150;
   const expandedViewWidth = 150;
@@ -41,10 +43,12 @@ export function renderExpandedView(args: {
       w: expandedViewWidth,
       h: expandedViewHeight,
     });
+
+    state.canvases.expandedViewCanvas.alpha(getTheme().widget.alpha);
     state.canvases.expandedViewCanvas.show();
   }
 
-  const fontSize = 12;
+  const fontSize = getTheme().fontSize;
   const titleY = fontSize;
 
   const maxY =
@@ -83,8 +87,8 @@ export function renderExpandedView(args: {
   const mainCanvasElements: hs.canvas.CanvasElement[] = [
     {
       type: 'rectangle',
-      fillColor: { red: 0.5, green: 0.5, blue: 0.5 },
-      strokeColor: { red: 0.4, green: 0.4, blue: 0.4 },
+      fillColor: theme.widget.normal.background,
+      strokeColor: theme.widget.normal.background,
       frame: {
         x: 0,
         y: 0,
@@ -96,8 +100,8 @@ export function renderExpandedView(args: {
     {
       // Indicator bar over regular canvas
       type: 'rectangle',
-      fillColor: { red: 0, green: 0, blue: 1 },
-      strokeColor: { red: 0, green: 0, blue: 1 },
+      fillColor: theme.widget.normal.foregroundSecondary,
+      strokeColor: theme.widget.normal.foregroundSecondary,
       frame: {
         x:
           widgetLayout.coords.leftX !== undefined
@@ -113,7 +117,7 @@ export function renderExpandedView(args: {
       // Title
       type: 'text',
       text: widgetConfig.title,
-      textColor: BLACK,
+      textColor: theme.widget.normal.foreground,
       textSize: fontSize,
       frame: {
         x: 4,
@@ -127,7 +131,7 @@ export function renderExpandedView(args: {
       type: 'text',
       text: currentValueString,
       textAlignment: 'right',
-      textColor: WHITE,
+      textColor: theme.widget.normal.foregroundSecondary,
       textSize: fontSize,
       frame: {
         x: 0,
@@ -139,11 +143,11 @@ export function renderExpandedView(args: {
   ];
 
   const graphLineSegments = getGraphLineSegments({
-    bgColor: { red: 0.5, green: 0.5, blue: 0.5 },
+    bgColor: theme.widget.normal.background,
     graphDimensions,
     graphTopLeft,
     scale,
-    strokeColor: { red: 0, green: 1, blue: 1 },
+    strokeColor: theme.widget.normal.foregroundSecondary,
     yValues: state.yValues,
   });
 
@@ -173,7 +177,7 @@ function getHorizontalScaleLineWithLabel(args: {
 }): hs.canvas.CanvasElement[] {
   const { graphDimensions, graphTopLeft, scale, value } = args;
 
-  const fontSize = 12;
+  const fontSize = getTheme().fontSize;
   const y = Math.round(graphTopLeft.y + graphDimensions.h - value * scale.y);
   const label = `${Math.round(value)}`;
 

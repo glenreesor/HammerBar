@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK, WHITE } from 'src/constants';
 import type { WidgetLayout } from 'src/mainPanel';
 import { WidgetConfig, State } from '../types';
 import { getGraphLineSegments } from './getGraphLineSegments';
 import { getGraphScaleFactors } from './getGraphScaleFactors';
+import { getTheme } from '../theme';
 
 export function renderMainGraph(args: {
   widgetLayout: WidgetLayout;
@@ -36,6 +36,8 @@ export function renderMainGraph(args: {
     mouseCallback,
   } = args;
 
+  const theme = getTheme();
+
   if (state.canvases.mainGraphCanvas === undefined) {
     const canvasX =
       widgetLayout.coords.leftX ?? widgetLayout.coords.rightX - widgetWidth;
@@ -47,17 +49,30 @@ export function renderMainGraph(args: {
       h: widgetLayout.widgetHeight,
     });
 
+    state.canvases.mainGraphCanvas.alpha(getTheme().widget.alpha);
     state.canvases.mainGraphCanvas.mouseCallback(mouseCallback);
     state.canvases.mainGraphCanvas.show();
   }
 
-  const baseFontSize = 12;
+  const baseFontSize = getTheme().fontSize;
   const fontSize = state.mouseButtonIsDown ? baseFontSize * 0.8 : baseFontSize;
 
   const titleY = widgetLayout.widgetHeight / 2 - fontSize - fontSize / 2;
   const bgColor = state.mouseIsInside
-    ? { red: 120 / 255, green: 140 / 255, blue: 140 / 255 }
-    : widgetLayout.panelHoverColor;
+    ? theme.widget.hover.background
+    : theme.widget.normal.background;
+
+  const foregroundPrimary = state.mouseIsInside
+    ? theme.widget.hover.foreground
+    : theme.widget.normal.foreground;
+
+  const foregroundSecondary = state.mouseIsInside
+    ? theme.widget.hover.foregroundSecondary
+    : theme.widget.normal.foregroundSecondary;
+
+  const foregroundTertiary = state.mouseIsInside
+    ? theme.widget.hover.foregroundTertiary
+    : theme.widget.normal.foregroundTertiary;
 
   const max =
     configParams.graphYMax ??
@@ -90,7 +105,7 @@ export function renderMainGraph(args: {
     {
       type: 'rectangle',
       fillColor: bgColor,
-      strokeColor: widgetLayout.panelColor,
+      strokeColor: bgColor,
       frame: {
         x: 0,
         y: 0,
@@ -104,7 +119,7 @@ export function renderMainGraph(args: {
     {
       type: 'text',
       text: configParams.title,
-      textColor: BLACK,
+      textColor: foregroundPrimary,
       textSize: fontSize,
       frame: {
         x: 2,
@@ -117,7 +132,7 @@ export function renderMainGraph(args: {
       // Max line
       type: 'segments',
       coordinates: [graphTopLeft, { x: widgetWidth, y: graphTopLeft.y }],
-      strokeColor: { red: 0.8, green: 0.8, blue: 0.8 },
+      strokeColor: foregroundTertiary,
       strokeWidth: 1,
     },
     {
@@ -125,7 +140,7 @@ export function renderMainGraph(args: {
       type: 'text',
       text: currentValueString,
       textAlignment: 'right',
-      textColor: WHITE,
+      textColor: foregroundSecondary,
       textSize: fontSize * 0.8,
       frame: {
         x: 0,
@@ -137,11 +152,11 @@ export function renderMainGraph(args: {
   ];
 
   const graphLineSegments = getGraphLineSegments({
-    bgColor: widgetLayout.panelHoverColor,
+    bgColor,
     graphDimensions,
     graphTopLeft,
     scale,
-    strokeColor: { red: 0, green: 1, blue: 1 },
+    strokeColor: foregroundSecondary,
     yValues: state.yValues,
   });
 

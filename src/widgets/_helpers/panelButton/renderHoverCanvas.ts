@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -16,13 +16,14 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import { BLACK } from 'src/constants';
+import { getTheme } from 'src/theme';
 
 export function renderHoverCanvas(args: {
   canvases: { hoverCanvas: hs.canvas.Canvas | undefined };
   buttonGeometry: { x: number; y: number };
   hoverText: string;
 }) {
-  const fontSize = 12;
+  const fontSize = getTheme().fontSize;
   const canvasWidth = fontSize * args.hoverText.length;
   const padding = 4;
   const canvasHeight = fontSize * 1.2 + 2 * padding;

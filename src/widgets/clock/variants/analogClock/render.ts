@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,11 +15,9 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import type { WidgetConfig } from './types';
 import { getAngle, getCoords, getTickMarkElements } from '../../util';
-
-const BG_COLOR = { red: 1, green: 1, blue: 1 };
+import { getTheme } from '../../theme';
 
 const EDGE_TO_TICKMARKS_PADDING = 1;
 const TICKMARK_LENGTH = 3;
@@ -38,6 +36,10 @@ export function render(args: {
 }) {
   const { widgetConfig, canvas, width, height } = args;
 
+  const theme = getTheme();
+
+  const BG_COLOR = theme.widget.normal.background;
+
   const clockRadius = Math.min(width / 2, height / 2) - 2;
 
   const clockCenter = {
@@ -54,7 +56,7 @@ export function render(args: {
     type: 'circle',
     center: clockCenter,
     radius: clockRadius,
-    strokeColor: BLACK,
+    strokeColor: theme.widget.normal.foreground,
     fillColor: BG_COLOR,
   };
 
@@ -62,8 +64,8 @@ export function render(args: {
     type: 'circle',
     center: clockCenter,
     radius: 1,
-    strokeColor: BLACK,
-    fillColor: { red: 0.5, green: 0.5, blue: 0.5 },
+    strokeColor: theme.widget.normal.foregroundSecondary,
+    fillColor: theme.widget.normal.foregroundSecondary,
   };
 
   const tickMarks = getTickMarkElements({
@@ -72,7 +74,7 @@ export function render(args: {
     paddingToClockEdge: EDGE_TO_TICKMARKS_PADDING,
     tickLength: TICKMARK_LENGTH,
     multiplesOf: 5,
-    color: { red: 0.5, green: 0.5, blue: 0.5 },
+    color: theme.widget.normal.foreground,
   });
 
   const hourHandLength = clockRadius - EDGE_TO_HOUR_HAND_PADDING;
@@ -83,24 +85,35 @@ export function render(args: {
     clockCenter,
     length: hourHandLength,
     angle: getAngle({ hour: hour + minute / 60 + second / 3600 }),
-    color: BLACK,
+    color: theme.widget.normal.foregroundSecondary,
   });
 
   const minuteHandElement = getHandElement({
     clockCenter,
     length: minuteHandLength,
     angle: getAngle({ minute: minute + second / 60 }),
-    color: BLACK,
+    color: theme.widget.normal.foregroundSecondary,
   });
 
   const secondHandElement = getHandElement({
     clockCenter,
     length: secondHandLength,
     angle: getAngle({ second }),
-    color: { red: 1, green: 0, blue: 0 },
+    color: theme.widget.normal.foregroundTertiary,
   });
 
   const elements = [
+    {
+      type: 'rectangle',
+      fillColor: BG_COLOR,
+      strokeColor: BG_COLOR,
+      frame: {
+        x: 0,
+        y: 0,
+        w: width,
+        h: height,
+      },
+    },
     clockOutlineElement,
     ...tickMarks,
     clockCenterElement,

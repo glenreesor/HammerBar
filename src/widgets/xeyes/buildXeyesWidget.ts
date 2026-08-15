@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 - 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK, WHITE } from 'src/constants';
 import type { WidgetLayout } from 'src/mainPanel';
 import {
   deleteCanvasesAndStopTimers,
@@ -23,10 +22,12 @@ import {
   showCanvases,
 } from '../_helpers/util';
 import type { WidgetConfig } from './types';
+import type { Theme } from 'src/theme';
 
 export function buildXeyesWidget(
   widgetConfig: WidgetConfig,
   widgetLayout: WidgetLayout,
+  theme: Theme,
 ) {
   function prepareForRemoval() {
     deleteCanvasesAndStopTimers([state.canvas], [state.timer]);
@@ -147,8 +148,8 @@ export function buildXeyesWidget(
     state.canvas?.replaceElements([
       {
         type: 'rectangle',
-        fillColor: widgetLayout.panelHoverColor,
-        strokeColor: widgetLayout.panelColor,
+        fillColor: theme.widget.normal.background,
+        strokeColor: theme.widget.normal.background,
         frame: {
           x: 0,
           y: 0,
@@ -160,29 +161,29 @@ export function buildXeyesWidget(
         type: 'circle',
         radius: eyeRadius,
         center: leftEyeCenter,
-        strokeColor: BLACK,
-        fillColor: WHITE,
+        strokeColor: theme.widget.normal.foreground,
+        fillColor: theme.widget.normal.background,
       },
       {
         type: 'circle',
         radius: pupilRadius,
         center: leftPupilCenter,
-        strokeColor: BLACK,
-        fillColor: BLACK,
+        strokeColor: theme.widget.normal.foregroundSecondary,
+        fillColor: theme.widget.normal.foregroundSecondary,
       },
       {
         type: 'circle',
         radius: eyeRadius,
         center: rightEyeCenter,
-        strokeColor: BLACK,
-        fillColor: WHITE,
+        strokeColor: theme.widget.normal.foreground,
+        fillColor: theme.widget.normal.background,
       },
       {
         type: 'circle',
         radius: pupilRadius,
         center: rightPupilCenter,
-        strokeColor: BLACK,
-        fillColor: BLACK,
+        strokeColor: theme.widget.normal.foregroundSecondary,
+        fillColor: theme.widget.normal.foregroundSecondary,
       },
     ]);
     state.timer = hs.timer.doAfter(state.interval, render);
@@ -225,6 +226,8 @@ export function buildXeyesWidget(
     w: width,
     h: widgetLayout.widgetHeight,
   });
+
+  state.canvas.alpha(theme.widget.alpha);
 
   render();
   state.canvas.show();

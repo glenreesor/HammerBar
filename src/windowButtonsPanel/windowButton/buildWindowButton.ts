@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 - 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -24,6 +24,7 @@ import {
 import { renderHoverWindowPreview } from './renderHoverWindowPreview';
 import { renderWindowButton } from './renderWindowButton';
 import type { ButtonGeometry, State } from './types';
+import { getTheme } from 'src/theme';
 
 export function buildWindowButton(args: {
   buttonGeometry: ButtonGeometry;
@@ -37,6 +38,8 @@ export function buildWindowButton(args: {
     isInitiallyVisible,
     panelHeight,
   } = args;
+
+  const theme = getTheme();
 
   function prepareForRemoval() {
     deleteCanvasesAndStopTimers(Object.values(state.canvases), []);
@@ -132,6 +135,8 @@ export function buildWindowButton(args: {
     w: initialButtonGeometry.width,
     h: panelHeight,
   });
+
+  state.canvases.mainCanvas.alpha(theme.windowButtonsPanel.alpha);
 
   render();
   state.canvases.mainCanvas.mouseCallback(mouseCallback);

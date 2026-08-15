@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -17,9 +17,10 @@
 
 import { BLACK } from 'src/constants';
 import type { State } from './types';
+import { getTheme } from 'src/theme';
 
 export function renderHoverWindowPreview(state: State) {
-  const fontSize = 12;
+  const fontSize = getTheme().fontSize;
   const canvasWidth = 300;
   const canvasHeight = 300;
   const padding = 10;

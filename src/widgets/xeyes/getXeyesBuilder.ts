@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -19,9 +19,11 @@ import type { WidgetLayout, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/util';
 import { buildXeyesWidget } from './buildXeyesWidget';
 import { validateConfig } from './validateConfig';
+import type { Theme } from 'src/theme';
 
 export function getXeyesBuilder(
   unvalidatedWidgetConfig: unknown,
+  getTheme: () => Theme,
 ): WidgetBuildingInfo {
   const { isValid, validConfig, expectedArgument } = validateConfig(
     unvalidatedWidgetConfig,
@@ -38,10 +40,12 @@ export function getXeyesBuilder(
     return getNoopWidgetBuildingInfo('XEyes', errorDetails);
   }
 
+  const theme = getTheme();
+
   return {
     type: 'success',
     widgetName: 'Xeyes',
     buildWidget: (widgetLayout: WidgetLayout) =>
-      buildXeyesWidget(validConfig, widgetLayout),
+      buildXeyesWidget(validConfig, widgetLayout, theme),
   };
 }

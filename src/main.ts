@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 - 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -30,15 +30,14 @@ import {
   setWindowStateUpdateInterval as applyWindowStateUpdateInterval,
   subscribeToWindowListUpdates,
 } from './windowListAndStateWatcher';
+import { getTheme } from 'src/theme';
 
 type Config = {
-  panelHeight: number;
   windowListUpdateInterval: number;
   windowStateUpdateInterval: number;
 };
 
 const config: Config = {
-  panelHeight: 45,
   windowListUpdateInterval: 1,
   windowStateUpdateInterval: 1,
 };
@@ -93,6 +92,7 @@ function createPanelsForAllScreens() {
   );
 
   hs.screen.allScreens().forEach((hammerspoonScreen) => {
+    const theme = getTheme();
     const screenInfo = getScreenInfo(hammerspoonScreen);
     console.log(
       `Adding panel for screen ${screenInfo.name} (id: ${screenInfo.id})`,
@@ -114,11 +114,11 @@ function createPanelsForAllScreens() {
       mainPanel({
         coords: {
           x: screenInfo.x,
-          y: screenInfo.y + screenInfo.height - config.panelHeight,
+          y: screenInfo.y + screenInfo.height - theme.height,
         },
         dimensions: {
           w: screenInfo.width,
-          h: config.panelHeight,
+          h: theme.height,
         },
         widgetsBuildingInfo: {
           left: leftWidgets,
@@ -154,6 +154,7 @@ function getErrorFreeWidgetBuilders(
 }
 
 function verticallyMaximizeCurrentWindow() {
+  const theme = getTheme();
   const currentWindow = hs.window.focusedWindow();
   if (!currentWindow) {
     return;
@@ -164,7 +165,7 @@ function verticallyMaximizeCurrentWindow() {
     x: currentWindow.frame().x,
     y: screenInfo.y,
     w: currentWindow.frame().w,
-    h: screenInfo.height - config.panelHeight,
+    h: screenInfo.height - theme.height,
   });
 }
 

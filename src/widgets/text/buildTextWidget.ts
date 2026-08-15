@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -23,10 +23,12 @@ import {
 } from '../_helpers/util';
 import type { WidgetConfig } from './types';
 import { renderTextWidget } from './renderTextWidget';
+import type { Theme } from 'src/theme';
 
 export function buildTextWidget(
   widgetConfig: WidgetConfig,
   widgetLayout: WidgetLayout,
+  theme: Theme,
 ) {
   type State = {
     canvas: hs.canvas.Canvas | undefined;
@@ -49,10 +51,12 @@ export function buildTextWidget(
     h: widgetLayout.widgetHeight,
   });
 
+  state.canvas.alpha(theme.widget.alpha);
+
   state.canvas.show();
   state.timer = hs.timer.doEvery(widgetConfig.interval, () => {
     if (state.canvas) {
-      renderTextWidget(widgetConfig, widgetLayout, state.canvas);
+      renderTextWidget(widgetConfig, widgetLayout, state.canvas, theme);
     }
   });
 
@@ -68,7 +72,7 @@ export function buildTextWidget(
     showCanvases([state.canvas]);
   }
 
-  renderTextWidget(widgetConfig, widgetLayout, state.canvas);
+  renderTextWidget(widgetConfig, widgetLayout, state.canvas, theme);
 
   return {
     width,

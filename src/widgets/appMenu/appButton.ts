@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 - 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,14 +15,12 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import type { WidgetLayout } from 'src/mainPanel';
+import { getTheme } from './theme';
 
 export function getAppButton({
   coords,
   widgetHeight,
-  panelColor,
-  panelHoverColor,
   bundleId,
   label,
   onClick,
@@ -31,6 +29,8 @@ export function getAppButton({
   label: string;
   onClick: () => void;
 }) {
+  const theme = getTheme();
+
   function prepareForRemoval() {
     state.canvas?.hide();
     state.canvas = undefined;
@@ -60,6 +60,7 @@ export function getAppButton({
 
   function render() {
     let bgColor;
+    let textColor;
     let fontSize;
     let iconHeight;
     let iconWidth;
@@ -68,20 +69,22 @@ export function getAppButton({
     let paddingRight;
 
     if (state.mouseIsInsideButton) {
-      bgColor = panelColor;
+      textColor = theme.widget.hover.foreground;
+      bgColor = theme.widget.hover.background;
     } else {
-      bgColor = panelHoverColor;
+      textColor = theme.widget.normal.foreground;
+      bgColor = theme.widget.normal.background;
     }
 
     if (state.mouseButtonIsDown) {
-      fontSize = 10;
+      fontSize = theme.fontSize * 0.8;
       iconWidth = 0.8 * widgetHeight;
       iconHeight = iconWidth;
       iconY = 0.1 * widgetHeight;
       paddingLeft = 2 + 0.2 * widgetHeight;
       paddingRight = 5;
     } else {
-      fontSize = 12;
+      fontSize = theme.fontSize;
       iconWidth = widgetHeight;
       iconHeight = iconWidth;
       iconY = 0;
@@ -127,7 +130,7 @@ export function getAppButton({
       {
         type: 'text',
         text: label,
-        textColor: BLACK,
+        textColor,
         textSize: fontSize,
         frame: {
           x: textX,
@@ -162,6 +165,8 @@ export function getAppButton({
   });
 
   render();
+
+  state.canvas.alpha(theme.widget.alpha);
   state.canvas.mouseCallback(mouseCallback);
   state.canvas.show();
 

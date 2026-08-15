@@ -1,4 +1,4 @@
-// Copyright 2025 Glen Reesor
+// Copyright 2025, 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -15,11 +15,9 @@
 // You should have received a copy of the GNU General Public License along with
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
-import { BLACK } from 'src/constants';
 import type { WidgetConfig } from './types';
 import { getAngle, getCoords, getTickMarkElements } from '../../util';
-
-const BG_COLOR = { red: 1, green: 1, blue: 1 };
+import { getTheme } from '../../theme';
 
 const EDGE_TO_TICKMARKS_PADDING = 1;
 const TICKMARKS_TO_MOVING_CIRCLES_PADDING = 2;
@@ -37,6 +35,10 @@ export function render(args: {
   height: number;
 }) {
   const { widgetConfig, canvas, width, height } = args;
+
+  const theme = getTheme();
+
+  const BG_COLOR = theme.widget.normal.background;
 
   const clockRadius = Math.min(width / 2, height / 2) - 2;
 
@@ -72,7 +74,7 @@ export function render(args: {
     type: 'circle',
     center: clockCenter,
     radius: clockRadius,
-    strokeColor: BLACK,
+    strokeColor: theme.widget.normal.foreground,
     fillColor: BG_COLOR,
   };
 
@@ -80,7 +82,7 @@ export function render(args: {
     type: 'circle',
     center: clockCenter,
     radius: hourDistFromOrigin,
-    strokeColor: { red: 0.5, green: 0.5, blue: 0.5 },
+    strokeColor: theme.widget.normal.foreground,
     fillColor: BG_COLOR,
   };
 
@@ -88,7 +90,7 @@ export function render(args: {
     type: 'circle',
     center: clockCenter,
     radius: minuteDistFromOrigin,
-    strokeColor: { red: 0.5, green: 0.5, blue: 0.5 },
+    strokeColor: theme.widget.normal.foreground,
     fillColor: BG_COLOR,
   };
 
@@ -98,7 +100,7 @@ export function render(args: {
     paddingToClockEdge: EDGE_TO_TICKMARKS_PADDING,
     tickLength: TICKMARK_LENGTH,
     multiplesOf: 5,
-    color: { red: 0.5, green: 0.5, blue: 0.5 },
+    color: theme.widget.normal.foreground,
   });
 
   const hourCircleElement = getCircleElement({
@@ -106,7 +108,7 @@ export function render(args: {
     distFromOrigin: hourDistFromOrigin,
     angle: getAngle({ hour: hour + minute / 60 + second / 3600 }),
     circleRadius: HOUR_CIRCLE_RADIUS,
-    color: BLACK,
+    color: theme.widget.normal.foregroundSecondary,
   });
 
   const minuteCircleElement = getCircleElement({
@@ -114,7 +116,7 @@ export function render(args: {
     distFromOrigin: minuteDistFromOrigin,
     angle: getAngle({ minute: minute + second / 60 }),
     circleRadius: MINUTE_CIRCLE_RADIUS,
-    color: BLACK,
+    color: theme.widget.normal.foregroundSecondary,
   });
 
   const secondCircleElement = getCircleElement({
@@ -122,11 +124,25 @@ export function render(args: {
     distFromOrigin: secondDistFromOrigin,
     angle: getAngle({ second }),
     circleRadius: SECOND_CIRCLE_RADIUS,
-    color: { red: 1, green: 0, blue: 0 },
+    color: theme.widget.normal.foregroundTertiary,
   });
 
   // Note the order of canvas elements (lowest to highest)
-  const elements: hs.canvas.CanvasElement[] = [clockOutlineElement];
+  const elements: hs.canvas.CanvasElement[] = [
+    {
+      type: 'rectangle',
+      fillColor: BG_COLOR,
+      strokeColor: BG_COLOR,
+      frame: {
+        x: 0,
+        y: 0,
+        w: width,
+        h: height,
+      },
+    },
+
+    clockOutlineElement,
+  ];
 
   if (widgetConfig.showCirclePaths) {
     elements.push(...[minuteCirclePathElement, hourCirclePathElement]);

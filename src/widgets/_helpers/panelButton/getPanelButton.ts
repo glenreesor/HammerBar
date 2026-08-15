@@ -18,6 +18,7 @@
 import type { WidgetLayout } from 'src/mainPanel';
 import { deleteCanvasesAndStopTimers, hideCanvases } from '../util';
 import { renderHoverCanvas } from './renderHoverCanvas';
+import { getTheme } from 'src/theme';
 
 type ImageInfo =
   | { bundleId: string; imagePath?: undefined }
@@ -26,8 +27,6 @@ type ImageInfo =
 export function getPanelButton({
   coords,
   widgetHeight,
-  panelColor,
-  panelHoverColor,
   imageInfo,
   hoverLabel,
   onClick,
@@ -36,6 +35,8 @@ export function getPanelButton({
   hoverLabel: string | undefined;
   onClick: () => void;
 }) {
+  const theme = getTheme();
+
   function prepareForRemoval() {
     deleteCanvasesAndStopTimers(Object.values(state.canvases), []);
   }
@@ -91,7 +92,16 @@ export function getPanelButton({
         ? hs.image.imageFromAppBundle(imageInfo.bundleId)
         : hs.image.imageFromPath(imageInfo.imagePath);
 
-    const bgColor = state.mouseIsInsideButton ? panelHoverColor : panelColor;
+    let colors = theme.widget.normal;
+    if (state.mouseIsInsideButton) {
+      colors = theme.widget.hover;
+    }
+
+    if (state.mouseButtonIsDown) {
+      colors = theme.widget.mouseDown;
+    }
+
+    const bgColor = colors.background;
 
     const imageWidth = state.mouseButtonIsDown
       ? 0.8 * normalImageWidth
@@ -159,6 +169,7 @@ export function getPanelButton({
 
   render();
   state.canvases.mainCanvas.mouseCallback(mouseCallback);
+  state.canvases.mainCanvas.alpha(theme.widget.alpha);
   state.canvases.mainCanvas.show();
 
   return {

@@ -25,8 +25,6 @@ export function addWidgets(args: {
     left: WidgetBuildingInfoSuccess[];
     right: WidgetBuildingInfoSuccess[];
   };
-  panelColor: hs.canvas.Color;
-  panelHoverColor: hs.canvas.Color;
 }): {
   widgetHandles: WidgetHandle[];
   endOfLeftWidgets: number;
@@ -39,8 +37,6 @@ export function addWidgets(args: {
     const newWidget = builderInfo.buildWidget({
       coords: { leftX: widgetLeftX, rightX: undefined, y: args.coords.y },
       widgetHeight: args.dimensions.h,
-      panelColor: args.panelColor,
-      panelHoverColor: args.panelHoverColor,
     });
 
     widgetHandles.push(newWidget);
@@ -56,8 +52,6 @@ export function addWidgets(args: {
     const newWidget = builderInfo.buildWidget({
       coords: { leftX: undefined, rightX: widgetRightX, y: args.coords.y },
       widgetHeight: args.dimensions.h,
-      panelColor: args.panelColor,
-      panelHoverColor: args.panelHoverColor,
     });
 
     widgetHandles.push(newWidget);

@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 - 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -19,9 +19,11 @@ import type { WidgetLayout, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/util';
 import { validateConfig } from './validateConfig';
 import { buildCpuMonitorWidget } from './buildCpuMonitorWidget';
+import type { Theme } from 'src/theme';
 
 export function getCpuMonitorBuilder(
   unvalidatedWidgetConfig: unknown,
+  getTheme: () => Theme,
 ): WidgetBuildingInfo {
   const { isValid, validConfig, expectedArgument } = validateConfig(
     unvalidatedWidgetConfig,
@@ -42,6 +44,6 @@ export function getCpuMonitorBuilder(
     type: 'success',
     widgetName: 'CpuMonitor',
     buildWidget: (widgetLayout: WidgetLayout) =>
-      buildCpuMonitorWidget(validConfig, widgetLayout),
+      buildCpuMonitorWidget(validConfig, widgetLayout, getTheme),
   };
 }

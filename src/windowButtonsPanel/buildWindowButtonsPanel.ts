@@ -19,6 +19,7 @@ import type { WidgetHandle } from 'src/mainPanel';
 import type { WindowState } from 'src/windowListAndStateWatcher';
 import type { WindowButtonActionsById } from './types';
 import { createMoveOrDeleteWindowButtons } from './createMoveOrDeleteWindowButtons';
+import { getTheme } from 'src/theme';
 
 export function buildWindowButtonsPanel(args: {
   screenId: number;
@@ -33,6 +34,8 @@ export function buildWindowButtonsPanel(args: {
     callback: (windowStates: WindowState[]) => void,
   ) => () => void;
 }): WidgetHandle {
+  const theme = getTheme();
+
   function bringToFront() {
     state.rightFillerPanel?.show();
     state.windowButtonActionsById.forEach((w) => w.bringToFront());
@@ -61,8 +64,6 @@ export function buildWindowButtonsPanel(args: {
   }
 
   //--------------------------------------------------------------------------
-
-  const PANEL_COLOR = { red: 150 / 255, green: 150 / 255, blue: 150 / 255 };
 
   // Hack for now. This should not be duplicated from createMoveOrDeleteWindowButtons
   const BUTTON_PADDING = 5;
@@ -98,8 +99,8 @@ export function buildWindowButtonsPanel(args: {
     state.rightFillerPanel?.replaceElements([
       {
         type: 'rectangle',
-        fillColor: PANEL_COLOR,
-        strokeColor: PANEL_COLOR,
+        fillColor: theme.windowButtonsPanel.background,
+        strokeColor: theme.windowButtonsPanel.background,
         frame: {
           x: newFillerX,
           y: 0,
@@ -144,8 +145,8 @@ export function buildWindowButtonsPanel(args: {
   state.rightFillerPanel.replaceElements([
     {
       type: 'rectangle',
-      fillColor: PANEL_COLOR,
-      strokeColor: PANEL_COLOR,
+      fillColor: theme.windowButtonsPanel.background,
+      strokeColor: theme.windowButtonsPanel.background,
       frame: {
         x: 0,
         y: 0,
@@ -154,6 +155,8 @@ export function buildWindowButtonsPanel(args: {
       },
     },
   ]);
+
+  state.rightFillerPanel.alpha(theme.windowButtonsPanel.alpha);
   state.rightFillerPanel.show();
 
   return {

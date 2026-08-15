@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 - 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -19,9 +19,11 @@ import type { WidgetLayout, WidgetBuildingInfo } from 'src/mainPanel';
 import { getNoopWidgetBuildingInfo } from 'src/util';
 import { validateConfig } from './validateConfig';
 import { buildTextWidget } from './buildTextWidget';
+import type { Theme } from 'src/theme';
 
 export function getTextBuilder(
   unvalidatedWidgetConfig: unknown,
+  getTheme: () => Theme,
 ): WidgetBuildingInfo {
   const { isValid, validConfig, expectedArgument } = validateConfig(
     unvalidatedWidgetConfig,
@@ -38,10 +40,11 @@ export function getTextBuilder(
     return getNoopWidgetBuildingInfo('Text', errorDetails);
   }
 
+  const theme = getTheme();
   return {
     type: 'success',
     widgetName: 'Text',
     buildWidget: (widgetLayout: WidgetLayout) =>
-      buildTextWidget(validConfig, widgetLayout),
+      buildTextWidget(validConfig, widgetLayout, theme),
   };
 }
