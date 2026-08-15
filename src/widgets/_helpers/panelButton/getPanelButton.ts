@@ -1,4 +1,4 @@
-// Copyright 2024, 2025 Glen Reesor
+// Copyright 2024 - 2026 Glen Reesor
 //
 // This file is part of HammerBar.
 //
@@ -16,11 +16,7 @@
 // HammerBar. If not, see <https://www.gnu.org/licenses/>.
 
 import type { WidgetLayout } from 'src/mainPanel';
-import {
-  deleteCanvasesAndStopTimers,
-  hideCanvases,
-  showCanvases,
-} from '../util';
+import { deleteCanvasesAndStopTimers, hideCanvases } from '../util';
 import { renderHoverCanvas } from './renderHoverCanvas';
 
 type ImageInfo =
@@ -49,7 +45,10 @@ export function getPanelButton({
   }
 
   function show() {
-    showCanvases(Object.values(state.canvases));
+    state.canvases.mainCanvas?.show();
+    if (state.mouseIsInsideButton) {
+      state.canvases.hoverCanvas?.show();
+    }
   }
   const mouseCallback: hs.canvas.CanvasMouseCallback = function (
     this: void,
